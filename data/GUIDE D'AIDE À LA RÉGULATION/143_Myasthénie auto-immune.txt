@@ -1,0 +1,72 @@
+================================================================================
+FICHE N°143
+================================================================================
+
+TITRE: Myasthénie auto-immune
+URL: https://www.guide-regulation-medicale.fr/index.php?module=Fiche&action=FrontDetailView&record=835
+DATE DE RÉCUPÉRATION: 2025-10-17 00:41:22
+CATÉGORIE: DIVERS
+
+================================================================================
+CONTENU:
+================================================================================
+
+Accès à la version ebook
+Annuaire
+    SOMMAIRE
+GENERALITES
+MOTIFS DE RECOURS
+TRIAGE
+CARDIO-VASCULAIRE
+RESPIRATOIRE
+NEUROLOGIE
+PSYCHIATRIE
+TRAUMATOLOGIE
+BRULURES ET FUMEES
+MORSURES ET PIQURES
+TOXICOLOGIE
+GYNECO OBST - NEONAT
+PEDIATRIE
+HEPATO GASTRO ENTEROLOGIE
+INFECTIOLOGIE
+ORL, STOMATO, OPHTALMO
+AUTRES PATHOLOGIES
+PATH CIRCONSTANCIELLES
+RISQUES SANITAIRES
+MALADIES RARES
+ORGANISATION
+DERNIERE PARTIE
+COUVERTURES
+DERNIÈRES MAJ
+MYASTHÉNIE AUTO-IMMUNE
+MALADIES RARES
+Date de mise à jour :
+21/11/2018
+Tout déplier | Tout replier
+Document
+Synonymes
+Myasthenia gravis, myasthénie acquise.
+Mécanismes
+Affection auto-immune acquise de la jonction neuromusculaire réduisant le nombre de récepteurs fonctionnels à l’acétylcholine et se traduisant par une fatigabilité musculaire variable dans le temps. Cliniquement, les muscles innervés par les nerfs crâniens sont les plus affectés.
+Les myasthénies congénitales sont dues à des mutations géniques (maladie différente de la myopathie).
+Risques particuliers en urgence
+Détresse respiratoire (qui peut être d’apparition très rapide, en quelques minutes), par fatigabilité musculaire du diaphragme. Elle peut être aggravée par l’encombrement bronchique
+Troubles de la déglutition
+Crise cholinergique par surdosage en anticholinestérasiques (hypersialorrhée, myosis, diarrhée, hypersécrétion bronchique).
+Traitements fréquemment prescrits au long cours
+Anticholinestérasiques oraux (pyridostigmine Mestinon®, ambénonium Mytélase®…)
+Parfois : corticoïdes ou traitement immuno-suppresseur (Imurel®, autres).
+Pièges
+Se méfier de la gravité des difficultés respiratoires : une détresse respiratoire aiguë sévère peut survenir en quelques minutes
+Se méfier d’un surdosage en anticholinestérasique réalisant une intoxication à l’acétylcholine qui peut simuler une poussée de myasthénie.
+Particularités de la prise en charge médicale pré-hospitalière
+Évaluation de la mécanique respiratoire (fréquence, amplitude, sollicitation des muscles accessoires, encombrement, intensité de la toux) ; la cyanose ou les sueurs sont des signes très tardifs qui précèdent de peu l’arrêt respiratoire ; la baisse de la saturation en oxygène est un signe tardif (se méfier d’une saturation normale)
+En extrahospitalier, le traitement est essentiellement symptomatique pour les troubles de déglutition et les troubles ventilatoires (assistance ventilatoire invasive ou non invasive). La ventilation non invasive ne devrait être envisagée que comme une solution d’attente de l’efficacité d’un traitement adapté. Il n’existe pas de données fortes pour conseiller la ventilation non invasive dans cette indication. La présence de troubles sévères de la déglutition contre-indique la ventilation non-invasive
+Même en dehors des poussées, se méfier de tout médicament dépresseur respiratoire direct ou indirect (hypnotiques, curares, morphiniques, benzodiazépines)
+En cas de troubles respiratoires ou de troubles de déglutition et en l’absence de signes de surdosage en anticholinestérasiques, injection sous-cutanée de 0,5 mg de néostigmine (Prostigmine®) ; l’administration intraveineuse de néostigmine telle qu’elle est notamment utilisée dans la décurarisation pharmacologique, peut provoquer une bradycardie parfois très sévère qui peut être prévenue par l’injection préalable d’atropine (dans tous les cas, une seringue d’atropine prête à l’emploi doit être disponible)
+Orienter en soins intensifs ou en réanimation.
+Server response time: 0.02 seconds.
+
+================================================================================
+FIN DU DOCUMENT
+================================================================================

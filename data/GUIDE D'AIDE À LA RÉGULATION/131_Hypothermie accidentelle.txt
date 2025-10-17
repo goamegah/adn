@@ -1,0 +1,71 @@
+================================================================================
+FICHE N°131
+================================================================================
+
+TITRE: Hypothermie accidentelle
+URL: https://www.guide-regulation-medicale.fr/index.php?module=Fiche&action=FrontDetailView&record=514
+DATE DE RÉCUPÉRATION: 2025-10-17 00:40:50
+CATÉGORIE: TRAUMATO
+
+================================================================================
+CONTENU:
+================================================================================
+
+Accès à la version ebook
+Annuaire
+    SOMMAIRE
+GENERALITES
+MOTIFS DE RECOURS
+TRIAGE
+CARDIO-VASCULAIRE
+RESPIRATOIRE
+NEUROLOGIE
+PSYCHIATRIE
+TRAUMATOLOGIE
+BRULURES ET FUMEES
+MORSURES ET PIQURES
+TOXICOLOGIE
+GYNECO OBST - NEONAT
+PEDIATRIE
+HEPATO GASTRO ENTEROLOGIE
+INFECTIOLOGIE
+ORL, STOMATO, OPHTALMO
+AUTRES PATHOLOGIES
+PATH CIRCONSTANCIELLES
+RISQUES SANITAIRES
+MALADIES RARES
+ORGANISATION
+DERNIERE PARTIE
+COUVERTURES
+DERNIÈRES MAJ
+HYPOTHERMIE ACCIDENTELLE
+PATH CIRCONSTANCIELLES
+Date de mise à jour :
+02/05/2019
+Tout déplier | Tout replier
+Introduction
+L’hypothermie n’est pas forcément le motif d’appel mais il faut la dépister en raison du risque de fibrillation ventriculaire ou d’aggravation de l’état du patient.
+ARM
+2. déterminer le niveau de priorité de l'appel initial
+• P0 : absence d’activité ventilatoire.
+• P1 : absence de réponse aux ordres simples.
+• P2 : patient conscient qui frissonne.
+3. chercher à savoir
+Circonstances :
+- accident suraigu : immersion.
+- accident aigu : accident de la voie publique avec incarcération et intempéries, contexte de montagne, victime polytraumatisée…
+- survenue progressive : intoxication médicamenteuse volontaire, hypoglycémie, allongé au sol retrouvé après la 24ème heure, inadaptation vestimentaire, nuit au froid…
+Penser aux victimes retrouvées inconscientes sur la voie publique ("SDF qui dort") ou à domicile ("ouverture de porte").
+4. conseiller en attendant la régulation médicale et l'arrivée des secours
+Gestes de secourisme si nécessaire.
+Toute mobilisation doit être prudente (risque de passage en fibrillation ventriculaire).
+5. adapter la décision si l’appel ne peut être régulé immédiatement
+Engagement immédiat d’un moyen secouriste équipé d’un défibrillateur et d’oxygène.
+Médecin régulateur
+Fichiers téléchargeables :
+algorithme hypothermie
+Server response time: 0.04 seconds.
+
+================================================================================
+FIN DU DOCUMENT
+================================================================================

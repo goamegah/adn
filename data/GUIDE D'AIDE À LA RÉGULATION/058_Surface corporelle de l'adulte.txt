@@ -1,0 +1,89 @@
+================================================================================
+FICHE N°58
+================================================================================
+
+TITRE: Surface corporelle de l'adulte
+URL: https://www.guide-regulation-medicale.fr/index.php?module=Fiche&action=FrontDetailView&record=521
+DATE DE RÉCUPÉRATION: 2025-10-17 00:38:11
+CATÉGORIE: DIVERS
+
+================================================================================
+CONTENU:
+================================================================================
+
+Accès à la version ebook
+Annuaire
+    SOMMAIRE
+GENERALITES
+MOTIFS DE RECOURS
+TRIAGE
+CARDIO-VASCULAIRE
+RESPIRATOIRE
+NEUROLOGIE
+PSYCHIATRIE
+TRAUMATOLOGIE
+BRULURES ET FUMEES
+MORSURES ET PIQURES
+TOXICOLOGIE
+GYNECO OBST - NEONAT
+PEDIATRIE
+HEPATO GASTRO ENTEROLOGIE
+INFECTIOLOGIE
+ORL, STOMATO, OPHTALMO
+AUTRES PATHOLOGIES
+PATH CIRCONSTANCIELLES
+RISQUES SANITAIRES
+MALADIES RARES
+ORGANISATION
+DERNIERE PARTIE
+COUVERTURES
+DERNIÈRES MAJ
+SURFACE CORPORELLE DE L'ADULTE
+BRULURES et FUMEES
+Date de mise à jour :
+30/12/2018
+Tout déplier | Tout replier
+Document
+Table de LUND et BROWDER
+
+tête   :   7%
+cou    :   2%
+tronc : face antérieure    :    13%
+tronc : face postérieure  :   13%
+une fesse  :   2,5%
+organes génitaux externes :  1%
+un bras  :  4%
+un avant-bras  :   3%
+une main  :  2,5%
+une cuisse  :   9,5%
+une jambe  :   7%
+un pied  :   3,5%
+
+---------------------------------------------------------------------------------------------------
+
+Règle des 9 de WALLACE
+
+tête et cou   :  9%
+thorax : face antérieure  :   9%
+thorax : face postérieure  :   9%
+abdomen : face antérieure  :   9%
+abdomen : face postérieure   :  9%
+un membre supérieur  :   9%
+un membre inférieur : face antérieure   :  9%
+un membre inférieur : face postérieure   :  9%
+organes génitaux externes  :   1%
+
+La règle de Wallace est moins précise que la table de Lund et Browder.
+Voir également la table de Lund et Browder pour les enfants selon l’âge.
+Fichiers téléchargeables :
+Programme de calcul du remplissage à télécharger (modèle Excel)
+Exemple de fiche d'admission d'un patient brulé (à charger & imprimer)
+Liens internet :
+Site de la SFB
+Photos :
+Exemple de fiche d'admission d'un patient brulé a imprimer
+Server response time: 0.02 seconds.
+
+================================================================================
+FIN DU DOCUMENT
+================================================================================

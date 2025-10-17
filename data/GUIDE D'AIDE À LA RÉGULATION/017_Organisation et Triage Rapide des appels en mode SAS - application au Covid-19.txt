@@ -1,0 +1,118 @@
+================================================================================
+FICHE N°17
+================================================================================
+
+TITRE: Organisation et Triage Rapide des appels en mode SAS - application au Covid-19
+URL: https://www.guide-regulation-medicale.fr/index.php?module=Fiche&action=FrontDetailView&record=980
+DATE DE RÉCUPÉRATION: 2025-10-17 00:36:41
+CATÉGORIE: DIVERS
+
+================================================================================
+CONTENU:
+================================================================================
+
+Accès à la version ebook
+Annuaire
+    SOMMAIRE
+GENERALITES
+MOTIFS DE RECOURS
+TRIAGE
+CARDIO-VASCULAIRE
+RESPIRATOIRE
+NEUROLOGIE
+PSYCHIATRIE
+TRAUMATOLOGIE
+BRULURES ET FUMEES
+MORSURES ET PIQURES
+TOXICOLOGIE
+GYNECO OBST - NEONAT
+PEDIATRIE
+HEPATO GASTRO ENTEROLOGIE
+INFECTIOLOGIE
+ORL, STOMATO, OPHTALMO
+AUTRES PATHOLOGIES
+PATH CIRCONSTANCIELLES
+RISQUES SANITAIRES
+MALADIES RARES
+ORGANISATION
+DERNIERE PARTIE
+COUVERTURES
+DERNIÈRES MAJ
+ORGANISATION ET TRIAGE RAPIDE DES APPELS EN MODE SAS - APPLICATION AU COVID-19
+TRIAGE
+Date de mise à jour :
+10/03/2020
+Tout déplier | Tout replier
+Document
+Recommandation de SUdF - Mars 2020
+  1. Mise en place d’un triage ARM en mode SAS :    moins de 30 secondes de communication
+Ouvrir un DRavec seules informations recueillies et saisies nécessaires pour le contacter en cas de perte de la communication (facilité par PFLAU)
+nom
+numéro de téléphone de l’appelant
+Qualifier le degré d’urgence : échelle des P, application d’algorithmes / protocoles pour déterminer s’il s’agit d’une détresse vitale (P0), d’une urgence (P1,P2) ou d’une demande qui relève du SNPA (P2,P3) – identifier les appels COVID-19
+Exemple de dialogue:
+Bonjour. Que vous arrive-t-il ? Quelle est la raison de votre appel ?
+renseigner les observations et mots clefs dans le DR
+Je vous remercie et vous passe ma/mon collègue. Il y a X minutes d’attente
+Orienter
+P0 >> départs réflexes, MU, …
+COVID-19 >> orientation vers organisation dédiée (salle dédiée, …)
+Autre >> transfert à ARM pour poursuite de la qualification / mise en attente FO.1 du Samu Centre 15
+  2. Etre accessible - SAS et détresse vitale (P0)
+En cas de détection d’une urgence vitale (P0), l’ARM « SAS » garde l’appelant et reprend une fonction d’ARM « AMU » :
+crée le DRM
+engage un prompt secours et un SMUR avant la phase de régulation médicale
+conseille et/ou guide les gestes de secourisme et RCP
+transfère l’appel immédiat au MRU
+  3. Etre accessible - Prise en charge COVID-19 
+"Bonjour. Revenez vous d’une zone à risque ?"
+--> renseigner l’information
+"Avez-vous de la toux, des difficultés respiratoires ?"
+--> renseigner l’information – mots clés
+3 situations se présentent alors :
+aucun critère + pas d'inquétude
+zone à risque moins de 14 jours + pas de symptômes OU en cas de doute pour l’ARM
+zone à risque moins de 14 jours + fièvre > 38° ou sensation (frissons, courbatures) + présence de signes d’infection respiratoire
+  Situation 1 : aucun critère + pas d'inquétude
+"Je vous remercie.
+Vous ne relevez pas d’une situation médicale à risque.
+Je vous invite à composer le 0 800 130 000 si vous voulez plus de renseignements sur le Coronavirus.
+Nous allons raccrocher ?
+Je vous souhaite une bonne journée."
+  Situation 2 : zone à risque moins de 14 jours + pas de symptômes OU en cas de doute pour l’ARM 
+"Je vous remercie.
+Vous ne relevez pas d’une situation à risque.
+Voulez-vous parler à un médecin ?"
+si oui
+"Je vous invite à rester chez vous en attendant qu’un médecin du Centre 15 vous rappelle dans les plus brefs délais."
+>> transfert du dossier au MR affecté à  cette tache >> rappel pour régulation médicale reportée
+si non
+"Je vous conseille de surveiller votre température deux fois par jour et d’éviter les contacts avec les personnes fragiles. Si apparition de température ou difficultés respiratoires, rappelez le 15."
+ensuite
+"Nous allons raccrocher ? Je vous souhaite une bonne journée."
+  Situation 3 : zone à risque moins de 14 jours + fièvre > 38° ou sensation (frissons, courbatures) + présence de signes d’infection respiratoire
+"Je vous remercie.
+Vous présentez les critères d’une situation à risque.
+Je vous invite à patienter en attendant qu’un médecin du Samu - Centre 15 prenne votre appel.
+Ne raccrochez pas, je vous mets dans sa salle d’attente téléphonique."
+>> transfert du dossier au MRU pour régulation médicale
+  4. Etre accessible - Mise en place d’un serveur vocal interactif
+Il est recommandé d’activer un serveur vocal interactif (SVI), en particulier pour gérer l’attente, pré-qualifier les flux et orienter au mieux les appels vers une salle dédiée, locale ou à distance.
+Il est recommandé que ce SVI sone soit activé qu'en cas d'attente.
+Le message peut être simple – il est répété deux fois
+« Si vous appelez au sujet du Coronavirus, tapez 2 »
+« Le Samu bonjour, si vous souhaitez parler à un médecin a propos du Coronavirus, tapez 3 »
+  5. Covid19 - Codage CIM 10
+Utiliser un code en complément de votre hypothèse de diagnostic :
+le code U07.1 : maladie respiratoire à Coronavirus 2019 (COVID-19)
+si le code U07.1 n’est pas disponible, la SFMU recommande d’utiliser :
+le code B97.2 : coronavirus, cause de maladies classées dans d'autres chapitres
+ou le code B34.2 : infection coronavirale, sans précision
+ou le code U04.9 : syndrome respiratoire aigu sévère [SRAS]
+  Fichiers téléchargeables :
+Organisation du triage (Covid-19)
+Server response time: 0.02 seconds.
+
+================================================================================
+FIN DU DOCUMENT
+================================================================================

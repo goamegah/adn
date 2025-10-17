@@ -1,0 +1,25 @@
+RAPPORT DE SCRAPING
+================================================================================
+
+Date: 2025-10-17 00:43:35
+Site: Guide de Régulation Médicale
+
+STATISTIQUES:
+----------------------------------------
+Fiches trouvées: 203
+Fiches récupérées avec succès: 203
+Erreurs: 0
+Taux de réussite: 100.0%
+
+ORGANISATION DES FICHIERS:
+----------------------------------------
+  urgences/: 17 fiches
+  neurologie/: 7 fiches
+  respiratoire/: 3 fiches
+  traumato/: 15 fiches
+  divers/: 128 fiches
+  psychiatrie/: 4 fiches
+  cardio/: 8 fiches
+  obstetrique/: 4 fiches
+  intoxication/: 7 fiches
+  pediatrie/: 10 fiches

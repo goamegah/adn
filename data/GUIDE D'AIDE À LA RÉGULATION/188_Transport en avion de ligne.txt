@@ -1,0 +1,73 @@
+================================================================================
+FICHE N°188
+================================================================================
+
+TITRE: Transport en avion de ligne
+URL: https://www.guide-regulation-medicale.fr/index.php?module=Fiche&action=FrontDetailView&record=921
+DATE DE RÉCUPÉRATION: 2025-10-17 00:43:03
+CATÉGORIE: DIVERS
+
+================================================================================
+CONTENU:
+================================================================================
+
+Accès à la version ebook
+Annuaire
+    SOMMAIRE
+GENERALITES
+MOTIFS DE RECOURS
+TRIAGE
+CARDIO-VASCULAIRE
+RESPIRATOIRE
+NEUROLOGIE
+PSYCHIATRIE
+TRAUMATOLOGIE
+BRULURES ET FUMEES
+MORSURES ET PIQURES
+TOXICOLOGIE
+GYNECO OBST - NEONAT
+PEDIATRIE
+HEPATO GASTRO ENTEROLOGIE
+INFECTIOLOGIE
+ORL, STOMATO, OPHTALMO
+AUTRES PATHOLOGIES
+PATH CIRCONSTANCIELLES
+RISQUES SANITAIRES
+MALADIES RARES
+ORGANISATION
+APPELS D'ORIGINE PARTICULIERE
+MODALITES DE TRANSFERT
+GUIDANCE
+SOINS A DOMICILE
+LOGISTIQUE COLLECTIVE
+VECTEURS DE TRANSPORT
+RELATIONS EXTERIEURES
+DERNIERE PARTIE
+COUVERTURES
+TRANSPORT EN AVION DE LIGNE
+ORGANISATION > VECTEURS DE TRANSPORT
+Date de mise à jour :
+28/12/2019
+Tout déplier | Tout replier
+Document
+La réflexion sur le choix du transport aérien repose sur le bénéfice attendu (gain de temps réel), les contraintes logistiques, les risques liés aux effets secondaires (contre-indications potentielles), le coût et la disponibilité des moyens. Le choix de l’avion de ligne comme moyen de transfert d’un patient doit répondre aux questions suivantes :
+  Quels sont les bénéfices attendus du transport par avion de ligne ?
+Sur une longue distance (>500 km), c’est le moyen de transport le plus rapide. En cas de contrainte géographique (massif de haute altitude, mer), l’avion s’impose souvent comme seul vecteur utilisable.
+  Quelles sont les contraintes à prendre en compte ?
+Effets secondaires : la pressurisation cabine des avions varie entre 1500 et 2400 mètres favorisant hypoxie et dilatation de l’air dans toutes les cavités physiologiques (estomac, sinus…) ou pathologiques (pneumothorax, occlusion…) ; les vibrations, les changements de vitesse et l’air sec en cabine sont considérés comme des inconforts mais n’interfèrent pas directement avec l’état clinique du patient.
+Contre-indications absolues au transport par avion de ligne : pneumothorax complet ou mal toléré, non drainé ; traumatisé grave non stabilisé, certaines chirurgies récentes (cœlioscopie
+Contre-indications relatives au transport par avion de ligne : cardiopathie ischémique (le patient traité, sans lésion coronarienne objectivée à la coronarographie et avec une fonction ventriculaire conservée peut voyager à J+2 du traitement médical ; le SCA non ST+ de moins de 48h et le SCA ST+ de moins d’un mois sont des contre-indications légales au transport aérien non médicalisé), embolie pulmonaire, insuffisance cardiaque non stabilisée (le patient doit être en mesure de tolérer une désaturation de 10% ainsi qu’une augmentation de fréquence cardiaque d’au moins 20%).
+Contraintes logistiques : délai d’embarquement, débarquement et contrôles de sécurité, localisation de la civière à l’arrière de l’avion, contrainte de brancardage, isolement du malade réduit (séparation par un rideau), disponibilité de place dans l’avion (6 places pour la civière), accessibilité au patient limitée, source électrique…
+  Comment organiser le transfert en avion de ligne ?
+Il faut toujours envisager une vision pessimiste du transfert (durée de voyage, évolution médicale du patient) et prévoir une quantité très supérieure aux besoins calculés en oxygène et énergie électrique (au moins trois heures supplémentaires). En effet, l’avion peut être retardé ou détourné vers un autre aéroport. La réserve en matériel, perfusions et médicaments doit permettre de prendre en charge toutes les évolutions cliniques possibles du patient.
+L’équipe médicale doit également bien gérer ses temps de repos et son alimentation.
+  Quelles sont les indications et les alternatives  du transfert en avion de ligne ?
+Les effets secondaires de l’altitude cabine et les contraintes logistiques font de l’avion de ligne un moyen de transport dont les indications sont très limitées. L’hélicoptère, n’ayant pas les même contraintes logistiques, peut remplacer l’avion de ligne jusqu’à environ 500km. Par ailleurs, l’aviation privée peut suppléer l’avion de ligne sur des distances intermédiaires mais la disponibilité et le coût de ce transport en limitent l’utilisation.
+  Quels sont les prérequis incontournables ?
+Le patient doit être stabilisé avant le transport et les éventuelles répercussions du transfert sur l’état du malade doivent être anticipées.
+Il convient également de s’assurer du financement et sa prise en charge dans le cadre d’une intervention SMUR (budgets hospitaliers) ou d’un rapatriement sanitaire (budgets privés tels que les compagnies d’assurance).
+Server response time: 0.02 seconds.
+
+================================================================================
+FIN DU DOCUMENT
+================================================================================
