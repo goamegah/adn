@@ -1,0 +1,76 @@
+================================================================================
+FICHE N°136
+================================================================================
+
+TITRE: Angio-œdème à bradykinine
+URL: https://www.guide-regulation-medicale.fr/index.php?module=Fiche&action=FrontDetailView&record=956
+DATE DE RÉCUPÉRATION: 2025-10-17 00:41:07
+CATÉGORIE: DIVERS
+
+================================================================================
+CONTENU:
+================================================================================
+
+Accès à la version ebook
+Annuaire
+    SOMMAIRE
+GENERALITES
+MOTIFS DE RECOURS
+TRIAGE
+CARDIO-VASCULAIRE
+RESPIRATOIRE
+NEUROLOGIE
+PSYCHIATRIE
+TRAUMATOLOGIE
+BRULURES ET FUMEES
+MORSURES ET PIQURES
+TOXICOLOGIE
+GYNECO OBST - NEONAT
+PEDIATRIE
+HEPATO GASTRO ENTEROLOGIE
+INFECTIOLOGIE
+ORL, STOMATO, OPHTALMO
+AUTRES PATHOLOGIES
+PATH CIRCONSTANCIELLES
+RISQUES SANITAIRES
+MALADIES RARES
+ORGANISATION
+DERNIERE PARTIE
+COUVERTURES
+DERNIÈRES MAJ
+ANGIO-ŒDÈME À BRADYKININE
+MALADIES RARES
+Date de mise à jour :
+21/11/2018
+Tout déplier | Tout replier
+Document
+Synonymes
+Œdème angioneurotique, angio-œdème héréditaire, angio-œdème bradykinique, angio-œdème secondaire aux inhibiteurs de l’enzyme de conversion.
+Mécanismes
+Maladies héréditaires ou acquises liées à une synthèse excessive de bradykinine ou un défaut de sa dégradation, à l’origine d’œdèmes sous-cutanés ou sous-muqueux, limités, non prurigineux, récidivants, disparaissant sans séquelle. La prise d’inhibiteurs de l’enzyme de conversion de l’angiotensine ou plus rarement de sartan peut déclencher une crise.
+Risques particuliers en urgence
+Œdème laryngé (25% de décès sans traitement spécifique)
+Œdème de la face
+Œdème du tube digestif : syndrome pseudo-occlusif
+Localisation, fréquence et gravité des crises différentes selon les individus.
+Caractère imprévisible de la crise grave.
+Traitements fréquemment prescrits au long cours
+Pas de traitement de fond systématique
+Parfois : acide tranexamique, danazol, concentrés de C1Inh humain
+Traitement préventif de l’œdème laryngé lors de toute intubation, fibrosocopie ou soins dentaires : concentré de C1Inh humain.
+Pièges
+L’œdème de la face peut se compliquer d’œdème laryngé.
+L’œdème digestif simule un tableau chirurgical et peut entraîner hyperalgie, ascite ou hypovolémie.
+Particularités de la prise en charge médicale pré-hospitalière
+Traitement symptomatique de la dyspnée, de l’hypovolémie, de la douleur et des vomissements (formes abdominales)
+Inutilité, car aucune efficacité, des antihistaminiques et des corticoïdes
+Le plus rapidement possible : traitement spécifique en cas de crises graves, c’est-à-dire toute crise touchant la face, la bouche, les voies aériennes supérieures et les crises abdominales (dotation du patient ou de l’hôpital) avec l’un des 2 produits :
+concentrés de C1Inh humain : 20u/kg en IV en 5 minutes (flacon de 500mg, injecter la totalité du flacon entamé même au-delà de la posologie préconisée)
+icatibant (ampoules 3ml = 30mg) : 30mg en SC (contre-indications : enfant et femme enceinte)
+Il est souhaitable que toute équipe SMUR sache où se procurer 24h/24 les traitements spécifiques (patient déjà diagnostiqué, pharmacie hospitalière, réanimation...).
+Admission en soins intensifs/réanimation, si possible dans la structure hospitalière de référence.
+  Server response time: 0.02 seconds.
+
+================================================================================
+FIN DU DOCUMENT
+================================================================================

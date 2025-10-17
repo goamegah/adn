@@ -1,0 +1,92 @@
+================================================================================
+FICHE N°189
+================================================================================
+
+TITRE: Gestion d’un bilan secouriste au CRRA
+URL: https://www.guide-regulation-medicale.fr/index.php?module=Fiche&action=FrontDetailView&record=591
+DATE DE RÉCUPÉRATION: 2025-10-17 00:43:05
+CATÉGORIE: DIVERS
+
+================================================================================
+CONTENU:
+================================================================================
+
+Accès à la version ebook
+Annuaire
+    SOMMAIRE
+GENERALITES
+MOTIFS DE RECOURS
+TRIAGE
+CARDIO-VASCULAIRE
+RESPIRATOIRE
+NEUROLOGIE
+PSYCHIATRIE
+TRAUMATOLOGIE
+BRULURES ET FUMEES
+MORSURES ET PIQURES
+TOXICOLOGIE
+GYNECO OBST - NEONAT
+PEDIATRIE
+HEPATO GASTRO ENTEROLOGIE
+INFECTIOLOGIE
+ORL, STOMATO, OPHTALMO
+AUTRES PATHOLOGIES
+PATH CIRCONSTANCIELLES
+RISQUES SANITAIRES
+MALADIES RARES
+ORGANISATION
+APPELS D'ORIGINE PARTICULIERE
+MODALITES DE TRANSFERT
+GUIDANCE
+SOINS A DOMICILE
+LOGISTIQUE COLLECTIVE
+VECTEURS DE TRANSPORT
+RELATIONS EXTERIEURES
+DERNIERE PARTIE
+COUVERTURES
+GESTION D’UN BILAN SECOURISTE AU CRRA
+ORGANISATION > RELATIONS EXTERIEURES
+Date de mise à jour :
+28/12/2019
+Tout déplier | Tout replier
+Document
+Tout patient pris en charge par un moyen engagé par le CRRA doit bénéficier d’un bilan clinique afin de conforter la décision du médecin régulateur, d’anticiper une admission hospitalière et de clôturer le dossier de régulation médicale.
+  Le bilan clinique d’un patient est réglementaire :
+Tout effecteur missionné par le SAMU-centre 15 doit lui transmettre un bilan afin qu'il puisse assurer les missions réglementairement définies (CSP R6311-2) :
+– s'assurer de la disponibilité des moyens d'hospitalisation publics ou privés adaptés à l'état du patient, compte tenu du respect du libre choix, et faire préparer son accueil,
+– organiser, le cas échéant, le transport dans un établissement public ou privé en faisant appel à un service public, à une entreprise privée de transports sanitaires ou à une association de secourisme,
+– veiller à l'admission du patient.
+Le référentiel commun sur l’organisation du secours d’urgence à personne et de l’aide médicale urgente intègre la notion de bilan secouriste. Pour les transporteurs sanitaires privés, la nécessité de ce bilan est rappelée dans le cadre de la convention nationale destinée à organiser les rapports entre les Transporteurs Sanitaires privés et les caisses d'Assurance Maladie de 2003 et de la convention de 2009.
+  Le bilan clinique a plusieurs objectifs :
+– valider la décision du médecin régulateur : afin de vérifier l’adéquation de l'effecteur à la gravité du malade, au nombre de victimes et à leurs pathologies, s’il existe des contraintes environnementales ou médico-sociales modifiant l'orientation ou nécessitant des moyens complémentaires, et afin de permettre l'adaptation des renforts ainsi que l'anticipation de mesures de sécurité pour les équipes intervenantes.
+– permettre l'orientation vers le lieu d'hospitalisation ou de consultation médicale le plus adapté, en respectant dans la mesure du possible le libre choix du patient ; ceci suppose la connaissance de la disponibilité des établissements d'accueil et des cabinets médicaux.
+– décrire l'épidémiologie de l'aide médicale urgente avec la connaissance de l'agent causal en cas de pathologie accidentelle, l’orientation diagnostique, la codification et l’exploitation par rapport à un thésaurus adapté.
+– déceler les patients en situation de détresse sociale, rupture de traitement, isolement, précarité… et de l’orienter vers un réseau d’appui et de coordination adapté.
+– assurer une démarche qualité par l'analyse des incidents (décisions multiples, retard à la décision, indisponibilité d'un effecteur souhaité, orientation inadaptée…).
+  Le bilan clinique est réalisé selon une procédure dirigée et validée :
+– cette procédure est normative et adaptée à une transmission synthétique.
+– idéalement, elle a comme support une fiche bilan dont la conception permet une description précise et concise de l’état neurologique, ventilatoire et circulatoire de la victime ainsi qu’une évaluation des fonctions vitales.
+– la réception (recueil et exploitation) des bilans secouristes peut être déléguée aux ARM et aux personnels paramédicaux sans outrepasser leur domaine de compétences, en collaboration avec un médecin régulateur ; le règlement intérieur du CRRA doit en préciser les modalités. La décision de laisser un patient sur place ne peut être prise que par le médecin régulateur.
+  Le bilan clinique comporte plusieurs éléments :
+– la nature réelle de l’intervention, les circonstances (mécanisme, cinétique…).
+– les antécédents du patient et son traitement habituel
+– l’examen clinique avec les paramètres vitaux mesurés :
+- l’état neurologique : perte de connaissance, désorientation, réponse aux ordres simples, déficits moteurs ou sensitifs, qualité de la parole, agitation, convulsions, état ébrieux, nausées, vomissements…
+- l’état ventilatoire : fréquence, amplitude, régularité, difficultés respiratoires, bruits, gêne à la parole, cyanose, saturation en oxygène, sueurs…
+- l’état circulatoire : caractéristique du pouls, pâleur, fréquence cardiaque, pression artérielle (systolique et diastolique), marbrures…
+- le bilan des lésions : plaies, traumatismes, brûlures, douleur et sa cotation.
+– les gestes effectués et l’évolution du patient au cours de la prise en charge (nécessité de répéter ce bilan).
+– le devenir de la victime : moyen de transport, destination.
+Certaines situations essentiellement en petite traumatologie dispensent le chef d’agrès de la transmission de ce bilan (annexe II du référentiel 2008, à valider localement par une convention entre chaque SDIS et SAMU.
+  Techniquement, le bilan clinique est :
+– transmis par téléphone en organisant éventuellement une conférence à plusieurs (secouriste, médecin régulateur, médecin du service d’accueil hospitalier…) ou par radio (en veillant à respecter la confidentialité et notamment l’identité).
+– enregistré et conservé pour assurer la traçabilité.
+  Le bilan est réceptionné au CRRA :
+- le bilan est traité selon les procédures internes au SAMU.
+- son analyse tient compte des niveaux de priorisation et de décision décrits dans la fiche : « degrés d’urgence en régulation médicale » dans laquelle sont notamment classés les niveaux des informations contenues dans le bilan passé par l’effecteur et surtout l’adéquation entre ces informations et celles reçues au moment de la régulation médicale initiale de l’appel.
+Bibliographie
+Server response time: 0.02 seconds.
+
+================================================================================
+FIN DU DOCUMENT
+================================================================================

@@ -1,0 +1,392 @@
+================================================================================
+FICHE N°5
+================================================================================
+
+TITRE: Principes de la régulation médicale
+URL: https://www.guide-regulation-medicale.fr/index.php?module=Fiche&action=FrontDetailView&record=174
+DATE DE RÉCUPÉRATION: 2025-10-17 00:36:15
+CATÉGORIE: URGENCES
+
+================================================================================
+CONTENU:
+================================================================================
+
+Accès à la version ebook
+Annuaire
+    SOMMAIRE
+GENERALITES
+MOTIFS DE RECOURS
+TRIAGE
+CARDIO-VASCULAIRE
+RESPIRATOIRE
+NEUROLOGIE
+PSYCHIATRIE
+TRAUMATOLOGIE
+BRULURES ET FUMEES
+MORSURES ET PIQURES
+TOXICOLOGIE
+GYNECO OBST - NEONAT
+PEDIATRIE
+HEPATO GASTRO ENTEROLOGIE
+INFECTIOLOGIE
+ORL, STOMATO, OPHTALMO
+AUTRES PATHOLOGIES
+PATH CIRCONSTANCIELLES
+RISQUES SANITAIRES
+MALADIES RARES
+ORGANISATION
+DERNIERE PARTIE
+COUVERTURES
+DERNIÈRES MAJ
+PRINCIPES DE LA RÉGULATION MÉDICALE
+GENERALITES
+Date de mise à jour :
+23/12/2019
+Tout déplier | Tout replier
+Document
+Marc GIROUD, past-président de Samu-Urgences de France
+Définition :
+
+La régulation médicale est un acte médical pratiqué au téléphone (ou au moyen de tout autre dispositif de télécommunication) par un médecin régulateur d’un centre d’appels dédié aux urgences médicales, en réponse à la demande du patient lui-même ou d’un tiers adressée directement ou indirectement à ce centre et concernant un patient se trouvant, à distance du centre, en situation d’urgence médicale manifeste, potentielle ou ressentie.
+
+L’acte de régulation médicale commence par un interrogatoire médical et un dialogue conduits avec méthode et dans le délai le plus rapide par le médecin régulateur pour analyser et prendre en compte les signes et les symptômes décrits et perçus, les antécédents médicaux, le contexte, les demandes et les attentes du patient, dans le but de préciser le besoin de soins, d’établir une ou des hypothèses diagnostiques et pronostiques et d’évaluer les risques de la situation en regard des bénéfices attendus des différentes prises en charge possibles : conseil médical, aide aux gestes de premier secours, prescription médicamenteuse, intervention médicale auprès du patient, orientation et transport du patient vers une structure hospitalière des urgences ou vers une unité ou une filière spécialisée du réseau des urgences.
+
+L’acte de régulation médicale aboutit à la prescription du juste soin représentant la réponse la mieux adaptée à la demande, compte tenu de l'organisation en place (secours à personne, aide médicale urgente, transport sanitaire, permanence des soins, structures d’urgences, hospitalisation), des ressources disponibles et du contexte.
+
+L’acte de régulation médicale se poursuit par la mise en œuvre de cette prescription, l’assistance aux éventuels intervenants, l’anticipation de chacune des étapes de la prise en charge du patient et le suivi de cette prise en charge le temps nécessaire, soit à son achèvement, soit à la prise du relais par une autre structure de santé.
+
+L’acte de régulation médicale est effectué au bénéfice du patient, dans un contrat de soins respectueux de son libre choix.
+
+La régulation médicale est une des composantes de la médecine d’urgence, de la télémédecine et de la médecine de catastrophe.
+
+
+Justification :
+
+Le patient confronté à une urgence médicale exprime à sa façon des besoins, des attentes et des symptômes dont il ne sait pas évaluer lui-même la gravité ; il ne sait pas, non plus, comment s’y prendre pour mettre en œuvre les moyens appropriés ; il sollicite, pour cela, un centre d’appels d’urgence dont il attend une prise en charge rapide et efficace, là où il se trouve ou à proximité.
+
+Le recours aux ressources de santé accessibles en urgence nécessitant une bonne connaissance de leur organisation et de leur disponibilité qui évolue en permanence, seule une structure dédiée aux urgences médicales (centre de régulation médicale) peut posséder sur ces ressources toutes les informations opérationnelles nécessaires à leur mise en œuvre.
+
+Un médecin dûment formé à cela (médecin régulateur) et agissant dans un centre de régulation médicale convenablement organisé, équipé et doté en personnels spécialisés – notamment les assistants de régulation médicale (ARM) – est le mieux à même d’assurer le dialogue avec le patient, de maîtriser les règles d’emploi des ressources, de déterminer et de mettre en œuvre, au cas par cas, la solution la mieux adaptée dans le délai le plus rapide (régulation médicale).
+Le temps passé par le médecin régulateur à comprendre à distance la situation et à prendre les dispositions nécessaires est un temps court ; ce temps initialement investi permet d’organiser et de sécuriser la prise en charge du patient.
+Un urgentiste hospitalier, du fait de la connaissance qu’il a des organisations hospitalières, sait, mieux que quiconque, anticiper les différentes étapes de la prise en charge hospitalière d’un patient ; ainsi, un médecin régulateur urgentiste hospitalier, après un contact préalable destiné à préparer sa prise en charge, oriente directement le patient vers la structure ou la filière spécialisée la mieux adaptée.
+
+Le médecin régulateur urgentiste hospitalier possède l’expertise nécessaire pour apporter aux différents intervenants pré-hospitaliers l’appui de son assistance.
+Pratiquée dans le cadre d’une structure d’urgences hospitalière, la régulation médicale est le meilleur lien possible entre l’organisation pré-hospitalière des secours et des soins et le réseau hospitalier des urgences.
+La participation de médecins régulateurs généralistes, aux côtés d’urgentistes hospitaliers au sein d’un centre unique de régulation médicale, apporte une compétence complémentaire qui permet de mieux couvrir l’ensemble des demandes, quelle que soit leur gravité, et d’ouvrir l’éventail des réponses en développant le conseil médical et la prescription médicamenteuse téléphonique.
+La régulation médicale pratiquée par des urgentistes hospitaliers optimise, au quotidien, l’emploi des ressources hospitalières et contribue à une meilleure structuration de l’offre de soins.
+
+Pratiquée dans le cadre du service public hospitalier, la régulation médicale offre à la personne la moins favorisée et la moins informée comme à la plus aisée d’accéder en urgence aux ressources les plus performantes dans les meilleurs délais, chaque fois que cela est nécessaire.
+
+
+Missions :
+
+Mission de solidarité et d’assistance :
+
+D’essence morale, l’obligation générale d’assistance à personne en danger s’impose aux médecins1 et la loi sanctionne les manquements à cette obligation2.
+
+1. Code de déontologie médicale (CDM). Art. 9 : « Tout médecin qui se trouve en présence d’un malade ou d’un blessé en péril ou, informé qu’un malade ou un blessé est en péril, doit lui porter assistance ou s’assurer qu’il reçoit les soins nécessaires. »
+2. Code pénal. Art. 223-6 : « Sera puni des mêmes peines quiconque s'abstient volontairement de porter à une personne en péril l'assistance que, sans risque pour lui ou pour les tiers, il pouvait lui prêter soit par son action personnelle, soit en provoquant un secours. »
+
+
+Mission de soins :
+
+La déontologie médicale crée des obligations au médecin régulateur.
+L’obligation d’assumer personnellement et consciencieusement ses actes3,
+L’obligation d’indépendance4,
+L’obligation de droiture5,
+L’obligation d’informer le patient et de respecter son libre choix6,
+L’obligation de respecter la confidentialité7,
+L’obligation de fonctionner en réseau8,
+L’obligation de délivrer les soins appropriés9,
+L’obligation de limiter ses prescriptions à ce qui est nécessaire10.
+3. CDM. Art. 32 : « … le médecin s’engage à assurer personnellement au patient des soins consciencieux, dévoués et fondés sur les données acquises de la science… » Art. 69 : « L’exercice de la médecine est personnel ; chaque médecin est responsable de ses décisions et de ses actes. »
+4. CDM. Art. 5 : « Le médecin ne peut aliéner son indépendance professionnelle sous quelque forme que ce soit. » Art. 8 : « Dans les limites fixées par la loi, le médecin est libre de ses prescriptions…» Art. 95 : « … le médecin ne peut accepter de limitation à son indépendance dans son exercice médical de la part de l’entreprise ou de l’organisme qui l’emploie. »
+5. CDM. Art. 23 : « Tout compérage… est interdit ». Art. 57 : « Le détournement ou la tentative de détournement de clientèle est interdit. »
+6. CDM. Art. 35 : « le médecin doit à la personne qu’il examine, qu’il soigne ou qu’il conseille, une information loyale, claire et appropriée… » Art. 36 : « Le consentement de la personne examinée ou soignée doit être recherché dans tous les cas. »
+Code de la santé publique (CSP). Art. L. 1111-2 : « Toute personne a le droit d'être informée sur son état de santé… Cette information incombe à tout professionnel de santé... Cette information est délivrée au cours d'un entretien individuel. En cas de litige, il appartient au professionnel ou à l'établissement de santé d'apporter la preuve que l'information a été délivrée à l'intéressé… Cette preuve peut être apportée par tout moyen. » Art. L. 1111-4 : « Toute personne prend avec le personnel de santé… les décisions concernant sa santé… Aucun acte médical ni aucun traitement ne peut être pratiqué sans le consentement libre et éclairé de la personne… »
+7. CDM. Art. 4 : « Le secret professionnel, institué dans l’intérêt des patients, s’impose à tout médecin dans les conditions établies par la loi… » Art. 72 : « Le médecin doit veiller à ce que les personnes qui l’assistent dans son exercice soient instruites de leurs obligations en matière de secret professionnel et s’y conforment… »
+8. CDM. Art. 32 « … en faisant appel, s’il y a lieu à des tiers compétents » Art. 33 : « … en s’aidant… s’il y a lieu, de concours appropriés. » Art. 60 « Le médecin doit proposer la consultation d’un confrère dès que les circonstances l’exigent… » Art. 64 : « Lorsque plusieurs médecins collaborent… ils doivent se tenir mutuellement informés… »
+9. CSP. Art. L. 1110-5 : « Toute personne a, compte tenu de son état de santé et de l'urgence des interventions que celui-ci requiert, le droit de recevoir les soins les plus appropriés et de bénéficier des thérapeutiques dont l'efficacité est reconnue et qui garantissent la meilleure sécurité sanitaire au regard des connaissances médicales avérées. » … « Toute personne a le droit de recevoir des soins visant à soulager sa douleur. Celle-ci doit être en toute circonstance prévenue, évaluée, prise en compte et traitée. »
+10. CDM. Art. 8 : « … le médecin… doit… limiter ses prescriptions et ses actes à ce qui est nécessaire à la qualité, à la sécurité et à l’efficacité des soins… »
+
+
+Mission spécifique du centre de régulation médicale du Samu :
+
+La mission du centre de régulation médicale du Samu est de « déterminer et déclencher, dans le délai le plus rapide, la réponse la mieux adaptée… » à un appel d’urgence11..
+Cette mission concerne la phase extra-hospitalière de la prise en charge du patient, jusqu’à, si nécessaire, son admission hospitalière aux urgences12 ou directement dans une unité ou une filière spécialisée13.
+Elle couvre les champs de la permanence des soins, du secours à personne, des transports sanitaires urgents, de l’aide médicale urgente, des catastrophes et des crises sanitaires. En outre, le Samu a la charge de coordonner l’action des structures mobiles d’urgence et de réanimation (Smur)14. Le médecin régulateur apporte aux intervenants aide et assistance, dans le respect, le cas échéant, de la responsabilité des médecins qui assurent en première ligne la prise en charge du patient.
+
+11. CSP. Art. L. 6112-5 et Art. R. 6311-2
+12. CSP. Art. R. 6123-18 : « Tout établissement autorisé… est tenu d’accueillir en permanence dans la structure des urgences toute personne… qui lui est adressée, notamment par le Samu. »
+13. CSP. Art. R. 6123-32-1 : « Lorsque le patient nécessite une prise en charge… spécialisée dans un très bref délai et que son pronostic vital ou fonctionnel est engagé, il est directement orienté, par le Samu ou en liaison avec ce dernier, vers le plateau technique adapté à son état. »
+14. CSP. Art. R. 6123-16 : « Les interventions des Smur… sont déclenchées et coordonnées par le Samu. L’équipe de la structure mobile d’urgence et de réanimation informe à tout moment le Samu du déroulement de l’intervention en cours. »
+
+
+Éthique :
+
+Solidarité active au service du patient :
+
+Comme tout acte médical, la régulation médicale est, par essence, dédiée à une personne – la personne qui se trouve, là, à l’instant, au téléphone, « en face du médecin » – et a pour finalité première de lui apporter, dans une démarche de solidarité active, la prise en charge que son état requiert, en faisant pour elle tout ce qui est raisonnablement possible, sans prendre prioritairement en compte le coût que cela implique pour la collectivité.
+En second lieu – mais en second lieu seulement – la finalité de l’acte de régulation médicale est aussi communautaire ; le médecin régulateur, comme tout médecin, doit limiter ses prescriptions à « ce qui est nécessaire ». Ces deux finalités ne sont pas contradictoires ; elles s’additionnent, mais la finalité individuelle prend le pas sur la finalité communautaire.
+Dans cette logique, le doute sur la gravité conduit à une décision couvrant l’hypothèse la plus pessimiste (1). Aucune considération communautaire ne saurait justifier une décision de prise en charge sciemment dégradée alors qu’il est possible de mettre en œuvre la solution de référence. En situation exceptionnelle, la mission est la même que d’ordinaire (garantir à chacun un égal accès au juste soin), l’éthique est la même (solidarité active au service du patient), c’est seulement le cadre qui change : la sectorisation de l’activité quotidienne est dépassée ; la catastrophe impose un cadre beaucoup plus large qui confère, de ce fait, des obligations non pas à un seul centre de régulation médicale mais à plusieurs.
+
+
+Équité dans l’accès aux soins :
+
+Toute discrimination serait contraire à la morale républicaine15.
+Les inégalités territoriales, sociales, humaines, sont à repérer et, dans toute la mesure du possible, à compenser par des dispositions appropriées16. Le patient le plus éloigné fait l’objet d’une plus grande propension à l’envoi de moyens lourds17. Le patient socialement défavorisé fait l’objet d’une écoute encore plus attentive18. Le patient qui appelle de façon répétée comme celui qui appelle et ensuite refuse qu’on lui vienne en aide sont à considérer comme des personnes psychologiquement fragiles justifiant une vigilance accrue.
+
+15. CSP. Art. L. 1110-3 : « Aucune personne ne peut faire l'objet de discriminations dans l'accès à la prévention ou aux soins. »
+16. L’équité consiste à faire plus pour ceux qui partent avec un handicap
+17. Une moindre propension à l’envoi de moyens lourds vers les territoires isolés majorerait l’inégalité territoriale, alors que l’objectif est de tout faire pour la réduire
+18. L’accès aux soins en urgence est souvent pour lui le seul recours, à la fois le premier et le dernier rempart
+
+
+Engagement envers le patient sans conflit d’intérêt :
+
+Tout médecin est lié par un « contrat de soins » au patient qui se confie à lui ou qui lui est confié. Selon la Cour de Cassation19, le médecin régulateur doit à son patient, non pas un service quelconque, mais le service le plus approprié en la circonstance.
+Cela suppose une compétence ; cela suppose aussi l’absence de conflit d’intérêt. Or, la décision du médecin régulateur consistant à confier une mission à un professionnel peut plaire à ce professionnel, peut lui déplaire ou peut déplaire à un autre professionnel susceptible de revendiquer ladite mission.
+La morale commande que le médecin régulateur n’ait à l’esprit que l’intérêt de son patient et qu’il fasse abstraction des pressions dont il est l’objet, particulièrement celles liées au financement à l’activité des structures de santé (y compris, naturellement, au sein de l’établissement qui l’emploie).
+
+19. Cour de Cassation, arrêt Mercier du 20 mai 1936 : « Il se forme entre le médecin et son client un véritable contrat comportant pour le praticien l'engagement sinon bien évidemment de guérir son malade, du moins de lui donner des soins, non pas quelconques mais consciencieux et attentifs et, réserve faite de circonstances exceptionnelles, conformes aux données acquises de la science. »
+
+Critères de décision :
+
+Critères déontiques :
+
+La décision du médecin régulateur doit être conforme aux obligations du droit, notamment celles relatives aux droits du patient.
+
+
+Critères techniques :
+
+La décision médicale associe, d’une part, les critères médicaux identifiés au cours de l’échange avec l’appelant et, d’autre part,  les critères suivants : disponibilité des moyens, contexte de l’intervention, organisations en place avec leurs délais et leur niveau de qualification.
+Devant toute situation où l’analyse est incertaine le doute bénéficie au patient (1).
+
+
+Critères socioculturels :
+
+La « valence sociale » intervient fortement dans les éléments contextuels.
+Elle est souvent associée à des considérations techniques, notamment celles relatives aux moyens de transport personnels du patient.
+La présence, sur les lieux où se trouve le patient, d’un public plus ou moins pressant est à prendre en compte dans le choix du moyen d’intervention le mieux adapté. Les références culturelles s’y associent ; sans que rien ait jamais été formellement prescrit dans aucun texte à ce sujet, il est admis d’accorder une attention toute particulière aux enfants et aux femmes enceintes.
+
+
+Critères éthiques :
+
+La décision du médecin régulateur doit être conforme aux règles de l’éthique médicale, notamment celles relatives à l’indépendance professionnelle du praticien et à la solidarité active qu’il doit déployer au service de tout patient, sans discrimination d’aucune sorte.
+
+
+Conditions d’exercice :
+
+
+Structure :
+
+La pratique professionnelle de la régulation médicale nécessite un environnement adapté au sein d’une structure dédiée.
+Dans le cadre du service public, cette structure est le Samu implanté dans un établissement de santé20.
+La pratique de la régulation médicale associe des médecins urgentistes et généralistes au sein du Samu 21 ; la complémentarité entre ces médecins est la garantie d’une réponse coordonnée, efficace et adaptée aux appels urgents dans leur diversité croissante, incluant le champ de la permanence des soins en médecine ambulatoire.
+Dans l’établissement de santé, les liens entre les trois composantes de la médecine d’urgence, Samu, Smur et structure des urgences, sont très étroits.
+
+20. CSP. Art. L. 6112-5 : « Seuls les établissements de santé… peuvent être autorisés… à comporter une ou plusieurs unités participant au service d'aide médicale urgente appelé Samu, dont les missions et l'organisation sont fixées par voie réglementaire. Les services d'aide médicale urgente comportent un centre de réception et de régulation des appels… »
+21. CSP. Art. L. 6112-5 : « … Leur fonctionnement peut être assuré, dans des conditions fixées par décret, avec le concours des praticiens non hospitaliers qui en font la demande… » CSP. Art. R. 6311-8 : « Les centres de réception et de régulation des appels permettent, grâce notamment au numéro d'appel unique dont ils sont dotés,… la participation des médecins d'exercice libéral au dispositif d'aide médicale urgente… déterminée par convention. »
+
+
+Locaux :
+
+La salle dédiée au centre de réception et de régulation médicale des appels est située dans un établissement de santé, au sein du secteur des urgences ; elle dispose d’un accès protégé et d’une ergonomie adaptée (insonorisation, thermorégulation…) ; elle est assez vaste (500 m2 pour la salle de régulation médicale et ses annexes directes) pour pouvoir y accueillir tous les partenaires qui le souhaiteraient (2).
+
+
+Système de communication et d’information :
+
+Le numéro d’appel téléphonique 15 est affecté au Samu ; les appels destinés à la permanence des soins en médecine ambulatoire peuvent être acheminés au centre de régulation médicale unique par un numéro spécifique.
+Le Samu et le Service Départemental d’Incendie et de Secours sont interconnectés22.
+Les systèmes téléphoniques, radio et informatiques des Samu sont convenablement dimensionnés et sécurisés ; les nouvelles technologies de l’information et de la communication sont mises à profit pour optimiser le traitement des appels.
+Le répertoire opérationnel des ressources est un élément clé de la documentation.
+L’accès au dossier médical hospitalier informatisé comme au dossier médical personnel (DMP) informatisé au niveau national est une perspective majeure de progrès dans la qualité et l’efficience de la régulation médicale. La transmission par le Samu de données aux intervenants qu’il engage et aux services receveurs est rendue plus efficace par les progrès de l’informatisation.
+
+22. CSP. Art. R. 6311-6 : « Pour répondre dans les délais les plus brefs aux demandes d'aide médicale urgente, les centres de réception et de régulation des appels mentionnés à l'article L. 6112-5 sont dotés d'un numéro d'appel téléphonique unique, le 15. Les installations de ces centres permettent, dans le respect du secret médical, les transferts réciproques d'appels et, si possible, la conférence téléphonique avec les centres de réception d'appels téléphoniques des services d'incendie et de secours dotés du numéro d'appel 18, ainsi qu'avec ceux des services de police et de gendarmerie. Les centres de réception des appels du n° 15 et du n° 18 se tiennent mutuellement informés des opérations en cours dans les plus brefs délais. Ils réorientent vers le centre compétent tout appel n'entrant pas directement dans leur domaine d'action. »
+
+
+Organisation :
+
+L’organisation des centres de régulation médicale évolue sous la contrainte de l’augmentation continue des appels qui leur sont adressés. L’adaptation à cette évolution peut être facilitée par l’adoption de modes organisationnels et l’usage d’outils technologiques couramment mis en œuvre dans les centres d’appels non médicaux (3). La Mission Nationale d’Expertise et d’Audit Hospitaliers (MeaH) accompagne cette évolution (4).
+
+
+Réseau :
+
+Le fonctionnement du centre de régulation médicale dépend de celui du réseau dont il est lui-même l’un des animateurs.
+Les partenaires du Samu sont nombreux : établissements de santé (structures des urgences, Smur, réanimations…), médecins correspondants Samu, pompiers, ambulanciers privés, secouristes, acteurs de permanence des soins en médecine ambulatoire, acteurs de l’hospitalisation à domicile et des soins palliatifs, travailleurs sociaux, pharmaciens d’officine, dentistes, kinésithérapeutes, infirmiers libéraux, autres centres d’appels santé ou social (centre antipoison, coordination périnatale, Samu social, téléalarme, etc.).
+Avec chacun, le centre de régulation médicale développe conventions, protocoles, évaluations conjointes, comités de coordination... Le Comité départemental présidé par le Préfet assure la cohérence de l’ensemble.
+Le réseau de l’urgence récemment réglementé23 est doté de trois nouveaux outils : la convention constitutive du réseau, le répertoire opérationnel des ressources (ROR), la fiche de dysfonctionnement. Le DMP, en cours de mise en place, apparaît comme le quatrième outil du réseau. La structure du réseau de l’urgence s’articule sur le territoire de santé et celui de la Région, mais cette structure territoriale ne fait pas obstacle à la recherche des solutions les plus appropriées pour le patient, y compris au-delà des frontières administratives de la Région ; l’interopérabilité de cette structure et de ses moyens techniques (notamment le ROR) est nationale. Les Samu et leurs systèmes d’information et de communication sont structurées en réseaux interopérables sur le territoire national dans le but de faciliter les pratiques suivantes : réponses interdépartementales et interrégionales (chaque fois que la distribution des ressources le commande : services spécialisés, hélicoptères, interventions en limite de département…) ; mutualisation de ressources entre plusieurs Samu (consultants spécialisés : pédiatres, psychiatres, toxicologues, sages-femmes, etc.) ; organisation de permanences médicales communes, notamment la nuit ; renfort d’un Samu par un autre en cas de panne, de catastrophe ou de débordement, selon des procédures de fonctionnement dégradé, d’entraide et de suppléance (1). Ce réseau peut associer, avec des procédures adaptées, des consultants déportés hors du centre de régulation médicale.
+
+23. CSP. Art. R. 6123-26 à R. 6123-32
+
+
+Ressources humaines :
+
+Le centre de régulation médicale dispose d’une équipe de professionnels qualifiés. Les médecins régulateurs assurent en continu la régulation médicale. Ils sont assistés par les ARM.
+Les effectifs sont tels que 99 % des appels sont décrochés dans la minute, avec un traitement de l’appel immédiatement engagé dans les cas les plus urgents. Pour y parvenir, un médecin régulateur et deux ARM sont présents en salle de régulation par tranche de 30 000 affaires/an ou de 300 000 habitants (1, 5).
+Les variations saisonnières sont intégrées dans le calcul de la population desservie. Les effectifs sont répartis dans la journée, la semaine, l’année en fonction de l’activité. Au moins aux heures de pointe, la mise en place de fonctions de tri initial des appels et de coordination est une perspective d’amélioration des délais de prise en charge des patients (6).
+Le Samu dispose de deux catégories de médecins régulateurs, les médecins régulateurs urgentistes et les médecins régulateurs généralistes. Les deux catégories de médecins régulateurs ne sont pas interchangeables.
+Pour garantir la sécurité du fonctionnement de la régulation médicale, au moins un médecin régulateur urgentiste est en permanence éveillé à son poste de travail, y compris la nuit (1, 7).
+Les médecins régulateurs généralistes disposent d’un statut spécifique ; ils sont intégrés à l’équipe médicale du Samu pour le projet médical, la démarche qualité, l’élaboration des protocoles, l’évaluation des pratiques professionnelles. Les personnels non médicaux constituent une équipe unique encadrée par un cadre de santé (2).
+L’équipe, outre les ARM, comporte d’autres professionnels ayant des qualifications spécifiques pour la documentation, la maintenance de certains équipements, l’analyse d’activité, la gestion des problèmes sociaux des patients (travailleur social).
+Des infirmiers peuvent assurer les fonctions d'ARM.
+
+
+Formation :
+
+La formation des professionnels des centres de régulation médicale est le principal déterminant de la qualité du service rendu. Les médecins régulateurs urgentistes ont de très bonnes connaissances en médecine d’urgence et une solide expérience de la pratique de la médecine d’urgence sur le terrain pré-hospitalier ; les médecins régulateurs généralistes ont une solide expérience de la consultation et de la pratique de la permanence des soins ; les ARM ont une parfaite maîtrise des outils d’information et de communication ; tous les personnels ont un sens du travail en réseau, un savoir-faire relationnel, une bonne connaissance des partenaires, des techniques de communication, de l’organisation des réseaux sanitaires et sociaux et des filières de soins, de la réglementation, des conventions et des protocoles établis sur le territoire couvert par le centre de régulation médicale. Les médecins régulateurs urgentistes sont formés dans le cadre du DESC-DES de Médecine d’Urgence, de la Capacité de Médecine d’Urgence et du Diplôme d’Université de Régulation Médicale (8). Les médecins régulateurs généralistes reçoivent une formation initiale et continue au sein du service. Les ARM ont une formation d’adaptation à l’emploi24. Un plan de formation continue des médecins et des ARM est établi au sein du centre de régulation médicale.
+
+24. Circulaire Dhos n° 32 du 18 janvier 2005 relative à la mise en œuvre de la formation d’adaptation à l’emploi des permanenciers auxiliaires de régulation médicale.
+
+
+Recherche :
+
+L’équipe de régulation médicale s’implique dans des travaux de recherche25 ; la Société Française de Médecine d’Urgence accompagne et promeut ces travaux.
+
+25. La régulation médicale est une discipline encore jeune. Peu de travaux scientifiques spécifiques sont, à ce jour, publiés ; il convient de les encourager.
+
+
+Bonnes pratiques :
+
+Association du patient à la décision :
+
+Le patient reçoit une information claire, compréhensible et adaptée (9) sur son état de santé et les risques qui lui sont liés, sur les bénéfices attendus et les risques possibles des actions envisagées et sur les conditions de sa prise en charge. Il est informé de la fonction et de l’identité des professionnels à qui il a affaire (10). Il participe aux décisions le concernant26.
+
+26. CSP. Art. L. 1111-4
+
+
+Analyse rationnelle des éléments d’information :
+
+Le patient confronté à une urgence médicale est naturellement inquiet ; il exprime à sa façon, plus ou moins adroitement et efficacement, des signes, des symptômes, des besoins et des attentes.
+Les profils d’appelants sont très variés ; certains possèdent une culture médicale relativement solide, d’autres, en revanche, ignorent des choses que l’on croirait unanimement partagées ; certains sont vindicatifs et l’on risque d’en inférer qu’ils exagèrent la gravité des symptômes, tandis que d’autres sont tellement policés et confiants qu’ils s’expriment sans aucune insistance, ce qui peut laisser échapper le caractère dramatique de la situation ; certains appellent de façon répétée et l’on risque, à tort, de croire que c’est, une nouvelle fois, exactement pour la même chose.
+Dans ces différentes situations, seule une démarche rationnelle permet au médecin régulateur de prendre la bonne décision après une analyse, point par point, des différents éléments objectifs qu’il peut avoir relevé, en s’étant affranchi de ses propres intuitions.
+
+
+Décision centrée sur le patient :
+
+Le médecin régulateur, d’une façon rationnelle, évalue la situation pour en déduire la réponse à même de garantir au patient la meilleure qualité-sécurité de prise en charge, selon les règles de bonne pratique professionnelle et dans la seule limite des ressources actuellement disponibles.
+Il engage d’emblée le Smur dans toutes les situations présentant un risque susceptible d’en justifier l’intervention ; il fait de même chaque fois qu’un tel risque est évoqué et qu’il ne peut être rationnellement écarté. Lorsque le patient est éloigné, il engage le Smur au moindre doute en ayant prioritairement à l’esprit l’intérêt du patient.
+Lorsque le patient se trouve dans une zone limitrophe de plusieurs départements ou secteurs, le médecin régulateur recherche et met en œuvre les solutions dans l’intérêt du patient, sans se limiter aux sectorisations administratives.
+
+
+Gestion du temps au bénéfice du patient :
+
+La bonne gestion du temps est un enjeu majeur de la régulation médicale. Elle comporte trois axes : la priorisation de la réponse aux cas les plus graves ; l’envoi d’emblée de moyens nécessaires ; l’orientation directe vers l’unité de soins la mieux adaptée. Elle repose sur deux principes d’action : la gestion des risques (y compris dans le doute) et l’anticipation.
+Devant toute situation où l’analyse est incertaine, le doute bénéficie au patient et commande l’engagement des moyens susceptibles de couvrir l’hypothèse la plus défavorable27.
+Lorsque son intervention est envisagée, le Smur est déclenché d’emblée, en première intention (11), et ceci d’autant plus rapidement que le patient en est plus éloigné28. En situation de catastrophe, les Smur des départements voisins susceptibles d’être mobilisés sont engagés d’emblée (selon le concept de l’anticipation d’assistance) et leur intervention n’est, le cas échéant, annulée qu’à la réception d’une « information documentée » émanant du Samu concerné et faisant état, d’une part, d’une analyse convenable du risque et, d’autre part, d’une maîtrise de la situation avec des moyens suffisants pour assurer la couverture des risques exceptionnels comme celle des missions habituelles.
+
+27. La réponse graduée consistant à envoyer d’abord un premier intervenant (généraliste, infirmier, ambulancier ou pompier) dans le dessein de confirmer la nécessité de l’engagement d’un Smur en seconde intention constitue une perte de temps et un risque ; ni les secouristes ni les infirmiers n’ont vocation à être envoyés « pour bilan ».
+28. Un moyen complémentaire au Smur (médecin correspondant Samu ou médecin de sapeurs-pompiers, médecin de proximité, infirmier, secouriste, ambulancier) est déclenché simultanément, le concours du Smur pouvant être annulé en fonction du bilan passé par cet intervenant.
+
+
+Tenue soigneuse du dossier du patient :
+
+Le dossier de régulation médicale est un élément clé de la qualité. Il comporte les éléments suivants : motif de recours, résumé de l’interrogatoire médical, signes et symptômes, besoins et attentes du patient, antécédents29, hypothèses diagnostiques et pronostiques, débat bénéfices-risques avec la réaction du patient à son exposé, expression du consentement éclairé du patient ou de son choix, prescription du médecin régulateur datée et signée, organisation de la prise en charge et son déroulement, bilans itératifs des effecteurs, procédure de clôture du dossier comportant la validation de la démarche. La clôture du dossier, temps fort de la qualité et de la prévention des risques, est le moment de vérifier et de valider l’ensemble de la démarche. Une synthèse du dossier de régulation médicale est transmise aux intervenants et au médecin traitant. La communication au patient suppose l’établissement d’un dossier formalisé, traduction fidèle des éléments du dossier informatique assortie des commentaires nécessaires à la compréhension du cas.
+
+29. La prochaine mise en place du DMP apportera des informations essentielles et permettra l’information du médecin traitant.
+
+
+Suivi attentif des conseils donnés au patient :
+
+Le suivi (par exemple dans un délai d’une heure) des cas n’ayant pas donné lieu à l’envoi d’un moyen permet de rattraper certaines erreurs ou incompréhensions initiales, de prendre en compte une évolution inattendue, de réévaluer la situation sans attendre une complication, de gérer à temps une éventuelle défaillance du dispositif mis en œuvre, etc. Le suivi systématique apporte un retour d’information précieux au médecin régulateur et au service. Il contribue, en outre, à rassurer le patient.
+
+
+Qualité :
+
+
+Démarche d’amélioration continue de la qualité et de la sécurité :
+
+Des moyens sont affectés à la démarche qualité après un arbitrage entre les différentes priorités30. Il convient d’agir avec pragmatisme, en sachant que l’essentiel est dans la continuité de la démarche, qui suppose l’adhésion de tous (2). La démarche gagne à être lente et participative ; un programme global et continu comportant des actions ciblées et temporaires est plus efficace qu’une accumulation d’actions simultanées trop lourdes à porter par l’équipe. La démarche qualité fait l’objet d’un rapport annuel précisant les actions réalisées, leur résultat et une estimation du temps qui leur a été consacré.
+
+30. La qualité a un coût qui est le temps qu’il faut lui consacrer ; c’est un investissement destiné à lutter contre la non-qualité qui, elle aussi, a un coût, humain et financier.
+
+
+Formalisation :
+
+La qualité suppose la formalisation au moyen de documents écrits : procédure d’élaboration, de concertation, de validation, de communication et d’évaluation des règles écrites de la structure ; organigramme précisant les responsabilités de chacun ; règlement intérieur précisant les missions, les règles et le mode de fonctionnement ; projet médical ; livret d’accueil des agents ; fiches de postes...
+La participation des professionnels à la vie du service est un facteur clé de la démarche qualité ; des responsabilités sont déléguées à des référents dont le rôle est formalisé dans un document.
+Le mode de recrutement et l’intégration des nouveaux membres de l’équipe sont formalisés. Les différentes formes de mutualisation au sein de l’ensemble des structures concourant à l’urgence et à la réanimation sont favorisées et formalisées (postes partagés, entraide, réunions communes…).
+Les mécanismes de coordination avec les partenaires sont formalisés dans des conventions et des procédures.
+
+
+Protocoles de régulation médicale :
+
+La veille scientifique et la diffusion en interne des règles de bonne pratique professionnelle sont organisées ; les recommandations externes sont, le cas échéant, adaptées aux particularités locales, déclinées dans des procédures et des protocoles propres au service et régulièrement actualisées ; elles sont connues de tous les professionnels.
+Les règles de tenue du dossier de régulation médicale sont formalisées.
+
+
+Gestion des événements, des non-conformités et des plaintes :
+
+La remontée à l’encadrement des événements remarquables, échecs, difficultés, non-conformités, réclamations, plaintes, etc. est une contribution majeure à la démarche qualité. Les responsabilités de chacun dans ce domaine sont précisées, ainsi que la méthode utilisée pour améliorer, à partir de ces cas, la qualité du service rendu.
+
+
+Évaluation :
+
+Évaluation des pratiques professionnelles :
+
+L’harmonisation des pratiques sur la base des recommandations est un objectif majeur de la démarche qualité. La revue des dossiers de régulation médicale est la principale méthode de l’évaluation des pratiques professionnelles (12) des acteurs de la régulation médicale ; compte tenu du nombre de dossiers, il convient de procéder par tirage au sort.
+L’évaluation porte sur la tenue du dossier et sur la conformité aux procédures des réponses données. L’évaluation de la pratique de la régulation médicale se fait à partir des motifs de recours, en vérifiant que les recommandations, les protocoles et les procédures ont bien, au cas par cas, été appliqués.
+
+
+Évaluation du service rendu aux partenaires :
+
+Le bon fonctionnement des réseaux et des filières repose sur l’information réciproque des partenaires et l’évaluation conjointe. Dans cette logique, le Samu fournit à ses partenaires des états décrivant l’orientation des patients. Ces états comportent, le cas échéant, les raisons des décisions d’orientation dérogeant aux conventions. Il est demandé aux services partenaires de tenir et communiquer des états décrivant les appels reçus, les suites données et les raisons des refus31.
+
+31. Pour cela les services partenaires du réseau s’engagent à tenir, dans chaque unité, un registre des appels reçus, mentionnant, pour tous les appels, leur origine, la réponse donnée, le motif d’un éventuel refus (faute de moyen disponible, au autre raison ), toute difficulté rencontrée, etc.
+
+
+Évaluation du service rendu aux patients :
+
+Re-qualification :
+Pour apprécier l’activité du centre de régulation médicale, il convient de mettre en parallèle les « demandes exprimées » et les « réponses apportées » ; ce qui permet la mesure de la plus-value de la régulation médicale lorsqu’elle requalifie une demande initialement présentée comme légère en un cas véritablement urgent, ou inversement.
+
+Pertinence médicale :
+L’évaluation du résultat de la régulation médicale repose sur une mesure de la pertinence médicale des réponses données au regard, d’une part, de la bonne application des recommandations en fonction du motif de recours et, d’autre part, de l’évolution ultérieure.
+Pour cela, le retour d’information est organisé ; il concerne tous les cas, légers et graves ; il porte, pour tous les cas, sur les heures suivant immédiatement l’acte de régulation médicale ainsi que, pour au moins une partie des cas, au moins par sondages, sur l’évolution des jours suivants.
+Le retour d’information se fait au moyen d’informations spontanément reçues par courriers (comptes-rendus des services receveurs), messages ciblés (généralement des plaintes), ou au moyen d’informations recherchées, notamment par appels téléphoniques. Les registres tenus dans certaines filières sont exploités (syndromes coronariens, AVC, traumas crâniens…).
+Le taux de gravité des patients pris en charge par les Smur est mesuré, de même que le nombre de patients de gravité équivalente arrivant aux urgences et qui n’ont pas été pris en charge par un Smur ; en lien avec les services des urgences du département, il est tenu, dans chaque établissement, un registre des patients arrivés aux urgences sans le concours du Smur alors que leur état l’aurait justifié. Les retours d’information sont gérés au niveau du service et distribués aux personnels concernés ainsi que, sous forme synthétique, à l’ensemble de l’équipe.
+
+Rapidité de la réponse :
+L’autocommutateur du centre de régulation médicale dispose d’une fonction d’analyse automatique du trafic téléphonique ; des tableaux de bord du délai pour décrocher sont établis à partir de ces analyses.
+
+Gestion du temps :
+Le déclenchement rapide des moyens adaptés est mesuré par des études ciblées du temps entre l’appel et la décision de l’envoi du moyen adapté ; ces études prennent en compte la gravité des cas. La mesure du taux de Smur déclenchés en première intention et en deuxième intention est réalisée par médecin régulateur ; les décisions d’envoi du Smur en deuxième intention sont analysées au cas par cas pour en tirer des enseignements ; chaque médecin régulateur est informé de son profil personnel et du profil moyen de l’équipe au regard de ce critère (11). Des études ciblées de l’orientation des patients sont réalisées pour évaluer le taux d’orientation directe en service spécialisé.
+
+Satisfaction des patients :
+Des enquêtes téléphoniques différées réalisées sur des périodes données auprès d’échantillons de patients sont le moyen approprié pour mesurer la satisfaction du patient ; l’analyse des réclamations et des plaintes est réalisée dans le même objectif.
+
+
+
+Conclusion :
+
+La régulation médicale, acte médical, est une des multiples facettes de l’art de soigner. Elle suppose un professionnalisme exigeant, un sens profond de la solidarité, l’esprit du travail en réseau, un réel savoir-faire relationnel et une éthique rigoureuse.
+
+La régulation médicale est, avant tout, un service rendu à un moment donné à une personne donnée, la personne qui se trouve - à l’instant -, au téléphone, « en face du médecin » et qui vit une situation qu’elle ressent comme urgente. Personne qui requiert une aide et qui, en dépit du fait que la situation la dépasse souvent de beaucoup, entend être considérée comme responsable et autonome.
+
+Le centre de régulation médicale a pour vocation de garantir à chacune des personnes pour lesquelles il est sollicité en urgence, l’accès au juste soin. Un tel rôle n’est utile - voire indispensable - que dans la mesure où il apporte au patient une plus-value en termes de rapidité, d’efficacité, de qualité, de sécurité et d’humanité.
+
+Le centre de régulation médicale n’est ni une autorité ni un passage obligé, mais un acteur du réseau des urgences médicales au service du patient. Sa légitimité est son efficacité. Son utilité est aussi d’être un espace de convergence entre les professionnels de l’urgence (pompiers, ambulanciers, généralistes, spécialistes…), un poste d’observation (veille et alerte) et un acteur majeur des crises sanitaires (épidémies, catastrophes).
+
+Pratiquée dans le cadre du service public hospitalier, ouvert à tous, la régulation médicale est, en outre, un facteur d’égalité et de cohésion sociale, permettant, à la personne la moins favorisée et la moins informée comme à la plus aisée, d’accéder aux ressources les plus performantes dans les meilleurs délais, chaque fois que cela est nécessaire.
+Bibliographie
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Server response time: 0.03 seconds.
+
+================================================================================
+FIN DU DOCUMENT
+================================================================================

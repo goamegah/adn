@@ -1,0 +1,83 @@
+================================================================================
+FICHE N°138
+================================================================================
+
+TITRE: Hémophilies congénitales
+URL: https://www.guide-regulation-medicale.fr/index.php?module=Fiche&action=FrontDetailView&record=832
+DATE DE RÉCUPÉRATION: 2025-10-17 00:41:12
+CATÉGORIE: DIVERS
+
+================================================================================
+CONTENU:
+================================================================================
+
+Accès à la version ebook
+Annuaire
+    SOMMAIRE
+GENERALITES
+MOTIFS DE RECOURS
+TRIAGE
+CARDIO-VASCULAIRE
+RESPIRATOIRE
+NEUROLOGIE
+PSYCHIATRIE
+TRAUMATOLOGIE
+BRULURES ET FUMEES
+MORSURES ET PIQURES
+TOXICOLOGIE
+GYNECO OBST - NEONAT
+PEDIATRIE
+HEPATO GASTRO ENTEROLOGIE
+INFECTIOLOGIE
+ORL, STOMATO, OPHTALMO
+AUTRES PATHOLOGIES
+PATH CIRCONSTANCIELLES
+RISQUES SANITAIRES
+MALADIES RARES
+ORGANISATION
+DERNIERE PARTIE
+COUVERTURES
+DERNIÈRES MAJ
+HÉMOPHILIES CONGÉNITALES
+MALADIES RARES
+Date de mise à jour :
+21/11/2018
+Tout déplier | Tout replier
+Document
+Synonymes
+Déficit en facteur VIII (hémophilie A) ou IX (hémophilie B).
+Mécanismes
+Déficit en facteur VIII (hémophilie A) ou IX (hémophilie B) d’origine génétique, lié au chromosome X, empêchant une coagulation normale ; la gravité est mineure, modérée ou sévère selon le taux de facteur déficitaire (respectivement 5-40%, 1-5%, <1%).
+L’hémophilie acquise est une maladie hémorragique, non héréditaire, rare, due à la présence d'auto-anticorps dirigés contre le facteur VIII qui en diminuent l’activité.
+Risques particuliers en urgence
+Pronostic vital susceptible d’être engagé par l’abondance (hémopéritoine, hématome du psoas) ou la localisation de l’hémorragie (traumatisme crânien ou rachidien, cou, plancher de la bouche)
+Hématome de localisation dangereuse engageant le pronostic fonctionnel (œil, creux poplité, avant-bras…).
+Traitements fréquemment prescrits au long cours
+Produit de substitution habituel (carnet et carte d’hémophile à récupérer)
+Le plus souvent, les hémophiles sévères disposent du produit de substitution à domicile.
+Pièges
+Se méfier d’un traumatisme même minime notamment cranio-rachidien
+Se méfier des hémorragies profondes difficiles à objectiver par l’examen clinique
+Les AINS sont contre-indiqués
+Certains hémophiles ont acquis des anticorps anti-FVIII ou anti-FIX et peuvent être traités par d’autres produits.
+Particularités de la prise en charge médicale pré-hospitalière
+Mobiliser avec prudence en toute circonstance
+Examiner un membre traumatisé ou douloureux avec précaution, éviter une mobilisation trop violente
+Abord veineux périphérique uniquement (ni abord central, ni intramusculaire, ni abord artériel sans correction du déficit)
+Effectuer un prélèvement sanguin pour un dosage facteur VIII ou IX et une recherche d’anticorps anti-facteur VIII ou IX avant toute injection de produit de substitution, et ne pas attendre le résultat pour traiter
+Pansement compressif sur les points de ponction
+Pas de prise de température rectale
+Prendre en charge efficacement la douleur
+Blocs plexiques déconseillés sans substitution
+Risque d’hématome bucco-pharyngé lors de l’intubation justifiant une sédation parfaite et un opérateur expérimenté
+Lors d’un syndrome coronarien aigu, la coronarographie même en urgence doit être réalisée sous couvert d’une correction du déficit (H0, H12, H24, H48) ; l’utilisation précoce des antiplaquettaires et de l’héparine est possible mais dépend de la sévérité de l’hémophilie : privilégier une discussion avec le cardiologue et l’hématologiste pour définir la stratégie de reperfusion
+Particularités de la prescription, de la reconstitution et des modalités de perfusion des produits antihémophiliques
+La desmopressine n’est indiquée que chez l’hémophile A mineur déjà connu pour être répondeur
+Récupérer le carnet de suivi et la carte d’hémophile
+Contacter rapidement le centre de traitement de l’hémophilie (coordonnées sur carte et carnet) et le pharmacien du centre d’accueil pour mise à disposition du produit
+Faire remplir l’autorisation d’opérer aux parents sur place si enfant mineur.
+  Server response time: 0.02 seconds.
+
+================================================================================
+FIN DU DOCUMENT
+================================================================================

@@ -1,0 +1,75 @@
+================================================================================
+FICHE N°168
+================================================================================
+
+TITRE: Transfert Inter-Hospitalier (TIH)
+URL: https://www.guide-regulation-medicale.fr/index.php?module=Fiche&action=FrontDetailView&record=604
+DATE DE RÉCUPÉRATION: 2025-10-17 00:42:17
+CATÉGORIE: DIVERS
+
+================================================================================
+CONTENU:
+================================================================================
+
+Accès à la version ebook
+Annuaire
+    SOMMAIRE
+GENERALITES
+MOTIFS DE RECOURS
+TRIAGE
+CARDIO-VASCULAIRE
+RESPIRATOIRE
+NEUROLOGIE
+PSYCHIATRIE
+TRAUMATOLOGIE
+BRULURES ET FUMEES
+MORSURES ET PIQURES
+TOXICOLOGIE
+GYNECO OBST - NEONAT
+PEDIATRIE
+HEPATO GASTRO ENTEROLOGIE
+INFECTIOLOGIE
+ORL, STOMATO, OPHTALMO
+AUTRES PATHOLOGIES
+PATH CIRCONSTANCIELLES
+RISQUES SANITAIRES
+MALADIES RARES
+ORGANISATION
+APPELS D'ORIGINE PARTICULIERE
+MODALITES DE TRANSFERT
+GUIDANCE
+SOINS A DOMICILE
+LOGISTIQUE COLLECTIVE
+VECTEURS DE TRANSPORT
+RELATIONS EXTERIEURES
+DERNIERE PARTIE
+COUVERTURES
+TRANSFERT INTER-HOSPITALIER (TIH)
+ORGANISATION > MODALITES DE TRANSFERT
+Date de mise à jour :
+23/12/2019
+Tout déplier | Tout replier
+Introduction
+La régulation médicale d’un transfert inter-hospitalier (TIH) nécessite la connaissance de la géographie sanitaire, dont les réseaux de soins, et de la géographie physique.
+ARM
+1. identifier l'appelant, le lieu d'intervention et le patient
+Faire préciser établissement, étage, service, coordonnées téléphoniques directes, nom du médecin demandeur.
+2. déterminer le niveau de priorité de l'appel initial
+Vérifier qu’il s’agit bien d’une demande de TIH et non d’une intervention primaire dans une structure hospitalière.
+• P1-AMU : patient instable, transfert urgent vers un plateau technique particulier (coronarographie, embolisation, hyperbarie…), détresse néonatale.
+• P2-AMU : TIH non programmé.
+• P3-AMU : TIH programmé.
+3. chercher à savoir
+Équipement particulier, équipe spécifique (néonatologie…).
+Anticiper la faisabilité du vol si l’HéliSmur est pressenti.
+Faire confirmer l’acceptation du patient par le service receveur.
+4. conseiller en attendant la régulation médicale et l'arrivée des secours
+Pas de spécificité.
+5. adapter la décision si l’appel ne peut être régulé immédiatement
+Si le dossier est qualifié P3, expliquer au demandeur que le médecin régulateur le contactera dès qu’il sera disponible.
+Médecin régulateur
+Server response time: 0.04 seconds.
+
+================================================================================
+FIN DU DOCUMENT
+================================================================================

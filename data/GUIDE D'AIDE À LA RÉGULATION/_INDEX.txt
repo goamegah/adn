@@ -1,0 +1,208 @@
+INDEX DES FICHES - Guide de Régulation Médicale
+Généré le: 2025-10-17 00:36:03
+Total: 203 fiches
+================================================================================
+
+  1. Accès à la version ebook
+  2. Annuaire
+  3. Introduction - Garantir à chaque patient un égal accès au juste soin
+  4. Du pied de l’arbre à la Télémédecine et à l’e-Santé
+  5. Principes de la régulation médicale
+  6. Du bon usage du Guide
+  7. Bonnes pratiques en régulation médicale : 15 commandements
+  8. Les étapes de l’acte de régulation
+  9. Structure d'un entretien téléphonique d'urgence
+ 10. Boite à outils, outils pour la communication ...
+ 11. Conseil médical
+ 12. Prescription médicamenteuse par téléphone
+ 13. Appels Priorisés P3 - Régulation Médicale Reportée
+ 14. Procédures dégradées générales
+ 15. Engagements réflexes du SMUR
+ 16. Degrés d’urgence en régulation médicale : les P, R et B
+ 17. Organisation et Triage Rapide des appels en mode SAS - application au Covid-19
+ 18. Douleur thoracique non traumatique
+ 19. Arrêt cardiaque de l’adulte
+ 20. Arrêt cardiaque de l’enfant (<8 ans)
+ 21. Patient porteur d’un stimulateur cardiaque
+ 22. Patient porteur d'un défibrillateur
+ 23. Patient sous assistance circulatoire
+ 24. Palpitations
+ 25. Poussée hypertensive (hors grossesse)
+ 26. Jambe douloureuse (non traumatique)
+ 27. Ajustement du traitement anti-vitamine K
+ 28. Dépistage d’un état de choc
+ 29. Dyspnée aiguë de l'adulte
+ 30. Asthme
+ 31. Hémoptysie
+ 32. Malaise
+ 33. Déficit neurologique de survenue brutale
+ 34. NIHSS (National Institute of Health Stroke Scale)
+ 35. Convulsions de l'adulte
+ 36. Céphalées
+ 37. Lombalgies
+ 38. Crise d’angoisse
+ 39. Agitation aiguë
+ 40. Délire, hallucinations
+ 41. Risque suicidaire
+ 42. Soins psychiatriques sans consentement
+ 43. Conditions d’engagement de la CUMP
+ 44. Traumatologie générale
+ 45. Traumatologie domestique, scolaire et sportive
+ 46. Chute à domicile
+ 47. Plaie
+ 48. Traumatisme isolé d’un doigt ou d’une main
+ 49. Section de doigt ou de membre
+ 50. Chute d'un lieu élevé
+ 51. Ecrasement, ensevelissement
+ 52. Pendaison
+ 53. Plaie par arme à feu
+ 54. Plaie par arme blanche
+ 55. Violences contre les femmes
+ 56. Transfusion en urgence pré-hospitalière
+ 57. Brûlure de l'adulte
+ 58. Surface corporelle de l'adulte
+ 59. Brûlure de l'enfant (moins de 12 ans)
+ 60. Surface corporelle de l'enfant
+ 61. Victime d'incendie
+ 62. Intoxication au Monoxyde de Carbone (CO)
+ 63. Morsures par animaux
+ 64. Envenimation par morsure de serpent
+ 65. Envenimation par des invertébrés terrestres
+ 66. Envenimation par des animaux marins
+ 67. Intoxication Médicamenteuse Volontaire
+ 68. Intoxication aiguë du toxicomane
+ 69. Intoxication par un produit domestique
+ 70. Intoxication par un produit agricole ou industriel
+ 71. Intoxication par des champignons
+ 72. Intoxication par un végétal
+ 73. Erreur de prise médicamenteuse
+ 74. Hémorragie gynécologique
+ 75. Accouchement : travail obstétrical
+ 76. Score de Malinas
+ 77. Score Prémat-SPIA Grossesse de moins de 8 mois (≤ 32 SA)
+ 78. Score SPIA Grossesse de 8 ou 9 mois (> 32 SA) ou de terme indéterminé
+ 79. Accouchement : le bébé est né
+ 80. Score d'APGAR - Indice de SILVERMAN
+ 81. Hémorragie post-partum
+ 82. Transfert in utero
+ 83. Transfert néonatal
+ 84. Oubli de pilule, contraception du lendemain
+ 85. Poussée hypertensive au cours du 3e trimestre de la grossesse
+ 86. Fièvre de l'enfant
+ 87. Convulsions de l'enfant
+ 88. Traumatisme crânien isolé chez l'enfant
+ 89. Gêne respiratoire non traumatique chez l'enfant
+ 90. Douleur abdominale non traumatique chez l'enfant
+ 91. Gastro-entérite aiguë du nourrisson
+ 92. Pleurs du nourrisson
+ 93. Malaise de l’enfant
+ 94. Malaise grave du nourrisson
+ 95. Mort inexpliquée du nourrisson
+ 96. Maltraitance et sévices à enfants
+ 97. Douleur abdominale non traumatique
+ 98. Saignement digestif
+ 99. Plainte d’origine digestive
+100. Diarrhée
+101. Constipation
+102. Syndrome grippal
+103. Fièvre en retour de zone tropicale
+104. Purpura
+105. Risque méningitique en collectivité
+106. Éruption cutanée et urticaire
+107. Adénopathies
+108. Infections sexuellement transmissibles
+109. Accident d’exposition au sang ou autres liquides biologiques
+110. Infections à virus grippaux d’origine aviaire
+111. Corps étranger ingéré ou inhalé
+112. Epistaxis
+113. Vertiges
+114. Otalgies
+115. Douleurs de la face
+116. Douleur dentaire
+117. Traumatisme dentaire
+118. Acouphènes
+119. Baisse d’audition et surdité brusques
+120. Troubles de la vision et cécité brusques
+121. Urgences ophtalmologiques
+122. Urgences ophtalmologiques devant un œil blanc
+123. Urgences ophtalmologiques devant un oeil rouge
+124. Appel pour un patient diabétique
+125. Urgences urologiques
+126. Réaction allergique
+127. Accident électrique
+128. Noyade
+129. Accident de plongée
+130. Fièvre chez l’adulte
+131. Hypothermie accidentelle
+132. Avalanché
+133. Mal aigu des montagnes (MAM)
+134. Syndrome grippal au retour de voyage
+135. Maladies rares : introduction et centres de référence
+136. Angio-œdème à bradykinine
+137. Drépanocytose
+138. Hémophilies congénitales
+139. Hyperthermie maligne d’effort
+140. Hyperthermie maligne de l’anesthésie
+141. Syndrome de Marfan
+142. Mucoviscidose
+143. Myasthénie auto-immune
+144. Myopathie
+145. Ostéogenèse imparfaite
+146. Porphyries cutanées bulleuses et érosives
+147. Porphyries cutanées photo-algiques
+148. Porphyrie hépatique aiguë
+149. Sclérose latérale amyotrophique
+150. Thalassémie
+151. Maladie de Willebrand
+152. Appel d’un enfant
+153. Appel d’une personne âgée
+154. Appel d’un déficient auditif
+155. Gestion de l'appel d'un non-francophone
+156. Appel en allemand
+157. Appel en anglais
+158. Appel en arabe (phonétique)
+159. Appel en espagnol
+160. Appel en italien
+161. Appel en néerlandais
+162. Appel en portugais
+163. Appels provenant d’autres départements
+164. Appel d’un train en marche
+165. Appel provenant d’un navire en mer
+166. Appel d’un milieu scolaire
+167. Appel provenant d’un EHPAD
+168. Transfert Inter-Hospitalier (TIH)
+169. Transfert Infirmier Inter-Hospitalier (TIIH)
+170. TIIH : recommandations de Samu-Urgences de France
+171. Guider une action par téléphone
+172. Guidance lors d’un arrêt cardiaque
+173. Mise en position latérale de sécurité
+174. Guidance lors d’une obstruction totale des voies aériennes
+175. Etat de mort, arrêt des gestes de survie
+176. Refus de soins
+177. Critères pour laisser un patient sur place
+178. Résultats d’analyse biologique
+179. Patient hospitalisé à domicile
+180. Soins palliatifs
+181. Fin de vie annoncée (à domicile, en EHPAD)
+182. Deuil par téléphone
+183. Nombreuses victimes
+184. Situations sanitaires à fort impact médiatique
+185. Régulation médicale en ambiance NRBC
+186. Identification d’un risque sanitaire non encore avéré
+187. Transport sanitaire médicalisé héliporté
+188. Transport en avion de ligne
+189. Gestion d’un bilan secouriste au CRRA
+190. Recherche de place d'hospitalisation (Intervention primaire)
+191. Appel pour assistance ou rapatriement
+192. Sollicitation des Médecins Correspondants de SAMU
+193. Urgences Sociales
+194. Procédure en cas de réclamations
+195. Déclarer un évènement indésirable en régulation médicale
+196. Les auteurs et experts de la v1 du Guide (2004)
+197. Les auteurs de la v2 du Guide (2009)
+198. Les auteurs, experts et contributeurs à la v3 du Guide (2017-2019)
+199. Remerciements (Guide v2)
+200. Remerciements (Guide v3)
+201. Ebook du Guide de Régulation Médicale
+202. Annuaire des Samu Smur et Urgences
+203. Couverture 4ème

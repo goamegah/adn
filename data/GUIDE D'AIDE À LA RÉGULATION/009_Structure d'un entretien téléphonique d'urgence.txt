@@ -1,0 +1,118 @@
+================================================================================
+FICHE N°9
+================================================================================
+
+TITRE: Structure d'un entretien téléphonique d'urgence
+URL: https://www.guide-regulation-medicale.fr/index.php?module=Fiche&action=FrontDetailView&record=344
+DATE DE RÉCUPÉRATION: 2025-10-17 00:36:23
+CATÉGORIE: URGENCES
+
+================================================================================
+CONTENU:
+================================================================================
+
+Accès à la version ebook
+Annuaire
+    SOMMAIRE
+GENERALITES
+MOTIFS DE RECOURS
+TRIAGE
+CARDIO-VASCULAIRE
+RESPIRATOIRE
+NEUROLOGIE
+PSYCHIATRIE
+TRAUMATOLOGIE
+BRULURES ET FUMEES
+MORSURES ET PIQURES
+TOXICOLOGIE
+GYNECO OBST - NEONAT
+PEDIATRIE
+HEPATO GASTRO ENTEROLOGIE
+INFECTIOLOGIE
+ORL, STOMATO, OPHTALMO
+AUTRES PATHOLOGIES
+PATH CIRCONSTANCIELLES
+RISQUES SANITAIRES
+MALADIES RARES
+ORGANISATION
+DERNIERE PARTIE
+COUVERTURES
+DERNIÈRES MAJ
+STRUCTURE D'UN ENTRETIEN TÉLÉPHONIQUE D'URGENCE
+GENERALITES
+Date de mise à jour :
+21/11/2018
+Tout déplier | Tout replier
+Document
+La conduite de notre entretien téléphonique selon des principes rigoureux, à l’instar de ce que nous faisons lorsque nous sommes auprès du malade, permet d’en garantir la qualité et la performance. Le structurer selon un schéma éprouvé nous conduit d’abord à être systématique dans les étapes incontournables de l’analyse sémiologique, puis à être productif en regard du temps, à produire du confort et enfin à conclure par un contrat le plus fiable possible. Certaines étapes de cet acte sont virtuelles, déjà incluses par exemple dans les civilités, partie intégrante du raisonnement médical ou comprises dans un dossier médical préexistant. Cette formalisation ne préjuge pas du temps réel mais plutôt des enjeux et de la complexité de notre acte.
+ARM
+Présenter la structure selon les consignes du service
+Se présenter par son nom: ceci permet d’induire une relation personnelle qui favorise la compliance*
+Reformuler les informations données par un éventuel correspondant d’amont (pompiers…) : ceci permet de montrer la continuité de l’action des différents professionnels impliqués et de gommer la frustration induite par l’attente ou les répétitions. La reformulation peut-être complète ou centrée sur une des informations destinée à être développée
+Ecouter les premiers mots. Ceci permet d’évaluer :
+l’état émotionnel
+l’environnement
+les compétences de compréhension, d’expression et de conceptualisation* de l’interlocuteur
+les premiers éléments de contenu santé
+Etablir une tactique d’interrogatoire prenant en compte ces observations (écoute passive, silencieuse, recentrage, interrogatoire policier, ...)
+Annoncer à un moment ou un autre de l’entretien la procédure de gestion d’appel  (l’ARM localise, recueille la demande et évalue l’urgence puis passe au médecin qui diagnostiquera, décidera et conseillera)
+Identifier l’appelant, le lieu d’intervention et le patient (vérifier les numéros de téléphone ou l’adresse affichée)
+Gérer l’émotion si elle perturbe l’interrogatoire, l’appelant, le patient ou l’Arm
+Déterminer le niveau de priorité de l’appel en recueillant des signes concernant les fonctions vitales (conscience, respiration, circulation) ou le mécanisme de l’événement
+Préparer l’appelant, améliorer s’il  le faut son état émotionnel afin de faciliter l’acte de régulation médicale
+Orienter vers le médecin régulateur hospitalier ou libéral selon le cas, dans un ordre et un délai adapté aux informations colligées et prenant en compte les différents appels en cours
+Synthétiser (écrit et oral si nécessaire) pour le médecin régulateur les informations recueillies auprès de l’appelant :
+zone géographique
+nature de l’interlocuteur (lien de parenté ou de proximité)
+âge et sexe du malade
+demande exprimée
+demande sous jacente (non exprimée initialement mais révélée lors de  l’interrogatoire de l’ARM)
+signes d’urgence
+tous les autres éléments santé entendus (hors cahier des charges)
+particularités ou interprétations, présentées comme telles par l’ARM
+Conseiller en attendant la régulation médicale ou l’arrivée du professionnel, selon les consignes ou protocoles du service
+Appliquer les procédures dégradées si l’appel ne peut être régulé immédiatement : en cas d’urgence vraie reconnue par l’ARM, un protocole préétabli peut être mis en œuvre. Il en informe le médecin régulateur.
+Prendre congé en informant l’interlocuteur de la durée d’attente au téléphone, en s’assurant de la réception et de la compréhension des informations délivrées et en écoutant l’accusé de réception
+Réutiliser le même schéma en cas de rappel
+MEDECIN REGULATEUR
+Saluer
+Se présenter par son nom: ceci permet d’induire une relation personnelle qui favorise la compliance*
+Reformuler les informations données par l’ARM : ceci permet de montrer la continuité pour l’appelant de l’action des différents professionnels impliqués. Et de gommer le frustration générée par l’attente
+Cette reformulation peut-être complète sur les éléments entendus ou centrée sur une des informations destinées à être développées.
+Indiquer si des moyens ont déjà été envoyés ; cela apporte de la sérénité pour la suite de l'acte de régulation.
+Ecouter les premiers mots : Ceci permet de réévaluer :
+l’état émotionnel
+l’environnement
+les capacités de compréhension, d’expression et de conceptualisation* de l’interlocuteur
+les éléments de contenu sémiologique
+Etablir une tactique d’interrogatoire prenant en compte ces observations (idem ARM)
+Annoncer la procédure de gestion d’appel (le médecin interrogera, diagnostiquera, décidera, informera et conseillera)
+Gérer l’émotion si elle perturbe l’interrogatoire, l’appelant, le patient ou le médecin
+Déterminer le niveau de priorité de l’appel initial : R1 à R4 selon les définitions du manuel en fonction du mécanisme, de l’atteinte avérée ou potentielle d’une fonction vitale, d’une urgence diagnostique, thérapeutique ou pronostique, d’un besoin type permanence de soins ou d’un conseil
+Explorer la sémiologie à distance
+Définir un syndrome puis un diagnostic ou un pronostic si nécessaire
+Choisir des modalités d’action
+Informer des diagnostics envisagés, des décisions prises et des délais de mise en œuvre du professionnel choisi
+Conseiller pour traiter ou améliorer les conditions d’attente
+Informer sur le suivi  envisagé, prévoir ou ménager le rappel éventuel
+Négocier en cas de dissensus avec l’appelant ou le malade
+Prendre congé, en s’assurant de la réception et de la compréhension des informations délivrées et en écoutant l’accusé de réception
+Synthétiser pour le dossier médical (indélébile), en complément du dossier Arm, les informations recueillies auprès de l’appelant :
+date et heure
+reformulation de la demande
+demande sous jacente (non exprimée initialement mais révélée par l’interrogatoire)
+signes d’urgence
+tous les autres éléments santé entendus et retenus pour la décision
+synthèse diagnostique ou hypothèses
+Décision ou prescription telles qu’annoncées au malade
+Modalités de suivi formulées à l’interlocuteur
+particularités de l’appel, de l’interlocuteur, du malade, du contrat
+Réutiliser le même schéma en cas de rappel
+* LEXIQUE
+Compliance : capacité du malade ou de l’interlocuteur, induite par le professionnel de santé, à suivre les actions, recommandations et décisions du professionnel de santé
+Conceptualisation : capacité à formaliser puis formuler les événements vécus ou le ressenti
+  Server response time: 0.03 seconds.
+
+================================================================================
+FIN DU DOCUMENT
+================================================================================

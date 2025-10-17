@@ -1,0 +1,72 @@
+================================================================================
+FICHE N°195
+================================================================================
+
+TITRE: Déclarer un évènement indésirable en régulation médicale
+URL: https://www.guide-regulation-medicale.fr/index.php?module=Fiche&action=FrontDetailView&record=962
+DATE DE RÉCUPÉRATION: 2025-10-17 00:43:18
+CATÉGORIE: URGENCES
+
+================================================================================
+CONTENU:
+================================================================================
+
+Accès à la version ebook
+Annuaire
+    SOMMAIRE
+GENERALITES
+MOTIFS DE RECOURS
+TRIAGE
+CARDIO-VASCULAIRE
+RESPIRATOIRE
+NEUROLOGIE
+PSYCHIATRIE
+TRAUMATOLOGIE
+BRULURES ET FUMEES
+MORSURES ET PIQURES
+TOXICOLOGIE
+GYNECO OBST - NEONAT
+PEDIATRIE
+HEPATO GASTRO ENTEROLOGIE
+INFECTIOLOGIE
+ORL, STOMATO, OPHTALMO
+AUTRES PATHOLOGIES
+PATH CIRCONSTANCIELLES
+RISQUES SANITAIRES
+MALADIES RARES
+ORGANISATION
+APPELS D'ORIGINE PARTICULIERE
+MODALITES DE TRANSFERT
+GUIDANCE
+SOINS A DOMICILE
+LOGISTIQUE COLLECTIVE
+VECTEURS DE TRANSPORT
+RELATIONS EXTERIEURES
+DERNIERE PARTIE
+COUVERTURES
+DÉCLARER UN ÉVÈNEMENT INDÉSIRABLE EN RÉGULATION MÉDICALE
+ORGANISATION > RELATIONS EXTERIEURES
+Date de mise à jour :
+01/12/2018
+Tout déplier | Tout replier
+Document
+Définitions
+Un événement indésirable associé aux soins (EIAS) est un évènement inattendu qui perturbe ou retarde le processus de soin ou impacte directement le patient dans sa santé. En régulation médicale, il peut concerner :
+l’accessibilité du CRRA 15,
+l’accueil des appelants,
+la qualification de la demande de soins,
+les actions mises en œuvre,
+l’orientation de l’appel et du patient.
+Un EIAS devient un événement indésirable grave associé à des soins (EIGS) dès lors que la gravité de cet EIAS a pour conséquences le décès, la mise en jeu du pronostic vital, la survenue probable d’un déficit fonctionnel permanent y compris une anomalie ou une malformation congénitale.
+Déclaration
+Tout professionnel du Samu-Centre 15 qui a connaissance d’un EIAS est invité à le déclarer, y compris même s’il implique les partenaires du Samu (établissement de soins, ambulanciers privés, pompiers, effecteurs de la PDSA…). A cette fin, les Samu-Centre 15 doivent disposer, comme tous les services de soins, d’une organisation accessible à l’ensemble des professionnels, qui s’appuie ou alimente le système de déclaration en place dans l’établissement de santé et permet une transmission facile et simple des fiches d’EIAS.
+La déclaration et le traitement des EIAS en régulation relèvent d’une démarche d’amélioration de la qualité et de la sécurité des soins. En aucun cas elle ne vise la recherche de responsabilité individuelle, disciplinaire ou pénale. Cette dynamique d’amélioration des pratiques par une analyse positive de l’erreur a pour objectif d’éviter la récidive de l’EIAS.
+Ainsi, un référent qualité et gestion des risques doit être identifié au sein de chaque Samu-Centre 15. Son rôle est de promouvoir l’amélioration de la qualité et de faciliter la déclaration et le traitement des EIAS en rapport avec la régulation médicale.
+Une cellule d’analyse des fiches évènements indésirables (CAFEI) constituée au niveau d’un ou plusieurs Samu-Centre 15 est chargée de recueillir et de traiter les fiches d’évènements indésirables en régulation médicale en s’appuyant sur les recommandations et outils de la Haute Autorité de Santé. Elle organise l’analyse approfondie des EIAS dans le cadre de revues de morbi-mortalité (RMM) ou de comité de retour d’expérience (CREX) et prend contact si besoin avec les partenaires du Samu concernés par l’EIAS. Elle peut proposer au décours de ces réunions (RMM ou CREX) des procédures ou/et des actions correctrices avec des indicateurs de suivi pour vérifier la mise en œuvre et la pertinence de la démarche envisagée.
+Le processus de déclaration des EIGS en régulation doit être identique à celui des EIAS.
+Le signalement des EIGS auprès du Directeur Général de l’ARS est obligatoire. Il se fait en lien avec la Direction de l’établissement et le chef de service. Il peut se faire sur le portail national de signalement des évènements sanitaires indésirables (https://signalement.social-sante.gouv.fr).
+Server response time: 0.02 seconds.
+
+================================================================================
+FIN DU DOCUMENT
+================================================================================
