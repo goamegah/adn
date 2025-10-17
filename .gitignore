@@ -87,10 +87,16 @@ secrets/
 gcloud/
 .gcloud/
 
-# Data files (votre dossier data semble contenir beaucoup de fichiers)
-data/raw/*.pdf
-data/processed/
-data/temp/
+# Data files - Exclude entire data directory
+data/
+*.pdf
+*.txt
+*.csv
+*.xlsx
+*.json
+!package.json
+!package-lock.json
+!requirements.txt
 
 # OS files
 .DS_Store
