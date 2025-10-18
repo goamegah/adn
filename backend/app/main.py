@@ -11,6 +11,9 @@ import google.auth
 import os
 from dotenv import load_dotenv
 
+from backend.app.routes import interventions_routes
+
+
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -133,3 +136,5 @@ async def chat_simple(
         "project": GCP_PROJECT_ID,
         "model": MODEL_NAME
     }
+
+app.include_router(interventions_routes.router)
