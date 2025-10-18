@@ -1,0 +1,76 @@
+================================================================================
+FICHE N°163
+================================================================================
+
+TITRE: Appels provenant d’autres départements
+URL: https://www.guide-regulation-medicale.fr/index.php?module=Fiche&action=FrontDetailView&record=844
+DATE DE RÉCUPÉRATION: 2025-10-17 00:42:06
+CATÉGORIE: DIVERS
+
+================================================================================
+CONTENU:
+================================================================================
+
+Accès à la version ebook
+Annuaire
+    SOMMAIRE
+GENERALITES
+MOTIFS DE RECOURS
+TRIAGE
+CARDIO-VASCULAIRE
+RESPIRATOIRE
+NEUROLOGIE
+PSYCHIATRIE
+TRAUMATOLOGIE
+BRULURES ET FUMEES
+MORSURES ET PIQURES
+TOXICOLOGIE
+GYNECO OBST - NEONAT
+PEDIATRIE
+HEPATO GASTRO ENTEROLOGIE
+INFECTIOLOGIE
+ORL, STOMATO, OPHTALMO
+AUTRES PATHOLOGIES
+PATH CIRCONSTANCIELLES
+RISQUES SANITAIRES
+MALADIES RARES
+ORGANISATION
+APPELS D'ORIGINE PARTICULIERE
+MODALITES DE TRANSFERT
+GUIDANCE
+SOINS A DOMICILE
+LOGISTIQUE COLLECTIVE
+VECTEURS DE TRANSPORT
+RELATIONS EXTERIEURES
+DERNIERE PARTIE
+COUVERTURES
+APPELS PROVENANT D’AUTRES DÉPARTEMENTS
+ORGANISATION > APPELS D'ORIGINE PARTICULIERE
+Date de mise à jour :
+30/12/2018
+Tout déplier | Tout replier
+Document
+La plupart des centres de régulation traitent les appels du département dans lequel ils sont implantés. Certains centres sont destinés et organisés pour traiter les appels de plusieurs départements. Ainsi, dans cette fiche, les « autres départements » désignent les secteurs en dehors du périmètre géographique de régulation normalement défini. 
+Ces recommandations visent à réduire la durée du traitement des appels en cas d’urgence vitale avérée ou potentielle et à limiter les transferts d’appels téléphoniques d’un SAMU vers un autre SAMU, transferts qui pourraient être préjudiciables au patient. Ces propositions peuvent guider l’élaboration de procédures locales qui doivent être adoptées en concertation avec les SAMU limitrophes et les tutelles.
+Le traitement des appels au SAMU en provenance d’un autre département doit être centré sur le patient et non pas sur la géographie administrative.
+  Traitement d’un appel non encore régulé :
+Lorsqu’un appel non régulé est reçu par un SAMU-A et est identifié comme provenant d’un territoire B limitrophe, il est traité par l’ARM comme tout autre appel.
+S’il s’agit d’une demande de renseignement relevant des compétences du SAMU-B, l’appel est transféré au SAMU-B ou il peut être proposé à l’appelant d’appeler directement le SAMU-B.
+S’il s’agit d’une affaire médicale, l’appel est transmis au médecin régulateur du SAMU-A. La gestion finale dépend de la décision prise par ce médecin régulateur :
+• P0, R1 (engagement d’une équipe SMUR) : deux situations sont possibles :
+– si le SMUR de première intention dépend du SAMU-A (qui a reçu l’appel), l’équipe SMUR est déclenchée immédiatement ; le SAMU-B (territoire où a lieu l’intervention) est informé de la mission (notamment si des moyens complémentaires du SMUR doivent être engagés : sapeurs-pompiers, ambulance, accueil d’un hélicoptère) et de son suivi ;
+– lorsque le SMUR à déclencher dépend d’un SAMU-B (territoire où a lieu l’intervention), le SAMU-A (qui a reçu l’appel) déclenche directement l’équipe SMUR si la pathologie relève d’un engagement réflexe (niveau P0) ; dans les autres cas (R1), le SAMU-B est informé prioritairement à charge pour lui de déclencher l’équipe SMUR appropriée.
+• R2, R3 : en cas de nécessité d’envoi d’une ambulance privée, des sapeurs-pompiers ou d’un médecin généraliste, l’appel est transféré après régulation médicale au SAMU-B (territoire où a lieu l’intervention) qui dispose notamment des gardes médicales et ambulancières, connaît les disponibilités des moyens à déclencher et peut décider des interventions par carence d’effecteur. Les éléments recueillis par l’ARM et le médecin régulateur sont communiqués oralement et éventuellement confirmés par voie informatique ou télécopie. À la discrétion du médecin régulateur, la communication est transférée au SAMU-B et l’appelant est informé de ce transfert d’appel.
+• R4 : en cas de conseil téléphonique, l’affaire est close par le SAMU-A (qui a reçu l’appel) et le SAMU-B (territoire où se trouve la patient) n’est pas nécessairement informé de l’appel.
+Dans les cas où une équipe SMUR intervient dans un autre département ou à la demande d’un SAMU d’un autre département, le bilan médical est transmis aux deux SAMU concernés : le médecin du SMUR transmet le bilan médical à un SAMU lequel en informe l’autre SAMU.
+  Traitement d’un appel déjà régulé :
+Lorsqu’un SAMU reçoit un appel déjà régulé par un autre SAMU, une seconde régulation n’est justifiée que si les moyens disponibles paraissent inadaptés à la décision initiale, le SAMU initialement concerné est informé des conclusions de cette seconde régulation.
+  Auto-déclenchement d’un SMUR :
+Lorsqu’un SMUR reçoit directement un appel justifiant une intervention immédiate sans régulation par le SAMU référent, l’intervention est déclenchée et le(s) SAMU du/des territoire(s) concerné(s) en est/sont informé(s).
+  Appels erratiques provenant d’un département distant :
+Il arrive que des appels proviennent de lieux très éloignés du SAMU receveur. Lorsqu’un appel est reçu par un SAMU en provenance d’un département éloigné, l’ARM s’enquiert des coordonnées de l’affaire et du motif d’appel afin de ne pas risquer une perte de contact avec l’appelant, en avise le médecin régulateur et transfère l’appel au SAMU territorialement concerné.
+Server response time: 0.02 seconds.
+
+================================================================================
+FIN DU DOCUMENT
+================================================================================

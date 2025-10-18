@@ -1,0 +1,110 @@
+================================================================================
+FICHE N°170
+================================================================================
+
+TITRE: TIIH : recommandations de Samu-Urgences de France
+URL: https://www.guide-regulation-medicale.fr/index.php?module=Fiche&action=FrontDetailView&record=788
+DATE DE RÉCUPÉRATION: 2025-10-17 00:42:22
+CATÉGORIE: URGENCES
+
+================================================================================
+CONTENU:
+================================================================================
+
+Accès à la version ebook
+Annuaire
+    SOMMAIRE
+GENERALITES
+MOTIFS DE RECOURS
+TRIAGE
+CARDIO-VASCULAIRE
+RESPIRATOIRE
+NEUROLOGIE
+PSYCHIATRIE
+TRAUMATOLOGIE
+BRULURES ET FUMEES
+MORSURES ET PIQURES
+TOXICOLOGIE
+GYNECO OBST - NEONAT
+PEDIATRIE
+HEPATO GASTRO ENTEROLOGIE
+INFECTIOLOGIE
+ORL, STOMATO, OPHTALMO
+AUTRES PATHOLOGIES
+PATH CIRCONSTANCIELLES
+RISQUES SANITAIRES
+MALADIES RARES
+ORGANISATION
+APPELS D'ORIGINE PARTICULIERE
+MODALITES DE TRANSFERT
+GUIDANCE
+SOINS A DOMICILE
+LOGISTIQUE COLLECTIVE
+VECTEURS DE TRANSPORT
+RELATIONS EXTERIEURES
+DERNIERE PARTIE
+COUVERTURES
+TIIH : RECOMMANDATIONS DE SAMU-URGENCES DE FRANCE
+ORGANISATION > MODALITES DE TRANSFERT
+Date de mise à jour :
+23/12/2019
+Tout déplier | Tout replier
+Document
+Recommandations de Samu-Urgences de France sur les Transferts Infirmiers Inter-Hospitaliers
+
+Préambule :
+
+Ce texte concerne les transferts pris en charge par les services hospitaliers entre deux établissements de soins, de patients ne nécessitant pas de prise en charge médicalisée (SMUR), mais relevant des compétences d’un infirmier.
+Ils sont appelés "Transferts Infirmiers Inter-Hospitaliers" (TIIH).
+Ils concernent l’ensemble des transferts inter-hospitaliers incluant l’activité adulte et pédiatrique, les transferts in utero ou psychiatriques.
+Ces transferts inter-hospitaliers sont coordonnés par les SAMU Centre 15.
+
+1. Quel est le rationnel de la mise en place des TIIH ?
+
+La mise en place de TIIH permet une réponse adaptée à la diversification et à l’augmentation des transferts inter-hospitaliers, diversification et augmentations engendrées par la restructuration du système de soins autour de plateaux techniques.
+Cet effecteur vise à améliorer le rapport bénéfice/risque au cours de transferts inter-hospitaliers de patients stabilisés et à optimiser le temps médical disponible. Il correspond à un nouvel effecteur à disposition de la régulation SAMU-Centre 15, intermédiaire entre le transport ambulancier et le transport SMUR.
+Ce nouvel effecteur doit permettre également d’améliorer les délais d’attente pour la réalisation des transferts inter-hospitaliers.
+
+2. Quelles sont les indications des TIIH ?
+
+Le TIIH est indiqué pour les patients stabilisés sans défaillance non compensée.
+Le pré-requis à ce type de transfert est la prise en charge préalable par un médecin avec réalisation d’un examen clinique, formulation d’un diagnostic, mise en route d’un traitement adapté et appréciation du risque évolutif.
+La justification d’un TIIH prend en compte l’indication d’un monitorage, la prescription d’une surveillance infirmière et de traitements continus pendant le transfert.
+L’analyse de la phase d’observation initiale, la durée estimée du transfert et les possibilités de renfort médicalisé sont des arguments décisionnels supplémentaires.
+
+3. Quelles sont les modalités pratiques d’un TIIH ?
+
+L’organisation générale des TIIH est validée par le CODAMU.
+Les TIIH sont régulés par le SAMU territorialement compétent de la structure de soins à l’origine de la demande de transfert.
+Un accord et une transmission d’informations médicales sont nécessaires entre le médecin demandeur, le médecin régulateur du SAMU et le médecin receveur.
+Le choix de l’équipe d’intervention et du type de vecteur est décidé par le médecin régulateur en accord avec le médecin demandeur.
+L’infirmier du TIIH est informé par le médecin régulateur de la nature du transfert et des conditions de réalisation de celui-ci.
+S’il l’estime nécessaire, une fois auprès du patient, l’infirmier qui assure le transfert peut demander une réévaluation par le médecin du service demandeur et le médecin régulateur.
+Cette nouvelle analyse peut le cas échéant aboutir à l’intervention d’un autre moyen.
+Une fiche de prescriptions concernant le traitement et la surveillance pour la durée du transfert, horodatée et signée par le médecin du service demandeur est remise à l’infirmier ainsi que le dossier patient.
+À tout moment, l’infirmier du TIIH doit pouvoir joindre le SAMU, notamment pour obtenir rapidement un renfort du SMUR le plus proche.
+Un dossier spécifique TIIH est rempli par l’infirmier pendant le transfert et remis dans le service d’accueil. Un double est archivé.
+Une transmission infirmière est effectuée dans le service receveur. S’il l’estime nécessaire, l’infirmier du TIIH peut demander en liaison avec le médecin régulateur une réévaluation par le médecin du service receveur.
+Le vecteur de transport doit être de type ASSU et comporte un équipement adapté à la surveillance et à la sécurité du patient.
+Les moyens de transmission radio-téléphoniques doivent être équivalents à ceux d’une UMH.
+Les différents horaires du transfert sont transmis en temps réel à la régulation du SAMU.
+Des protocoles de soins écrits sont élaborés par un groupe de travail comprenant au moins un cadre de santé, un infirmier, un médecin du SMUR. Ces protocoles concernent les éléments de surveillance, les actes de soins et les procédures d’appel à renfort au cours d’un TIIH. Ils sont validés par l’encadrement médical du SAMU et annexés au règlement intérieur du SAMU-Centre 15.
+Une tarification spécifique doit être définie pour les TIIH.
+
+4. Formation spécifique de l’infirmier TIIH :
+
+Les infirmiers qui réalisent des TIIH doivent avoir acquis une expérience dans le transport SMUR ou être diplômés infirmiers anesthésistes et justifier d’un maintien de compétences en SMUR.
+Ils doivent bénéficier d’une formation théorique et pratique, ainsi que d’une mise régulière en situation, incluant l’utilisation du défibrillateur semi automatique.
+Cette formation est coordonnée par le SAMU.
+Des transferts particuliers (pédiatriques, transferts in utero, psychiatriques,…) peuvent justifier de compétences et de formations spécifiques.
+
+5. Evaluation et expérimentation :
+
+La mise en place de ce dispositif nécessite une évaluation réalisée sur plusieurs sites représentatifs : nombre de TIIH, délais de réalisation, registre d'incidents, indices de satisfaction des utilisateurs de TIIH et des usagers, indicateurs d'efficience, évaluation médico-économique…
+Une analyse de tous les dossiers de TIIH doit être effectuée par une commission associant les SMUR et le SAMU du département.
+Au terme de cette évaluation, une estimation des ressources humaines supplémentaires nécessaires et une adaptation ou une modulation de ce référentiel pourront être envisagées.
+Server response time: 0.02 seconds.
+
+================================================================================
+FIN DU DOCUMENT
+================================================================================
