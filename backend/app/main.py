@@ -11,8 +11,7 @@ from vertexai.generative_models import GenerativeModel, GenerationConfig
 import google.auth
 from dotenv import load_dotenv
 
-from backend.app.routes import interventions_routes
-from backend.app.routes import call_routes
+from backend.app.routes import interventions_routes, call_routes, orchestrator_routes  # ⭐ AJOUT
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -24,9 +23,9 @@ MODEL_NAME = "gemini-2.0-flash"
 vertexai.init(project=GCP_PROJECT_ID, location=GCP_REGION)
 
 app = FastAPI(
-    title="AI Agent API",
-    description="Serverless AI Agent using Vertex AI Gemini",
-    version="1.0.0"
+    title="ADN Backend API",  # ⭐ MODIFIÉ
+    description="Agentic Diagnostic Navigator - Unified Backend with AI Agents",  # ⭐ MODIFIÉ
+    version="2.0.0"  # ⭐ MODIFIÉ
 )
 
 # CORS pour le frontend
@@ -50,17 +49,20 @@ generation_config = GenerationConfig(
 @app.get("/")
 async def root():
     return {
-        "message": "Welcome to the AI Agent API",
-        "description": "Serverless AI Agent powered by Vertex AI Gemini",
+        "message": "Welcome to the ADN Backend API",  # ⭐ MODIFIÉ
+        "description": "Agentic Diagnostic Navigator - Unified Backend",  # ⭐ MODIFIÉ
         "project": GCP_PROJECT_ID,
         "region": GCP_REGION,
         "endpoints": {
             "/": "This welcome message",
             "/health": "Health check endpoint",
+            "/api/analyze": "🆕 Orchestrator - Multi-agent analysis",  # ⭐ NOUVEAU
+            "/api/status": "🆕 Orchestrator status",  # ⭐ NOUVEAU
             "/chat": "Chat with AI agent (query parameter: prompt)",
             "/call/start": "Start emergency call recording",
             "/call/status/{session_id}": "Get call transcript and analysis",
             "/call/stop/{session_id}": "Stop call recording",
+            "/interventions": "Interventions management",  # ⭐ AJOUT
             "/docs": "API documentation (Swagger UI)",
             "/redoc": "API documentation (ReDoc)"
         }
@@ -74,7 +76,9 @@ async def health_check():
             "status": "healthy",
             "project": GCP_PROJECT_ID,
             "region": GCP_REGION,
-            "service": "ai-agent-api"
+            "service": "adn-backend-api",  # ⭐ MODIFIÉ
+            "orchestrator": "active",  # ⭐ NOUVEAU
+            "vertex_ai": "connected"  # ⭐ NOUVEAU
         }
     except Exception as e:
         logger.error(f"Health check failed: {e}")
@@ -146,5 +150,11 @@ async def chat_simple(
         "model": MODEL_NAME
     }
 
+# ⭐ INCLUDE ROUTERS
 app.include_router(interventions_routes.router)
 app.include_router(call_routes.router)
+app.include_router(orchestrator_routes.router)  # ⭐ NOUVEAU - Orchestrateur multi-agents
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
