@@ -4,16 +4,15 @@ import logging
 from typing import Optional
 from fastapi import FastAPI, Query, HTTPException
 from fastapi.responses import StreamingResponse
+from fastapi.middleware.cors import CORSMiddleware
 import asyncio
 import vertexai
 from vertexai.generative_models import GenerativeModel, GenerationConfig
 import google.auth
-import os
 from dotenv import load_dotenv
 
 from backend.app.routes import interventions_routes
-
-
+from backend.app.routes import call_routes
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -24,11 +23,19 @@ GCP_REGION = os.getenv("GCP_REGION", "europe-west1")
 MODEL_NAME = "gemini-2.0-flash"
 vertexai.init(project=GCP_PROJECT_ID, location=GCP_REGION)
 
-
 app = FastAPI(
     title="AI Agent API",
     description="Serverless AI Agent using Vertex AI Gemini",
     version="1.0.0"
+)
+
+# CORS pour le frontend
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 model = GenerativeModel(MODEL_NAME)
@@ -51,6 +58,9 @@ async def root():
             "/": "This welcome message",
             "/health": "Health check endpoint",
             "/chat": "Chat with AI agent (query parameter: prompt)",
+            "/call/start": "Start emergency call recording",
+            "/call/status/{session_id}": "Get call transcript and analysis",
+            "/call/stop/{session_id}": "Stop call recording",
             "/docs": "API documentation (Swagger UI)",
             "/redoc": "API documentation (ReDoc)"
         }
@@ -97,7 +107,6 @@ async def chat(
     
     logger.info(f"Received chat request with prompt length: {len(prompt)}")
     
-
     return StreamingResponse(
         generate_stream(prompt),
         media_type="text/event-stream",
@@ -105,8 +114,8 @@ async def chat(
             "Cache-Control": "no-cache",
             "Connection": "keep-alive",
             "X-Accel-Buffering": "no",
-            }
-        )
+        }
+    )
 
 @app.get("/chat/simple")
 async def chat_simple(
@@ -138,3 +147,4 @@ async def chat_simple(
     }
 
 app.include_router(interventions_routes.router)
+app.include_router(call_routes.router)
