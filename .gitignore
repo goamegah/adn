@@ -179,6 +179,7 @@ $RECYCLE.BIN/
 *.msm
 *.msp
 *.lnk
+*.lnk
 
 bazar/
 local/
