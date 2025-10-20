@@ -1,19 +1,31 @@
 # backend/app/routes/orchestrator_routes.py
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 import time
-import random
 import logging
+import sys
+import os
+
+# Ajouter le chemin racine pour importer les agents
+ROOT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+if ROOT_DIR not in sys.path:
+    sys.path.insert(0, ROOT_DIR)
+
+from agents.orchestrator.agent import OrchestrateurADN
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api", tags=["orchestrator"])
 
+# Initialiser l'orchestrateur (une seule fois au démarrage)
+PROJECT_ID = os.getenv("GCP_PROJECT_ID", "ai-diagnostic-navigator-475316")
+orchestrateur = OrchestrateurADN(project_id=PROJECT_ID)
+
 
 class AnalyzeRequest(BaseModel):
-    patient_id: str = ""
-    query: str
+    patient_id: Optional[str] = None  # ID patient MIMIC-III ou None
+    query: str  # Texte médical OU question
     metadata: Dict[str, Any] = {}
 
 
@@ -31,201 +43,170 @@ class AnalyzeResponse(BaseModel):
 @router.post("/analyze", response_model=AnalyzeResponse)
 async def analyze(req: AnalyzeRequest):
     """
-    Endpoint principal d'analyse orchestrée.
-    Délègue aux 4 agents spécialisés:
-    1. Agent Synthétiseur (patient summary)
-    2. Agent Expert (differential diagnostics)
-    3. Agent Critique (alerts)
-    4. Agent Recommandations (immediate actions)
+    Endpoint principal d'analyse avec les VRAIS agents ADN
+    - Si patient_id fourni : charge depuis MIMIC-III
+    - Sinon : analyse le texte médical dans query
     """
     start_time = time.time()
     
-    if not req.query:
-        raise HTTPException(status_code=400, detail="query is required")
+    if not req.query and not req.patient_id:
+        raise HTTPException(status_code=400, detail="query ou patient_id requis")
 
-    logger.info(f"🚀 Starting orchestrated analysis for patient: {req.patient_id}")
+    logger.info(f"🚀 Analyse orchestrée - Patient: {req.patient_id}, Query length: {len(req.query)}")
 
     try:
-        # Générer un ID d'analyse unique
-        analysis_id = f"ana_{random.randint(100000, 999999)}"
+        # Déterminer le mode (MIMIC-III ou texte médical)
+        if req.patient_id and req.patient_id.isdigit():
+            # Mode MIMIC-III
+            subject_id = int(req.patient_id)
+            resultat = orchestrateur.analyser_patient(subject_id)
+            analysis_id = f"mimic_{subject_id}_{int(time.time())}"
+        else:
+            # Mode texte médical
+            from agents.collector.agent import AgentCollecteur
+            from agents.synthesizer.agent import AgentSynthetiseur
+            from agents.expert.agent import AgentExpert
+            
+            agent1 = AgentCollecteur()
+            agent2 = AgentSynthetiseur(project_id=PROJECT_ID)
+            agent3 = AgentExpert(project_id=PROJECT_ID)
+            
+            # Étape 1 : Collecte depuis texte
+            data_collectee = agent1.collecter_donnees_patient(texte_medical=req.query)
+            
+            # Étape 2 : Synthèse + Critique
+            resultat_synthese = agent2.analyser_patient(data_collectee)
+            
+            # Étape 3 : Expertise
+            resultat_expert = agent3.analyser_alertes(resultat_synthese)
+            
+            resultat = {
+                "patient_id": "TEXT_INPUT",
+                "agent1_collecteur": data_collectee,
+                "agent2_synthetiseur": resultat_synthese,
+                "agent3_expert": resultat_expert,
+                "status": "success"
+            }
+            analysis_id = f"text_{int(time.time())}"
         
-        # ========================================
-        # AGENT 1: SYNTHÉTISEUR
-        # ========================================
-        logger.info("📊 Agent Synthétiseur: Generating patient summary...")
-        patient_summary = {
-            "patient": {
-                "name": "Marie Dubois",
-                "age": 65
-            },
-            "admission": {
-                "reason": "Dyspnée aiguë",
-                "time": "14:15"
-            },
-            "allergies": [
-                {"substance": "Pénicilline", "severity": "severe"}
-            ],
-            "antecedents": [
-                {"pathology": "Hypertension", "year": 2019},
-                {"pathology": "Diabète Type 2", "year": 2021},
-                {"pathology": "Fibrillation auriculaire", "year": 2023}
-            ],
-            "current_medications": [
-                {"drug": "Metformine", "dosage": "1000mg"},
-                {"drug": "Bisoprolol", "dosage": "5mg"},
-                {"drug": "Apixaban", "dosage": "5mg"}
-            ],
-            "vital_signs": {
-                "blood_pressure": {"systolic": 145, "diastolic": 92},
-                "heart_rate": {"value": 110, "rhythm": "irrégulier"},
-                "spo2": {"value": 89},
-                "temperature": {"value": 37.8}
-            }
-        }
-
-        # ========================================
-        # AGENT 2: EXPERT (Diagnostics différentiels)
-        # ========================================
-        logger.info("🧠 Agent Expert: Computing differential diagnostics...")
-        differentials = [
-            {
-                "pathology": "Embolie Pulmonaire",
-                "probability_label": "Élevée",
-                "score": 7.5,
-                "evidence": [
-                    {"text": "Dyspnée aiguë + ATCD TVP", "source": "DPI"},
-                    {"text": "D-dimères très élevés (2850)", "source": "LIS"},
-                    {"text": "FA connue", "source": "DPI"}
-                ],
-                "suggested_actions": [
-                    {"priority": 1, "action": "Angio-TDM thoracique en urgence"}
-                ]
-            },
-            {
-                "pathology": "Décompensation Cardiaque",
-                "probability_label": "Moyenne",
-                "score": 5.2,
-                "evidence": [
-                    {"text": "FA + Dyspnée", "source": "DPI"},
-                    {"text": "HTA connue", "source": "DPI"}
-                ],
-                "suggested_actions": [
-                    {"priority": 2, "action": "ECG, Rx Thorax, NT-proBNP"}
-                ]
-            },
-            {
-                "pathology": "Pneumonie Atypique",
-                "probability_label": "Faible",
-                "score": 3.1,
-                "evidence": [
-                    {"text": "Fébricule + Dyspnée", "source": "Examen"},
-                    {"text": "CRP normale ce matin", "source": "LIS"}
-                ],
-                "suggested_actions": [
-                    {"priority": 3, "action": "Rx Thorax si autres causes exclues"}
-                ]
-            },
-        ]
-
-        # ========================================
-        # AGENT 3: CRITIQUE (Alertes)
-        # ========================================
-        logger.info("⚠️ Agent Critique: Detecting critical alerts...")
-        alerts = [
-            {
-                "severity": "critical",
-                "title": "Antécédent de TVP Non Répertorié",
-                "description": "Thrombose veineuse profonde documentée en 2018 (Note infirmière du 15/03/2018) absente de la liste des diagnostics actifs. Risque élevé d'embolie pulmonaire.",
-                "confidence": 0.95
-            },
-            {
-                "severity": "warning",
-                "title": "D-Dimères Élevés Non Signalés",
-                "description": "Résultat laboratoire ce matin: D-Dimères à 2850 ng/mL (N < 500). Non mentionnés dans le rapport d'admission.",
-                "confidence": 1.0
-            },
-        ]
-
-        # ========================================
-        # AGENT 4: RECOMMANDATIONS
-        # ========================================
-        logger.info("💡 Agent Recommandations: Formulating immediate actions...")
-        recommendations = [
-            {
-                "priority": 1,
-                "category": "PRIORITÉ URGENTE",
-                "title": "Angio-TDM Thoracique",
-                "description": "Éliminer embolie pulmonaire (ATCD TVP + D-dimères élevés)",
-                "expected_delay": "< 30 min"
-            },
-            {
-                "priority": 2,
-                "category": "Monitoring",
-                "title": "Surveillance SpO2 + O2",
-                "description": "SpO2 à 89%, installer O2 si < 92%",
-                "expected_delay": "immédiat"
-            },
-            {
-                "priority": 3,
-                "category": "Biologie",
-                "title": "Examens complémentaires",
-                "description": "Gazométrie artérielle, NT-proBNP, Troponines",
-                "expected_delay": "< 1h"
-            },
-            {
-                "priority": 4,
-                "category": "Préparation",
-                "title": "Alerte équipe réanimation",
-                "description": "Prévenir en cas de dégradation",
-                "expected_delay": "standby"
-            }
-        ]
-
-        # Message de chat pour l'utilisateur
-        chat_reply = (
-            f"✅ Analyse complétée pour le patient {req.patient_id or 'N/A'}.\n\n"
-            f"📊 Synthèse générée par l'Agent Synthétiseur\n"
-            f"🧠 {len(differentials)} diagnostics différentiels identifiés par l'Agent Expert\n"
-            f"⚠️ {len(alerts)} alertes critiques détectées par l'Agent Critique\n"
-            f"💡 {len(recommendations)} recommandations immédiates formulées\n\n"
-            f"Consultation complète disponible dans les panels."
-        )
-
-        # Calcul du temps de traitement
-        processing_time = int((time.time() - start_time) * 1000)
-        confidence = round(random.uniform(0.82, 0.95), 2)
-
-        logger.info(f"✅ Analysis completed: {analysis_id} in {processing_time}ms")
-
-        return AnalyzeResponse(
-            analysis_id=analysis_id,
-            confidence=confidence,
-            processing_time_ms=processing_time,
-            patient_summary=patient_summary,
-            differentials=differentials,
-            alerts=alerts,
-            recommendations=recommendations,
-            chat_reply=chat_reply,
-        )
+        # Formater la réponse pour le frontend
+        response = _formater_pour_frontend(resultat)
+        response["analysis_id"] = analysis_id
+        response["processing_time_ms"] = int((time.time() - start_time) * 1000)
+        
+        logger.info(f"✅ Analyse terminée: {analysis_id} en {response['processing_time_ms']}ms")
+        
+        return AnalyzeResponse(**response)
     
     except Exception as e:
-        logger.error(f"❌ Error in orchestrated analysis: {str(e)}")
+        logger.error(f"❌ Erreur analyse: {str(e)}")
         import traceback
         traceback.print_exc()
-        raise HTTPException(status_code=500, detail=f"Erreur d'analyse: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Erreur: {str(e)}")
+
+
+def _formater_pour_frontend(resultat: Dict) -> Dict:
+    """Convertit le format agent → format frontend"""
+    
+    # Extraire les données des agents
+    agent1 = resultat.get("agent1_collecteur", {}).get("patient_normalized", {})
+    agent2 = resultat.get("agent2_synthetiseur", {})
+    agent3 = resultat.get("agent3_expert", {})
+    
+    synthesis = agent2.get("synthesis", {})
+    
+    # Formater patient_summary
+    patient_summary = {
+        "patient": {
+            "name": f"Patient {agent1.get('id', 'N/A')}",
+            "age": agent1.get("age")
+        },
+        "admission": {
+            "reason": agent1.get("admission", {}).get("chief_complaint", "Texte médical"),
+            "time": str(agent1.get("admission", {}).get("date", ""))
+        },
+        "synthesis_text": synthesis.get("summary", "Analyse en cours..."),
+        "vital_signs": agent1.get("vitals_current", {})
+    }
+    
+    # Si c'est un texte médical, ajouter le texte brut
+    if agent1.get("source_type") == "TEXTE_MEDICAL":
+        patient_summary["raw_text"] = agent1.get("texte_brut", "")
+    
+    # Formater diagnostics différentiels
+    differentials_raw = agent3.get("differential_diagnoses", [])
+    differentials = []
+    for dx in differentials_raw:
+        differentials.append({
+            "pathology": dx.get("diagnosis", "N/A"),
+            "probability_label": dx.get("probability", "N/A"),
+            "score": dx.get("confidence_score", 0) * 10,  # Convertir 0-1 en 0-10
+            "evidence": [
+                {"text": ev.get("finding", ""), "source": ev.get("source", "")}
+                for ev in dx.get("supporting_evidence", [])
+            ],
+            "suggested_actions": [
+                {"priority": i+1, "action": action}
+                for i, action in enumerate(dx.get("additional_tests_needed", []))
+            ]
+        })
+    
+    # Formater alertes
+    alerts_raw = agent2.get("critical_alerts", [])
+    alerts = []
+    for alert in alerts_raw:
+        alerts.append({
+            "severity": alert.get("severity", "warning").lower(),
+            "title": alert.get("type", "Alerte"),
+            "description": alert.get("finding", ""),
+            "confidence": 0.9
+        })
+    
+    # Formater recommandations
+    actions_raw = agent3.get("action_plan", {}).get("immediate_actions", [])
+    recommendations = []
+    for i, action in enumerate(actions_raw, 1):
+        recommendations.append({
+            "priority": i,
+            "category": "Action Urgente" if i == 1 else "Monitoring",
+            "title": action.get("action", "Action recommandée")[:50],
+            "description": action.get("justification", ""),
+            "expected_delay": "< 1h"
+        })
+    
+    # Message chat
+    nb_diagnostics = len(differentials)
+    nb_alertes = len(alerts)
+    severity = synthesis.get("severity", "N/A")
+    
+    chat_reply = (
+        f"✅ Analyse complétée\n\n"
+        f"📊 Sévérité: {severity}\n"
+        f"🧠 {nb_diagnostics} diagnostics différentiels identifiés\n"
+        f"🚨 {nb_alertes} alertes critiques détectées\n\n"
+        f"Consultez les panels pour les détails complets."
+    )
+    
+    return {
+        "confidence": 0.88,
+        "patient_summary": patient_summary,
+        "differentials": differentials,
+        "alerts": alerts,
+        "recommendations": recommendations,
+        "chat_reply": chat_reply
+    }
 
 
 @router.get("/status")
 async def orchestrator_status():
-    """Health check et status de l'orchestrateur"""
+    """Health check de l'orchestrateur"""
     return {
         "service": "ADN Orchestrator",
         "status": "operational",
-        "version": "2.0.0",
+        "version": "3.0.0",
         "agents": {
-            "synthesizer": {"status": "active", "description": "Patient summary generation"},
-            "expert": {"status": "active", "description": "Differential diagnostics"},
-            "critic": {"status": "active", "description": "Critical alerts detection"},
-            "recommender": {"status": "active", "description": "Immediate actions"}
+            "collector": {"status": "active", "modes": ["MIMIC-III", "Texte médical"]},
+            "synthesizer": {"status": "active", "description": "Synthèse Jekyll/Hyde"},
+            "expert": {"status": "active", "description": "Diagnostics + RAG"},
         }
     }
