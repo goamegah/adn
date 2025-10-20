@@ -313,3 +313,4 @@ export default function Panels({ data }) {
     </div>
   )
 }
+
