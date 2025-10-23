@@ -1,8 +1,14 @@
 [project]
 name = "adn"
 version = "0.1.0"
-description = "customer service demo using Agent Development Kit"
-authors = [{ name = "Godwin AMEGAH", email = "komlan.godwin.amegah@gmail.com" }]
+description = "Agentic Diagnosis Navigator using Agent Development Kit"
+authors = [
+    { name = "Godwin", email = "komlan.godwin.amegah@gmail.com" },
+    { name = "André", email = "andretd1809@gmail.com" },
+    { name = "Brooklyn", email = "brooklynwafellman@gmail.com" },
+    { name = "Karim", email = "chikhikarim912@gmail.com" },
+    { name = "Anis", email = "adjaoudanis2021@gmail.com" }
+]
 license = "Apache-2.0"
 # readme = "README.md"
 dependencies = [
