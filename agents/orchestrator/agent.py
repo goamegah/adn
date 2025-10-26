@@ -25,7 +25,7 @@ class OrchestrateurADN:
         self.data_dir = data_dir
 
         self.agent1 = AgentCollecteur(data_dir=data_dir)
-        self.agent2 = AgentSynthetiseur(project_id=project_id)
+        self.agent2 = AgentSynthetiseur()
         self.agent3 = AgentExpert(project_id=project_id)
     
     def analyser_patient(self, subject_id: int) -> Dict[str, Any]:        
