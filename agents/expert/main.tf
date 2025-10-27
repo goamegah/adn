@@ -1,4 +1,4 @@
-# main.tf - Agent 2 (Synthesizer) Deployment on Cloud Run
+# main.tf - Agent 3 (Expert) Deployment on Cloud Run
 # Project: AI Diagnostic Navigator
 # SOLUTION: Automatic build with Cloud Build
 
@@ -40,24 +40,24 @@ resource "google_project_service" "aiplatform_api" {
   disable_on_destroy = false
 }
 
-# Service Account for Agent 2
-resource "google_service_account" "agent2_sa" {
-  account_id   = "agent2-synthetiseur-sa"
-  display_name = "Service Account for Agent 2 Synthesizer"
+# Service Account for Agent 3
+resource "google_service_account" "agent3_sa" {
+  account_id   = "agent3-expert-sa"
+  display_name = "Service Account for Agent 3 Expert"
 }
 
 # Vertex AI permissions
-resource "google_project_iam_member" "agent2_aiplatform" {
+resource "google_project_iam_member" "agent3_aiplatform" {
   project = "ai-diagnostic-navigator-475316"
   role    = "roles/aiplatform.user"
-  member  = "serviceAccount:${google_service_account.agent2_sa.email}"
+  member  = "serviceAccount:${google_service_account.agent3_sa.email}"
 }
 
 # Permissions to read logs
-resource "google_project_iam_member" "agent2_logging" {
+resource "google_project_iam_member" "agent3_logging" {
   project = "ai-diagnostic-navigator-475316"
   role    = "roles/logging.logWriter"
-  member  = "serviceAccount:${google_service_account.agent2_sa.email}"
+  member  = "serviceAccount:${google_service_account.agent3_sa.email}"
 }
 
 # IMPORTANT: This file only creates the infrastructure
@@ -66,7 +66,7 @@ resource "google_project_iam_member" "agent2_logging" {
 # Outputs
 output "service_account_email" {
   description = "Email of the created service account"
-  value       = google_service_account.agent2_sa.email
+  value       = google_service_account.agent3_sa.email
 }
 
 output "project_id" {
