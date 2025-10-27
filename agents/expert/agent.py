@@ -1,7 +1,8 @@
 """
 Agent 3 Expert ADK - ADN (AI Diagnostic Navigator)
-'The Medicine Professor' - Validates with guidelines and generates differential diagnoses
-Compatible with ADK architecture
+
+'Le Professeur de Médecine' - Valide avec guidelines et génère diagnostics différentiels
+Compatible avec l'architecture ADK
 """
 
 import json
@@ -19,18 +20,19 @@ load_dotenv(dotenv_path=ENV_PATH, override=True)
 
 class AgentExpert:
     """
-    Agent 3: Expert that validates alerts with medical guidelines
-    and generates differential diagnoses
-    Compatible with ADK interface
+    Agent 3 : Expert qui valide les alertes avec des guidelines médicales
+    et génère des diagnostics différentiels
+    Compatible avec l'interface ADK
     """
 
     def __init__(self):
-        """Initialize the agent with Gemini client"""
+        """Initialise l'agent avec le client Gemini"
         self.api_key = os.getenv("GOOGLE_API_KEY")
         self.client = genai.Client(api_key=self.api_key)
         self.model_id = "gemini-2.0-flash-exp"
         
-        # RAG Configuration (Vertex AI Search - optional if available)
+
+        # Configuration RAG (Vertex AI Search - optionnel si disponible)
         self.rag_disponible = False
         self.datastore_id = None
 
@@ -39,7 +41,7 @@ class AgentExpert:
         output_agent2: Dict[str, Any]
     ) -> List[Dict]:
         """
-        PHASE 1: Generation of differential diagnoses
+        PHASE 1 : Génération des diagnostics différentiels
         """
         synthese = output_agent2.get("synthesis", {})
         alertes = output_agent2.get("critical_alerts", [])
@@ -119,7 +121,7 @@ Be thorough but relevant - include serious diagnoses even if less probable.
         data_patient: Dict
     ) -> List[Dict]:
         """
-        PHASE 2: Validation of alerts against medical guidelines
+        PHASE 2 : Validation des alertes contre les guidelines médicales
         """
         alertes_validees = []
         
@@ -192,12 +194,13 @@ JSON format:
         data_patient: Dict
     ) -> List[Dict]:
         """
-        PHASE 3: Calculation of additional risk scores
+        PHASE 3 : Calcul des scores de risque additionnels
         """
         prompt_scores = f"""
 You are an expert in clinical scores and prognosis.
 
-RETAINED DIAGNOSES:
+DIAGNOSTICS RETENUS :
+
 {json.dumps(diagnostics[:3], indent=2, ensure_ascii=False)}
 
 PATIENT DATA:
@@ -260,20 +263,17 @@ Indicate confidence and impact of missing data.
         return result.get("risk_scores", [])
 
     def phase_plan_action(
-        self, 
-        output_agent2: Dict[str, Any]
-    ) -> Dict[str, Any]:
+
+        self,
+        alertes_validees: List[Dict],
+        diagnostics: List[Dict],
+        data_patient: Dict
+    ) -> Dict:
         """
-        PHASE 4: Generation of prioritized action plan
+        PHASE 4 : Génération du plan d'action concret et sourcé
         """
-        # Extract relevant data
-        diagnostics = output_agent2.get("differential_diagnoses", [])
-        alertes_validees = output_agent2.get("validated_alerts", [])
-        scores = output_agent2.get("risk_scores", [])
-        data_patient = output_agent2.get("raw_patient_data", {})
-        
-        prompt_plan = f"""
-You are an expert in emergency medicine and critical care.
+        prompt_action = f"""
+Tu es un médecin urgentiste qui crée un plan d'action concret.
 
 CLINICAL CONTEXT:
 - Top Diagnoses: {json.dumps(diagnostics[:3], indent=2, ensure_ascii=False)}
@@ -361,66 +361,72 @@ Verify contraindications for EVERY recommendation.
         
         response = self.client.models.generate_content(
             model=self.model_id,
-            contents=prompt_plan,
+            contents=prompt_action,
             config=types.GenerateContentConfig(
                 response_mime_type="application/json"
             )
         )
         
-        result = json.loads(response.text)
-        return result.get("action_plan", {})
+        return json.loads(response.text)
 
-    def phase_synthese_preuves(
-        self, 
-        validated_alerts: List[Dict],
-        action_plan: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    def analyser_alertes(self, output_agent2: Dict[str, Any]) -> Dict[str, Any]:
         """
-        PHASE 5: Synthesis of all evidence and medical references used
+        Pipeline complet : Diagnostics → Validation → Scores → Action
+        Point d'entrée principal de l'agent
         """
-        # Collect all references from validated alerts
-        all_references = []
+        print("🎓 Agent 3 Expert (ADK) : Démarrage de l'analyse...")
         
-        for alert in validated_alerts:
-            validation = alert.get("validation", {})
-            guidelines = validation.get("guidelines_references", [])
-            all_references.extend(guidelines)
+        # Extraction des données
+        synthese = output_agent2.get("synthesis", {})
+        alertes = output_agent2.get("critical_alerts", [])
+        data_patient = output_agent2.get("raw_patient_data", {})
+        scores = output_agent2.get("clinical_scores", [])
         
-        # Deduplicate and classify by quality
-        unique_refs = {}
-        for ref in all_references:
-            ref_name = ref.get("guideline_name", "")
-            if ref_name and ref_name not in unique_refs:
-                unique_refs[ref_name] = ref
+        # Phase 1 : Diagnostics différentiels
+        print("\n📊 Phase 1 : Génération des diagnostics différentiels...")
+        diagnostics = self.phase_diagnostics_differentiels(output_agent2)
         
-        # Count by evidence strength
-        high_quality = sum(
-            1 for ref in unique_refs.values() 
-            if ref.get("strength_of_evidence") == "HIGH"
-        )
-        moderate_quality = sum(
-            1 for ref in unique_refs.values() 
-            if ref.get("strength_of_evidence") == "MODERATE"
-        )
-        low_quality = sum(
-            1 for ref in unique_refs.values() 
-            if ref.get("strength_of_evidence") == "LOW"
-        )
+        # Phase 2 : Validation des alertes
+        print("\n📚 Phase 2 : Validation avec guidelines médicales...")
+        alertes_validees = self.phase_validation_guidelines(alertes, data_patient)
         
-        return {
-            "total_references": len(unique_refs),
-            "references": list(unique_refs.values()),
-            "evidence_strength_summary": {
-                "high_quality": high_quality,
-                "moderate_quality": moderate_quality,
-                "low_quality": low_quality
-            },
-            "key_recommendations": [
-                ref.get("recommendation") 
-                for ref in unique_refs.values() 
-                if ref.get("recommendation")
-            ]
+        # Phase 3 : Scores de risque
+        print("\n🎯 Phase 3 : Calcul des scores de risque...")
+        scores_risque = self.phase_scores_risque(diagnostics, data_patient)
+        
+        # Phase 4 : Plan d'action
+        print("\n💊 Phase 4 : Génération du plan d'action...")
+        plan_action = self.phase_plan_action(alertes_validees, diagnostics, data_patient)
+        
+        # Phase 5 : Synthèse des preuves
+        print("\n📖 Phase 5 : Synthèse des preuves...")
+        synthese_preuves = self._generer_synthese_preuves(diagnostics, alertes_validees)
+        
+        # Résultat final
+        resultat_final = {
+            "agent_type": "EXPERT_VALIDATION",
+            "patient_id": data_patient.get("id", "UNKNOWN"),
+            "source_synthesis": synthese.get("summary", ""),
+            
+            # Résultats des phases
+            "differential_diagnoses": diagnostics,
+            "validated_alerts": alertes_validees,
+            "risk_scores": scores_risque,
+            "action_plan": plan_action,
+            "evidence_summary": synthese_preuves,
+            
+            # Données source conservées
+            "source_data": {
+                "patient_normalized": data_patient,
+                "original_synthesis": synthese,
+                "original_alerts": alertes,
+                "original_scores": scores
+            }
         }
+        
+        print("\n✅ Agent 3 Expert (ADK) : Analyse terminée")
+        
+        return resultat_final
 
     def _construire_contexte_clinique(
         self,
@@ -433,16 +439,36 @@ Verify contraindications for EVERY recommendation.
         Build complete clinical context for the LLM
         """
         return {
-            "synthesis": synthese,
-            "critical_alerts": alertes,
-            "patient_data": data_patient,
-            "clinical_scores": scores
+            "presentation_clinique": synthese.get("summary", ""),
+            "problemes_principaux": synthese.get("key_problems", []),
+            "severite": synthese.get("severity", ""),
+            "trajectoire": synthese.get("clinical_trajectory", ""),
+            "alertes_critiques": [
+                {
+                    "type": a.get("type"),
+                    "finding": a.get("finding"),
+                    "severity": a.get("severity")
+                }
+                for a in alertes
+            ],
+            "donnees_patient": {
+                "age": data_patient.get("age"),
+                "sex": data_patient.get("sex"),
+                "antecedents": data_patient.get("medical_history", {}).get("known_conditions", []),
+                "medicaments": data_patient.get("medications_current", []) or 
+                              data_patient.get("medical_history", {}).get("medications_current", []),
+                "signes_vitaux": data_patient.get("vitals_current", {}),
+                "laboratoire": data_patient.get("labs", []),
+                "microbiologie": data_patient.get("cultures", [])
+            },
+            "scores_cliniques": scores
         }
 
-    def analyser_complet(
-        self, 
-        output_agent2: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    def _generer_synthese_preuves(
+        self,
+        diagnostics: List[Dict],
+        alertes_validees: List[Dict]
+    ) -> Dict:
         """
         Complete analysis: executes all 5 phases
         
@@ -452,14 +478,8 @@ Verify contraindications for EVERY recommendation.
         Returns:
             Complete result with diagnoses, validations, scores, plan, and evidence
         """
-        print("\n" + "="*100)
-        print("🎓 AGENT 3 - EXPERT MEDICAL VALIDATOR")
-        print("="*100)
-        
-        # PHASE 1: Differential diagnoses
-        print("\n📋 PHASE 1 - Generating differential diagnoses...")
-        diagnostics = self.phase_diagnostics_differentiels(output_agent2)
-        print(f"   ✅ {len(diagnostics)} diagnoses generated")
+        # Extraire toutes les références
+        toutes_references = []
         
         # PHASE 2: Guideline validation
         print("\n📚 PHASE 2 - Validating alerts against guidelines...")
@@ -468,52 +488,40 @@ Verify contraindications for EVERY recommendation.
         alertes_validees = self.phase_validation_guidelines(alertes, data_patient)
         print(f"   ✅ {len(alertes_validees)} alerts validated")
         
-        # PHASE 3: Risk scores
-        print("\n🎯 PHASE 3 - Calculating risk scores...")
-        scores = self.phase_scores_risque(diagnostics, data_patient)
-        print(f"   ✅ {len(scores)} scores calculated")
+        # Déduplication et tri
+        references_uniques = []
+        vues = set()
+        for ref in toutes_references:
+            nom = ref.get("guideline_name", "")
+            if nom and nom not in vues:
+                vues.add(nom)
+                references_uniques.append(ref)
         
-        # PHASE 4: Action plan
-        print("\n💊 PHASE 4 - Generating action plan...")
-        
-        # Prepare enriched data for action plan
-        enriched_data = {
-            **output_agent2,
-            "differential_diagnoses": diagnostics,
-            "validated_alerts": alertes_validees,
-            "risk_scores": scores
+        return {
+            "total_references": len(references_uniques),
+            "guidelines_cited": references_uniques,
+            "evidence_strength_summary": {
+                "high_quality": len([r for r in references_uniques if r.get("strength_of_evidence") == "HIGH"]),
+                "moderate_quality": len([r for r in references_uniques if r.get("strength_of_evidence") == "MODERATE"]),
+                "low_quality": len([r for r in references_uniques if r.get("strength_of_evidence") == "LOW"])
+            },
+            "key_recommendations": [
+                ref.get("recommendation")
+                for ref in references_uniques[:5]
+                if ref.get("recommendation")
+            ]
         }
-        
-        plan_action = self.phase_plan_action(enriched_data)
-        print(f"   ✅ Action plan generated")
-        
-        # PHASE 5: Evidence synthesis
-        print("\n📊 PHASE 5 - Synthesizing evidence...")
-        synthese_preuves = self.phase_synthese_preuves(alertes_validees, plan_action)
-        print(f"   ✅ {synthese_preuves['total_references']} references compiled")
-        
-        # Assemble complete result
-        result = {
-            "patient_id": output_agent2.get("patient_id"),
-            "differential_diagnoses": diagnostics,
-            "validated_alerts": alertes_validees,
-            "risk_scores": scores,
-            "action_plan": plan_action,
-            "evidence_summary": synthese_preuves
-        }
-        
-        print("\n" + "="*100)
-        print("✅ COMPLETE ANALYSIS FINISHED")
-        print("="*100 + "\n")
-        
-        return result
-
 
 def format_output_for_ui(resultat: Dict[str, Any]) -> str:
     """
-    Format the result for display in ADK interface
+    Formate le résultat pour l'affichage dans l'interface ADK
     """
     output = []
+    
+    # En-tête
+    output.append("=" * 100)
+    output.append(f"🎓 AGENT EXPERT - Validation Médicale Patient {resultat.get('patient_id', 'N/A')}")
+    output.append("=" * 100)
     
     # Header
     output.append("=" * 100)
@@ -523,36 +531,35 @@ def format_output_for_ui(resultat: Dict[str, Any]) -> str:
     # 1. DIFFERENTIAL DIAGNOSES
     diagnostics = resultat.get("differential_diagnoses", [])
     output.append(f"\n┌{'─'*98}┐")
-    output.append(f"│  🔍 DIFFERENTIAL DIAGNOSES - {len(diagnostics)} identified{' '*(98-len(f'  🔍 DIFFERENTIAL DIAGNOSES - {len(diagnostics)} identified'))}│")
+    output.append(f"│  🔍 DIAGNOSTICS DIFFÉRENTIELS - {len(diagnostics)} identifié(s){' '*(98-len(f'  🔍 DIAGNOSTICS DIFFÉRENTIELS - {len(diagnostics)} identifié(s)'))}│")
     output.append(f"└{'─'*98}┘")
     
     for i, diag in enumerate(diagnostics, 1):
         prob_emoji = "🔴" if diag.get("probability") == "HIGH" else "🟡" if diag.get("probability") == "MEDIUM" else "🟢"
-        output.append(f"\n{prob_emoji} DIAGNOSIS #{i} - {diag.get('diagnosis', 'N/A')}")
-        output.append(f"   ICD-10 Code: {diag.get('icd10_code', 'N/A')}")
-        output.append(f"   Probability: {diag.get('probability', 'N/A')} | Confidence: {diag.get('confidence_score', 0):.2f}")
-        output.append(f"   Urgency: {diag.get('urgency', 'N/A')}")
+        output.append(f"\n{prob_emoji} DIAGNOSTIC #{i} - {diag.get('diagnosis', 'N/A')}")
+        output.append(f"   Code ICD-10 : {diag.get('icd10_code', 'N/A')}")
+        output.append(f"   Probabilité : {diag.get('probability', 'N/A')} | Confiance : {diag.get('confidence_score', 0):.2f}")
+        output.append(f"   Urgence : {diag.get('urgency', 'N/A')}")
         
         evidence_for = diag.get("supporting_evidence", [])
         if evidence_for:
-            output.append(f"\n   ✅ Supporting Evidence ({len(evidence_for)}):")
+            output.append(f"\n   ✅ Arguments POUR ({len(evidence_for)}) :")
             for ev in evidence_for[:3]:
-                output.append(f"      • {ev.get('finding')} (strength: {ev.get('strength')})")
+                output.append(f"      • {ev.get('finding')} (force: {ev.get('strength')})")
         
         evidence_against = diag.get("contradicting_evidence", [])
         if evidence_against:
-            output.append(f"\n   ❌ Contradicting Evidence ({len(evidence_against)}):")
+            output.append(f"\n   ❌ Arguments CONTRE ({len(evidence_against)}) :")
             for ev in evidence_against[:2]:
                 output.append(f"      • {ev.get('finding')} (impact: {ev.get('impact')})")
         
         tests = diag.get("additional_tests_needed", [])
         if tests:
-            output.append(f"\n   🔬 Required Tests: {', '.join(tests[:3])}")
-    
+            output.append(f"\n   🔬 Examens nécessaires : {', '.join(tests[:3])}")    
     # 2. VALIDATED ALERTS
     alertes_val = resultat.get("validated_alerts", [])
     output.append(f"\n\n┌{'─'*98}┐")
-    output.append(f"│  ✅ VALIDATED ALERTS - {len(alertes_val)} alert(s){' '*(98-len(f'  ✅ VALIDATED ALERTS - {len(alertes_val)} alert(s)'))}│")
+    output.append(f"│  ✅ ALERTES VALIDÉES - {len(alertes_val)} alerte(s){' '*(98-len(f'  ✅ ALERTES VALIDÉES - {len(alertes_val)} alerte(s)'))}│")
     output.append(f"└{'─'*98}┘")
     
     for alerte in alertes_val:
@@ -562,13 +569,13 @@ def format_output_for_ui(resultat: Dict[str, Any]) -> str:
         
         emoji = "✅" if validated else "⚠️"
         output.append(f"\n{emoji} {alerte.get('type', 'N/A')}")
-        output.append(f"   Finding: {alerte.get('finding', 'N/A')}")
-        output.append(f"   Validation: {validated} (strength: {strength})")
-        output.append(f"   Urgency: {validation.get('action_urgency_validated', 'N/A')}")
+        output.append(f"   Finding : {alerte.get('finding', 'N/A')}")
+        output.append(f"   Validation : {validated} (force: {strength})")
+        output.append(f"   Urgence : {validation.get('action_urgency_validated', 'N/A')}")
         
         guidelines = validation.get("guidelines_references", [])
         if guidelines:
-            output.append(f"\n   📚 Guidelines ({len(guidelines)}):")
+            output.append(f"\n   📚 Guidelines ({len(guidelines)}) :")
             for guide in guidelines[:2]:
                 output.append(f"      • {guide.get('guideline_name')}")
                 rec = guide.get('recommendation', '')
@@ -578,62 +585,61 @@ def format_output_for_ui(resultat: Dict[str, Any]) -> str:
     # 3. ACTION PLAN
     plan = resultat.get("action_plan", {})
     output.append(f"\n\n┌{'─'*98}┐")
-    output.append(f"│  💊 ACTION PLAN{' '*83}│")
+    output.append(f"│  💊 PLAN D'ACTION{' '*83}│")
     output.append(f"└{'─'*98}┘")
     
     immediate = plan.get("immediate_actions", [])
     if immediate:
-        output.append(f"\n🚨 IMMEDIATE ACTIONS (< 15 min) - {len(immediate)} action(s):")
+        output.append(f"\n🚨 ACTIONS IMMÉDIATES (< 15 min) - {len(immediate)} action(s) :")
         for action in immediate:
             output.append(f"   • {action.get('action')}")
             output.append(f"     ↳ {action.get('justification')}")
     
     urgent = plan.get("urgent_actions", [])
     if urgent:
-        output.append(f"\n⏰ URGENT ACTIONS (< 1h) - {len(urgent)} action(s):")
+        output.append(f"\n⏰ ACTIONS URGENTES (< 1h) - {len(urgent)} action(s) :")
         for action in urgent:
             output.append(f"   • {action.get('action')} - {action.get('timeframe')}")
     
     monitoring = plan.get("monitoring_plan", [])
     if monitoring:
-        output.append(f"\n📊 MONITORING - {len(monitoring)} parameter(s):")
+        output.append(f"\n📊 SURVEILLANCE - {len(monitoring)} paramètre(s) :")
         for item in monitoring[:3]:
             output.append(f"   • {item.get('parameter')} - {item.get('frequency')}")
     
-    # 4. RISK SCORES
+    # 4. SCORES DE RISQUE
     scores = resultat.get("risk_scores", [])
     if scores:
         output.append(f"\n\n┌{'─'*98}┐")
-        output.append(f"│  🎯 RISK SCORES - {len(scores)} score(s){' '*(98-len(f'  🎯 RISK SCORES - {len(scores)} score(s)'))}│")
+        output.append(f"│  🎯 SCORES DE RISQUE - {len(scores)} score(s){' '*(98-len(f'  🎯 SCORES DE RISQUE - {len(scores)} score(s)'))}│")
         output.append(f"└{'─'*98}┘")
         
         for score in scores:
-            output.append(f"\n📈 {score.get('score_name', 'N/A')}: {score.get('score_value', 'N/A')}")
-            output.append(f"   Category: {score.get('risk_category', 'N/A')}")
-            output.append(f"   Interpretation: {score.get('interpretation', 'N/A')}")
+            output.append(f"\n📈 {score.get('score_name', 'N/A')} : {score.get('score_value', 'N/A')}")
+            output.append(f"   Catégorie : {score.get('risk_category', 'N/A')}")
+            output.append(f"   Interprétation : {score.get('interpretation', 'N/A')}")
     
-    # 5. EVIDENCE SYNTHESIS
+    # 5. SYNTHÈSE DES PREUVES
     evidence = resultat.get("evidence_summary", {})
     output.append(f"\n\n┌{'─'*98}┐")
-    output.append(f"│  📚 EVIDENCE SYNTHESIS{' '*73}│")
+    output.append(f"│  📚 SYNTHÈSE DES PREUVES{' '*73}│")
     output.append(f"└{'─'*98}┘")
     
-    output.append(f"\n📊 Total References: {evidence.get('total_references', 0)}")
+    output.append(f"\n📊 Total références : {evidence.get('total_references', 0)}")
     
     strength_summary = evidence.get("evidence_strength_summary", {})
     if strength_summary:
-        output.append(f"\n🎯 Evidence Quality:")
-        output.append(f"   • High: {strength_summary.get('high_quality', 0)}")
-        output.append(f"   • Moderate: {strength_summary.get('moderate_quality', 0)}")
-        output.append(f"   • Low: {strength_summary.get('low_quality', 0)}")
-    
+        output.append(f"\n🎯 Qualité des preuves :")
+        output.append(f"   • Haute : {strength_summary.get('high_quality', 0)}")
+        output.append(f"   • Moyenne : {strength_summary.get('moderate_quality', 0)}")
+        output.append(f"   • Basse : {strength_summary.get('low_quality', 0)}")    
     output.append("\n" + "=" * 100)
     
     return "\n".join(output)
 
 
 # ============================================================================
-# ADK ROOT AGENT CONFIGURATION
+# CONFIGURATION ADK ROOT AGENT
 # ============================================================================
 
 root_agent = LlmAgent(
@@ -642,74 +648,74 @@ root_agent = LlmAgent(
     model="gemini-2.0-flash-exp",
     
     description="""
-Expert medical agent in clinical validation and differential diagnoses.
-Analyzes alerts from the Synthesizer Agent, validates against medical guidelines,
-generates differential diagnoses and proposes evidence-based action plans.
+Agent médical expert en validation clinique et diagnostics différentiels.
+Analyse les alertes de l'Agent Synthétiseur, valide contre les guidelines médicales,
+génère des diagnostics différentiels et propose des plans d'action sourcés.
 
-CAPABILITIES:
-- Generation of differential diagnoses with evidence
-- Validation of alerts against international guidelines
-- Calculation of specialized risk scores (APACHE II, GRACE, TIMI, NIHSS, etc.)
-- Generation of prioritized and evidence-based action plans
-- Synthesis of evidence and medical references
+CAPACITÉS :
+- Génération de diagnostics différentiels avec preuves
+- Validation des alertes contre guidelines internationales
+- Calcul de scores de risque spécialisés (APACHE II, GRACE, TIMI, NIHSS, etc.)
+- Génération de plans d'action priorisés et sourcés
+- Synthèse des preuves et références médicales
 """,
     
     instruction="""
-You are a medical professor expert in emergency medicine and infectious diseases.
+Tu es un professeur de médecine expert en médecine d'urgence et infectiologie.
 
-ROLE:
-- Validate clinical alerts against recognized medical guidelines
-- Generate evidence-based differential diagnoses
-- Calculate relevant risk scores
-- Propose evidence-based and prioritized action plans
+RÔLE :
+- Valider les alertes cliniques contre les guidelines médicales reconnues
+- Générer des diagnostics différentiels basés sur les preuves
+- Calculer des scores de risque pertinents
+- Proposer des plans d'action sourcés et priorisés
 
-5-PHASE PROCESS:
+PROCESSUS EN 5 PHASES :
 
-PHASE 1 - DIFFERENTIAL DIAGNOSES:
-- Generate a complete and relevant list of diagnoses
-- For each diagnosis: probability, confidence, evidence FOR/AGAINST
-- Include serious diagnoses even if less probable
-- Identify necessary additional tests
+PHASE 1 - DIAGNOSTICS DIFFÉRENTIELS :
+- Génère une liste complète et pertinente de diagnostics
+- Pour chaque diagnostic : probabilité, confiance, preuves POUR/CONTRE
+- Inclut les diagnostics graves même si moins probables
+- Identifie les examens complémentaires nécessaires
 
-PHASE 2 - GUIDELINE VALIDATION:
-- Validate each alert against recognized guidelines (Surviving Sepsis, ESC, AHA, etc.)
-- Systematically cite sources with strength of evidence
-- Verify contraindications
-- Propose alternative approaches
+PHASE 2 - VALIDATION GUIDELINES :
+- Valide chaque alerte contre guidelines reconnues (Surviving Sepsis, ESC, AHA, etc.)
+- Cite systématiquement les sources avec force d'évidence
+- Vérifie les contre-indications
+- Propose des approches alternatives
 
-PHASE 3 - RISK SCORES:
-- Calculate relevant scores based on diagnoses (SOFA, qSOFA, APACHE II, GRACE, TIMI, etc.)
-- Interpret results and predict outcomes
-- Evaluate confidence in calculations
+PHASE 3 - SCORES DE RISQUE :
+- Calcule scores pertinents selon diagnostics (SOFA, qSOFA, APACHE II, GRACE, TIMI, etc.)
+- Interprète les résultats et prédit les outcomes
+- Évalue la confiance dans les calculs
 
-PHASE 4 - ACTION PLAN:
-Structure by priorities:
-- IMMEDIATE (< 15 min): life-saving actions
-- URGENT (< 1h): important actions
-- Prioritized diagnostic workup
-- Monitoring plan with alert thresholds
-- Specialized consultations
-- Medication adjustments with dosages
+PHASE 4 - PLAN D'ACTION :
+Structure en priorités :
+- IMMEDIATE (< 15 min) : actions vitales
+- URGENT (< 1h) : actions importantes
+- Workup diagnostique priorisé
+- Plan de surveillance avec seuils d'alerte
+- Consultations spécialisées
+- Ajustements médicamenteux avec posologies
 
-PHASE 5 - EVIDENCE SYNTHESIS:
-- Compilation of all references used
-- Deduplication and classification by quality
-- Top key recommendations
+PHASE 5 - SYNTHÈSE PREUVES :
+- Compilation de toutes les références utilisées
+- Déduplication et classification par qualité
+- Top recommandations clés
 
-PRINCIPLES:
-- Always prioritize patient safety
-- Base all recommendations on recognized guidelines
-- Systematically cite sources with strength of evidence
-- Consider serious diagnoses even if less probable
-- Prioritize by urgency: IMMEDIATE > URGENT > ROUTINE
-- Verify contraindications for each recommendation
-- Use ICD-10 codes when applicable
-- Confidence score >= 0.7 for critical recommendations
+PRINCIPES :
+- Toujours privilégier la sécurité patient
+- Base toutes tes recommandations sur des guidelines reconnues
+- Cite systématiquement tes sources avec force de l'évidence
+- Considère les diagnostics graves même si moins probables
+- Priorise par urgence : IMMEDIATE > URGENT > ROUTINE
+- Vérifie les contre-indications pour chaque recommandation
+- Utilise les codes ICD-10 quand applicable
+- Confidence score >= 0.7 pour recommandations critiques
 
-QUALITY:
-- Minimum 3 differential diagnoses if relevant
-- Citations with guideline name + year + strength of evidence
-- Systematic verification of drug interactions
-- Concrete and actionable action plans
+QUALITÉ :
+- Minimum 3 diagnostics différentiels si pertinent
+- Citations avec nom guideline + année + force évidence
+- Vérification systématique des interactions médicamenteuses
+- Plans d'action concrets et actionnables
 """
 )
