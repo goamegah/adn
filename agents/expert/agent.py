@@ -1,5 +1,6 @@
 """
 Agent 3 Expert ADK - ADN (AI Diagnostic Navigator)
+
 'Le Professeur de Médecine' - Valide avec guidelines et génère diagnostics différentiels
 Compatible avec l'architecture ADK
 """
@@ -25,11 +26,12 @@ class AgentExpert:
     """
 
     def __init__(self):
-        """Initialise l'agent avec le client Gemini"""
+        """Initialise l'agent avec le client Gemini"
         self.api_key = os.getenv("GOOGLE_API_KEY")
         self.client = genai.Client(api_key=self.api_key)
         self.model_id = "gemini-2.0-flash-exp"
         
+
         # Configuration RAG (Vertex AI Search - optionnel si disponible)
         self.rag_disponible = False
         self.datastore_id = None
@@ -51,55 +53,55 @@ class AgentExpert:
         )
         
         prompt_diagnostics = f"""
-Tu es un expert en médecine d'urgence et infectiologie.
+You are an expert in emergency medicine and infectious diseases.
 
-CONTEXTE CLINIQUE COMPLET :
+COMPLETE CLINICAL CONTEXT:
 {json.dumps(contexte_clinique, indent=2, ensure_ascii=False)}
 
-Ta mission : Générer une liste de diagnostics différentiels pertinents.
+Your mission: Generate a list of relevant differential diagnoses.
 
-Pour chaque diagnostic, fournis :
-1. Le nom du diagnostic
-2. La probabilité (HIGH/MEDIUM/LOW)
-3. Un score de confiance (0.0 à 1.0)
-4. Les critères qui soutiennent ce diagnostic (trouvés dans les données)
-5. Les critères qui vont contre ce diagnostic
-6. Les examens complémentaires nécessaires pour confirmer/infirmer
+For each diagnosis, provide:
+1. The diagnosis name
+2. The probability (HIGH/MEDIUM/LOW)
+3. A confidence score (0.0 to 1.0)
+4. Criteria supporting this diagnosis (found in the data)
+5. Criteria contradicting this diagnosis
+6. Additional tests needed to confirm/rule out
 
-Format JSON strict :
+Strict JSON format:
 {{
     "differential_diagnoses": [
         {{
-            "diagnosis": "Nom du diagnostic",
-            "icd10_code": "Code ICD-10 si applicable",
+            "diagnosis": "Diagnosis name",
+            "icd10_code": "ICD-10 code if applicable",
             "probability": "HIGH/MEDIUM/LOW",
             "confidence_score": 0.85,
             "supporting_evidence": [
                 {{
-                    "finding": "Élément clinique",
+                    "finding": "Clinical element",
                     "strength": "DEFINITIVE/STRONG/MODERATE/WEAK",
-                    "source": "D'où vient cette info"
+                    "source": "Where this info comes from"
                 }}
             ],
             "contradicting_evidence": [
                 {{
-                    "finding": "Élément qui va contre",
+                    "finding": "Element that contradicts",
                     "impact": "MAJOR/MODERATE/MINOR"
                 }}
             ],
             "additional_tests_needed": [
-                "Examen 1",
-                "Examen 2"
+                "Test 1",
+                "Test 2"
             ],
             "urgency": "IMMEDIATE/URGENT/ROUTINE",
-            "typical_presentation": "Description de la présentation typique",
-            "atypical_features": ["Caractéristique atypique observée"]
+            "typical_presentation": "Description of typical presentation",
+            "atypical_features": ["Observed atypical feature"]
         }}
     ]
 }}
 
-Classe les diagnostics par probabilité décroissante.
-Sois exhaustif mais pertinent - inclus les diagnostics graves même si moins probables.
+Rank diagnoses by decreasing probability.
+Be thorough but relevant - include serious diagnoses even if less probable.
 """
         
         response = self.client.models.generate_content(
@@ -125,43 +127,43 @@ Sois exhaustif mais pertinent - inclus les diagnostics graves même si moins pro
         
         for alerte in alertes:
             prompt_validation = f"""
-Tu es un expert en médecine basée sur les preuves.
+You are an expert in evidence-based medicine.
 
-ALERTE À VALIDER :
+ALERT TO VALIDATE:
 {json.dumps(alerte, indent=2, ensure_ascii=False)}
 
-CONTEXTE PATIENT :
+PATIENT CONTEXT:
 {json.dumps(data_patient, indent=2, ensure_ascii=False)}
 
-Ta mission : Valider cette alerte contre les guidelines médicales reconnues.
+Your mission: Validate this alert against recognized medical guidelines.
 
-Format JSON :
+JSON format:
 {{
     "alert_validated": true/false,
     "validation_strength": "STRONG/MODERATE/WEAK",
     "guidelines_references": [
         {{
-            "guideline_name": "Nom de la guideline (ex: Surviving Sepsis Campaign 2021)",
-            "recommendation": "Recommandation exacte",
+            "guideline_name": "Guideline name (e.g., Surviving Sepsis Campaign 2021)",
+            "recommendation": "Exact recommendation",
             "strength_of_evidence": "HIGH/MODERATE/LOW",
-            "source_url": "URL si disponible",
-            "quote": "Citation pertinente de la guideline"
+            "source_url": "URL if available",
+            "quote": "Relevant guideline citation"
         }}
     ],
     "clinical_evidence": [
         {{
             "evidence_type": "RCT/Meta-analysis/Observational/Expert opinion",
-            "finding": "Résultat de l'étude",
-            "relevance": "Description de la pertinence pour ce cas"
+            "finding": "Study result",
+            "relevance": "Description of relevance for this case"
         }}
     ],
     "action_urgency_validated": "IMMEDIATE/WITHIN_1H/WITHIN_6H/ROUTINE",
     "alternative_approaches": [
-        "Approche alternative 1 si la première n'est pas possible"
+        "Alternative approach 1 if the first is not possible"
     ],
     "contraindications_check": {{
         "contraindications_present": false,
-        "details": "Vérification des contre-indications"
+        "details": "Contraindication verification"
     }}
 }}
 """
@@ -176,7 +178,7 @@ Format JSON :
             
             validation = json.loads(response.text)
             
-            # Combiner l'alerte originale avec la validation
+            # Combine original alert with validation
             alerte_validee = {
                 **alerte,
                 "validation": validation
@@ -195,41 +197,58 @@ Format JSON :
         PHASE 3 : Calcul des scores de risque additionnels
         """
         prompt_scores = f"""
-Tu es un expert en scores cliniques et pronostic.
+You are an expert in clinical scores and prognosis.
 
 DIAGNOSTICS RETENUS :
+
 {json.dumps(diagnostics[:3], indent=2, ensure_ascii=False)}
 
-DONNÉES PATIENT :
+PATIENT DATA:
 {json.dumps(data_patient, indent=2, ensure_ascii=False)}
 
-Pour chaque diagnostic, calcule les scores de risque pertinents.
+For each diagnosis, calculate relevant risk scores.
 
-Exemples de scores selon le diagnostic :
-- Sepsis : APACHE II, SAPS II, mortalité prédite
-- Infarctus : GRACE, TIMI, risque de décès à 30j
-- AVC : NIHSS, ASPECT, risque hémorragique si thrombolyse
-- Embolie pulmonaire : score de Wells, PESI, sPESI
+Score examples by diagnosis:
+- Sepsis: APACHE II, SAPS II, predicted mortality
+- ACS: TIMI, GRACE, predicted risk
+- Stroke: NIHSS, mRS
+- PE: Wells, Geneva, PESI
+- Heart Failure: NYHA, Framingham
+- Trauma: ISS, RTS, TRISS
+- DKA: severity score
+- Pancreatitis: Ranson, BISAP
 
-Format JSON :
+Strict JSON format:
 {{
     "risk_scores": [
         {{
-            "diagnosis_related": "Diagnostic concerné",
-            "score_name": "Nom du score",
-            "score_value": valeur_numérique,
-            "interpretation": "Interprétation du score",
-            "risk_category": "LOW/INTERMEDIATE/HIGH",
-            "predicted_outcomes": {{
-                "mortality_30d": "Pourcentage ou catégorie",
-                "complications": ["Complication possible 1"],
-                "icu_length_of_stay": "Estimation"
+            "diagnosis": "Associated diagnosis",
+            "score_name": "Score name (e.g., APACHE II)",
+            "score_value": "Calculated value",
+            "score_components": [
+                {{
+                    "component": "Age",
+                    "value": 65,
+                    "points": 5,
+                    "explanation": "Age > 65 years = 5 points"
+                }}
+            ],
+            "risk_category": "LOW/MODERATE/HIGH/CRITICAL",
+            "predicted_outcome": {{
+                "mortality_24h": "X%",
+                "mortality_7d": "X%",
+                "mortality_30d": "X%",
+                "other_outcome": "Description"
             }},
-            "components_breakdown": {{"composante": "valeur"}},
-            "confidence_in_calculation": "HIGH/MEDIUM/LOW avec justification"
+            "interpretation": "Clinical interpretation",
+            "confidence_in_calculation": "HIGH/MODERATE/LOW",
+            "missing_data_impact": "Impact of missing data on accuracy"
         }}
     ]
 }}
+
+Calculate ONLY applicable and useful scores.
+Indicate confidence and impact of missing data.
 """
         
         response = self.client.models.generate_content(
@@ -244,6 +263,7 @@ Format JSON :
         return result.get("risk_scores", [])
 
     def phase_plan_action(
+
         self,
         alertes_validees: List[Dict],
         diagnostics: List[Dict],
@@ -255,77 +275,88 @@ Format JSON :
         prompt_action = f"""
 Tu es un médecin urgentiste qui crée un plan d'action concret.
 
-ALERTES VALIDÉES :
-{json.dumps(alertes_validees, indent=2, ensure_ascii=False)}
+CLINICAL CONTEXT:
+- Top Diagnoses: {json.dumps(diagnostics[:3], indent=2, ensure_ascii=False)}
+- Validated Alerts: {json.dumps(alertes_validees, indent=2, ensure_ascii=False)}
+- Risk Scores: {json.dumps(scores, indent=2, ensure_ascii=False)}
+- Patient Data: {json.dumps(data_patient, indent=2, ensure_ascii=False)}
 
-DIAGNOSTICS DIFFÉRENTIELS :
-{json.dumps(diagnostics[:3], indent=2, ensure_ascii=False)}
+Your mission: Generate a comprehensive, prioritized, and evidence-based action plan.
 
-DONNÉES PATIENT :
-{json.dumps(data_patient, indent=2, ensure_ascii=False)}
-
-Crée un plan d'action structuré et priorisé.
-
-Format JSON :
+Strict JSON format:
 {{
-    "immediate_actions": [
-        {{
-            "action": "Action à prendre MAINTENANT (< 15 min)",
-            "justification": "Pourquoi c'est urgent",
-            "guideline_reference": "Référence guideline",
-            "expected_outcome": "Résultat attendu",
-            "monitoring": "Comment surveiller l'effet"
+    "action_plan": {{
+        "immediate_actions": [
+            {{
+                "priority": 1,
+                "action": "Precise action",
+                "timeframe": "< 15 minutes",
+                "justification": "Why this action is critical",
+                "guideline_reference": "Guideline supporting this action",
+                "monitoring_after_action": "What to monitor"
+            }}
+        ],
+        "urgent_actions": [
+            {{
+                "priority": 2,
+                "action": "Action",
+                "timeframe": "< 1 hour",
+                "justification": "Justification",
+                "guideline_reference": "Reference"
+            }}
+        ],
+        "diagnostic_workup": [
+            {{
+                "test": "Test name",
+                "priority": "STAT/URGENT/ROUTINE",
+                "rationale": "Why this test",
+                "expected_findings": "What we expect to find",
+                "impact_on_management": "How it changes management"
+            }}
+        ],
+        "monitoring_plan": [
+            {{
+                "parameter": "Parameter to monitor",
+                "frequency": "Frequency",
+                "alert_threshold": "Value triggering alert",
+                "action_if_threshold": "Action if threshold reached"
+            }}
+        ],
+        "specialist_consultations": [
+            {{
+                "specialty": "Specialty",
+                "urgency": "IMMEDIATE/URGENT/ROUTINE",
+                "reason": "Reason for consultation",
+                "specific_questions": "Specific questions for specialist"
+            }}
+        ],
+        "medication_adjustments": [
+            {{
+                "medication": "Medication name",
+                "action": "START/STOP/ADJUST",
+                "dose": "Precise dose",
+                "route": "Route",
+                "frequency": "Frequency",
+                "rationale": "Why this change",
+                "contraindication_check": "Verified contraindications",
+                "monitoring": "What to monitor"
+            }}
+        ],
+        "disposition": {{
+            "recommended_level_of_care": "ICU/Step-down/Floor/Discharge",
+            "justification": "Why this level of care",
+            "alternative_if_unavailable": "Alternative if not available"
         }}
-    ],
-    "urgent_actions": [
-        {{
-            "action": "Action dans l'heure",
-            "timeframe": "< 1h",
-            "justification": "Justification",
-            "guideline_reference": "Référence"
-        }}
-    ],
-    "diagnostic_workup": [
-        {{
-            "test": "Examen à réaliser",
-            "indication": "Pourquoi",
-            "priority": "HIGH/MEDIUM/LOW",
-            "expected_turnaround": "Délai de résultat",
-            "interpretation_guide": "Comment interpréter"
-        }}
-    ],
-    "monitoring_plan": [
-        {{
-            "parameter": "Paramètre à surveiller",
-            "frequency": "Fréquence de surveillance",
-            "alert_threshold": "Seuil d'alerte",
-            "escalation_if": "Quand escalader"
-        }}
-    ],
-    "consultation_needs": [
-        {{
-            "specialty": "Spécialité à consulter",
-            "urgency": "IMMEDIATE/URGENT/ROUTINE",
-            "reason": "Raison de la consultation",
-            "questions_to_address": ["Question 1"]
-        }}
-    ],
-    "medication_adjustments": [
-        {{
-            "medication": "Médicament",
-            "action": "START/STOP/ADJUST",
-            "dosing": "Posologie recommandée",
-            "monitoring_required": "Surveillance nécessaire",
-            "guideline_reference": "Référence"
-        }}
-    ],
-    "disposition": {{
-        "recommended_location": "USI/USC/Étage/Domicile",
-        "justification": "Justification de l'orientation",
-        "criteria_for_discharge": ["Critère pour sortie si applicable"],
-        "follow_up_plan": "Plan de suivi"
     }}
 }}
+
+PRIORITIES:
+1. IMMEDIATE actions (< 15 min): life-saving
+2. URGENT actions (< 1h): important for outcome
+3. ROUTINE: can wait but necessary
+
+Base ALL recommendations on recognized guidelines.
+Verify contraindications for EVERY recommendation.
 """
         
         response = self.client.models.generate_content(
@@ -403,9 +434,9 @@ Format JSON :
         alertes: List[Dict],
         data_patient: Dict,
         scores: List[Dict]
-    ) -> Dict:
+    ) -> Dict[str, Any]:
         """
-        Construit un contexte clinique structuré pour l'IA
+        Build complete clinical context for the LLM
         """
         return {
             "presentation_clinique": synthese.get("summary", ""),
@@ -439,15 +470,23 @@ Format JSON :
         alertes_validees: List[Dict]
     ) -> Dict:
         """
-        Génère une synthèse des preuves et références
+        Complete analysis: executes all 5 phases
+        
+        Args:
+            output_agent2: Complete output from Agent 2 (Synthesizer)
+            
+        Returns:
+            Complete result with diagnoses, validations, scores, plan, and evidence
         """
         # Extraire toutes les références
         toutes_references = []
         
-        for alerte in alertes_validees:
-            if "validation" in alerte:
-                refs = alerte["validation"].get("guidelines_references", [])
-                toutes_references.extend(refs)
+        # PHASE 2: Guideline validation
+        print("\n📚 PHASE 2 - Validating alerts against guidelines...")
+        alertes = output_agent2.get("critical_alerts", [])
+        data_patient = output_agent2.get("raw_patient_data", {})
+        alertes_validees = self.phase_validation_guidelines(alertes, data_patient)
+        print(f"   ✅ {len(alertes_validees)} alerts validated")
         
         # Déduplication et tri
         references_uniques = []
@@ -473,7 +512,6 @@ Format JSON :
             ]
         }
 
-
 def format_output_for_ui(resultat: Dict[str, Any]) -> str:
     """
     Formate le résultat pour l'affichage dans l'interface ADK
@@ -485,7 +523,12 @@ def format_output_for_ui(resultat: Dict[str, Any]) -> str:
     output.append(f"🎓 AGENT EXPERT - Validation Médicale Patient {resultat.get('patient_id', 'N/A')}")
     output.append("=" * 100)
     
-    # 1. DIAGNOSTICS DIFFÉRENTIELS
+    # Header
+    output.append("=" * 100)
+    output.append(f"🎓 EXPERT AGENT - Medical Validation Patient {resultat.get('patient_id', 'N/A')}")
+    output.append("=" * 100)
+    
+    # 1. DIFFERENTIAL DIAGNOSES
     diagnostics = resultat.get("differential_diagnoses", [])
     output.append(f"\n┌{'─'*98}┐")
     output.append(f"│  🔍 DIAGNOSTICS DIFFÉRENTIELS - {len(diagnostics)} identifié(s){' '*(98-len(f'  🔍 DIAGNOSTICS DIFFÉRENTIELS - {len(diagnostics)} identifié(s)'))}│")
@@ -512,9 +555,8 @@ def format_output_for_ui(resultat: Dict[str, Any]) -> str:
         
         tests = diag.get("additional_tests_needed", [])
         if tests:
-            output.append(f"\n   🔬 Examens nécessaires : {', '.join(tests[:3])}")
-    
-    # 2. ALERTES VALIDÉES
+            output.append(f"\n   🔬 Examens nécessaires : {', '.join(tests[:3])}")    
+    # 2. VALIDATED ALERTS
     alertes_val = resultat.get("validated_alerts", [])
     output.append(f"\n\n┌{'─'*98}┐")
     output.append(f"│  ✅ ALERTES VALIDÉES - {len(alertes_val)} alerte(s){' '*(98-len(f'  ✅ ALERTES VALIDÉES - {len(alertes_val)} alerte(s)'))}│")
@@ -540,7 +582,7 @@ def format_output_for_ui(resultat: Dict[str, Any]) -> str:
                 if rec:
                     output.append(f"        → {rec[:80]}...")
     
-    # 3. PLAN D'ACTION
+    # 3. ACTION PLAN
     plan = resultat.get("action_plan", {})
     output.append(f"\n\n┌{'─'*98}┐")
     output.append(f"│  💊 PLAN D'ACTION{' '*83}│")
@@ -590,8 +632,7 @@ def format_output_for_ui(resultat: Dict[str, Any]) -> str:
         output.append(f"\n🎯 Qualité des preuves :")
         output.append(f"   • Haute : {strength_summary.get('high_quality', 0)}")
         output.append(f"   • Moyenne : {strength_summary.get('moderate_quality', 0)}")
-        output.append(f"   • Basse : {strength_summary.get('low_quality', 0)}")
-    
+        output.append(f"   • Basse : {strength_summary.get('low_quality', 0)}")    
     output.append("\n" + "=" * 100)
     
     return "\n".join(output)

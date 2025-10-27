@@ -1,6 +1,6 @@
 """
-Agent Synthétiseur ADK - ADN (AI Diagnostic Navigator)
-'Le Double Cerveau' - Résume puis s'auto-critique pour trouver les incohérences
+ADK Synthesizer Agent - ADN (AI Diagnostic Navigator)
+'The Double Brain' - Summarizes then self-criticizes to find inconsistencies
 """
 
 import json
@@ -12,39 +12,39 @@ from google.genai import types
 from google.adk.agents import LlmAgent
 
 from dotenv import load_dotenv
-ENV_PATH = Path(__file__).parent.parent / ".env"  # agents/.env
+ENV_PATH = Path(__file__).parent.parent / ".env"  # agents/.env (for, local testing)
 load_dotenv(dotenv_path=ENV_PATH, override=True)
 
 class AgentSynthetiseur:
     """
-    Agent ADK qui synthétise les données patient et s'autocritique
-    Compatible avec l'interface ADK et le format hospitalier/SAMU
+    ADK Agent that synthesizes patient data and self-criticizes
+    Compatible with ADK interface and hospital/EMS format
     """
 
     def __init__(self):
-        """Initialise l'agent avec le client Gemini"""
+        """Initializes the agent with the Gemini client"""
         self.api_key = os.getenv("GOOGLE_API_KEY")
         self.client = genai.Client(api_key=self.api_key)
         self.model_id = "gemini-2.0-flash-exp"
         
     def normaliser_input(self, data_input: Dict[str, Any]) -> Dict[str, Any]:
         """
-        Normalise n'importe quel format d'input en format unifié
-        Gère : format hospitalier, appels SAMU, ou tout autre format
+        Normalizes any input format into a unified format
+        Handles: hospital format, EMS calls, or any other format
         """
-        # Si c'est déjà au bon format (patient_normalized existe)
+        # If already in the correct format (patient_normalized exists)
         if "patient_normalized" in data_input:
             return data_input
 
-        # Si c'est un appel SAMU (avec input.text et expected_output)
+        # If it's an EMS call (with input.text and expected_output)
         if "input" in data_input and "expected_output" in data_input:
             return self._convertir_format_samu(data_input)
 
-        # Sinon, essayer de détecter automatiquement
+        # Otherwise, try to auto-detect
         return self._auto_detecter_format(data_input)
 
     def _convertir_format_samu(self, data_samu: Dict) -> Dict:
-        """Convertit le format SAMU en format unifié"""
+        """Converts EMS format to unified format"""
         expected = data_samu.get("expected_output", {})
         meta = data_samu.get("meta", {})
         appel_text = data_samu.get("input", {}).get("text", "")
@@ -93,33 +93,33 @@ class AgentSynthetiseur:
         return {"patient_normalized": patient_normalized}
 
     def _auto_detecter_format(self, data: Dict) -> Dict:
-        """Détecte automatiquement le format et convertit"""
+        """Automatically detects format and converts"""
         prompt_detection = f"""
-Tu reçois des données patient dans un format inconnu.
+You receive patient data in an unknown format.
 
-DONNÉES BRUTES :
+RAW DATA:
 {json.dumps(data, indent=2, ensure_ascii=False)}
 
-Ta mission : Identifier et extraire TOUTES les informations médicales pertinentes.
+Your mission: Identify and extract ALL relevant medical information.
 
-Format de sortie (JSON STRICT) :
+Output format (STRICT JSON):
 {{
     "patient_normalized": {{
-        "id": "identifiant ou généré",
-        "source_type": "type de source détecté",
-        "age": âge_numérique,
-        "sex": "homme/femme/inconnu",
+        "id": "identifier or generated",
+        "source_type": "detected source type",
+        "age": numeric_age,
+        "sex": "male/female/unknown",
         "admission": {{
-            "type": "type d'admission",
-            "chief_complaint": "motif principal",
-            "date": "date si disponible"
+            "type": "admission type",
+            "chief_complaint": "main reason",
+            "date": "date if available"
         }},
         "vitals_current": {{
-            "consciousness": "état de conscience",
+            "consciousness": "consciousness state",
             "breathing": "respiration",
-            "pulse": "pouls",
-            "blood_pressure": "tension",
-            "temperature": "température",
+            "pulse": "pulse",
+            "blood_pressure": "blood pressure",
+            "temperature": "temperature",
             "spo2": "saturation"
         }},
         "symptoms": {{}},
@@ -133,7 +133,7 @@ Format de sortie (JSON STRICT) :
     }}
 }}
 
-Extrait TOUT ce qui est disponible, même si incomplet.
+Extract EVERYTHING that is available, even if incomplete.
 """
 
         response = self.client.models.generate_content(
@@ -148,26 +148,26 @@ Extrait TOUT ce qui est disponible, même si incomplet.
 
     def phase_synthese(self, data_patient: Dict[str, Any]) -> Dict[str, Any]:
         """
-        PHASE 1 - Mode Jekyll : Résumé Standard
-        L'IA crée naturellement un résumé
+        PHASE 1 - Jekyll Mode: Standard Summary
+        The AI naturally creates a summary
         """
         prompt_synthese = f"""
-Tu es un médecin urgentiste expérimenté. 
+You are an experienced emergency physician.
 
-Voici TOUTES les données disponibles pour ce patient :
+Here is ALL available data for this patient:
 {json.dumps(data_patient, indent=2, ensure_ascii=False)}
 
-Ta tâche : Crée un résumé clinique professionnel et structuré.
+Your task: Create a professional and structured clinical summary.
 
-Format attendu (JSON):
+Expected format (JSON):
 {{
-    "summary": "Résumé narratif en 3-5 lignes du tableau clinique",
-    "key_problems": ["Problème 1", "Problème 2", ...],
+    "summary": "Narrative summary in 3-5 lines of the clinical picture",
+    "key_problems": ["Problem 1", "Problem 2", ...],
     "severity": "LOW/MEDIUM/HIGH/CRITICAL",
     "clinical_trajectory": "STABLE/DETERIORATING/IMPROVING"
 }}
 
-Sois concis mais complet. C'est un résumé standard de qualité.
+Be concise but complete. This is a quality standard summary.
 """
 
         response = self.client.models.generate_content(
@@ -182,70 +182,67 @@ Sois concis mais complet. C'est un résumé standard de qualité.
 
     def phase_critique(self, data_patient: Dict[str, Any], synthese: Dict[str, Any]) -> Dict[str, Any]:
         """
-        PHASE 2 - Mode Hyde : Autocritique Impitoyable
+        PHASE 2 - Hyde Mode: Ruthless Self-Criticism
         """
         prompt_critique = f"""
-Tu es maintenant un médecin auditeur sénior ultra-exigeant. 
-Ton job : CHALLENGER TOUT dans le résumé ci-dessous !
+You are now a senior ultra-demanding auditor physician.
+Your job: CHALLENGE EVERYTHING in the summary below!
 
-DONNÉES PATIENT COMPLÈTES :
+COMPLETE PATIENT DATA:
 {json.dumps(data_patient, indent=2, ensure_ascii=False)}
 
-RÉSUMÉ À CRITIQUER :
+SUMMARY TO CRITIQUE:
 {json.dumps(synthese, indent=2, ensure_ascii=False)}
 
-Ta mission d'AUTOCRITIQUE IMPITOYABLE :
-1. Cherche ce qui MANQUE dans les données
-2. Trouve les INCOHÉRENCES entre les données
-3. Détecte les DÉLAIS ANORMAUX
-4. Identifie les RISQUES NON MENTIONNÉS
-5. Repère les TRAITEMENTS INADAPTÉS
+Your RUTHLESS SELF-CRITICISM mission:
+1. Look for what is MISSING in the data
+2. Find INCONSISTENCIES between data points
+3. Detect ABNORMAL DELAYS
+4. Identify UNMENTIONED RISKS
+5. Spot INAPPROPRIATE TREATMENTS
 
-Format de sortie (JSON):
+Output format (JSON):
 {{
     "critical_alerts": [
         {{
             "type": "MISSING_DATA|INCONSISTENCY|DELAYED_ACTION|TREATMENT_MISMATCH|SILENT_DETERIORATION",
             "severity": "LOW/MEDIUM/HIGH/CRITICAL",
-            "finding": "Description précise du problème",
-            "source": "Où dans les données",
-            "clinical_impact": "Conséquence clinique",
-            "evidence": {{}},
-            "action_required": "Action à prendre immédiatement"
+            "finding": "Precise description of the problem",
+            "action_required": "Required immediate action"
         }}
     ],
     "data_inconsistencies": [
         {{
-            "type": "TEMPORAL_GAP|VALUE_MISMATCH|CONTRADICTORY_INFO",
-            "description": "Qu'est-ce qui ne colle pas",
-            "consequence": "Impact sur la prise en charge"
+            "field_1": "field name",
+            "value_1": "value",
+            "field_2": "field name",
+            "value_2": "value",
+            "explanation": "Why these values are inconsistent"
         }}
     ],
     "reliability_assessment": {{
-        "dossier_completeness": 0.75,
+        "dossier_completeness": 0.0-1.0,
         "confidence_level": "LOW/MEDIUM/HIGH",
-        "critical_data_missing": ["Donnée manquante 1", ...],
-        "recommendation": "Recommandation globale"
+        "critical_data_missing": ["missing data 1", "missing data 2"],
+        "data_quality_issues": ["issue 1", "issue 2"]
     }},
     "clinical_scores": [
         {{
-            "score_name": "SOFA/qSOFA/NEWS/MEWS/etc",
-            "value": "score calculé",
-            "interpretation": "Interprétation",
-            "clinical_action": "Action suggérée"
+            "score_name": "SOFA/qSOFA/NEWS/GCS/etc",
+            "value": "calculated score",
+            "interpretation": "interpretation",
+            "evidence": ["Evidence 1", "Evidence 2"]
         }}
     ],
     "deterioration_analysis": {{
-        "silent_deterioration_detected": true/false,
-        "severity": "MILD/MODERATE/SEVERE",
-        "trajectory": "RAPID/GRADUAL/STABLE",
-        "time_window": "Fenêtre thérapeutique restante",
-        "predicted_outcome": "Pronostic prédit",
-        "evidence": ["Preuve 1", "Preuve 2"]
+        "risk_level": "LOW/MEDIUM/HIGH/CRITICAL",
+        "warning_signs": ["sign 1", "sign 2"],
+        "predicted_timeline": "when deterioration might occur",
+        "evidence": ["Evidence 1", "Evidence 2"]
     }}
 }}
 
-Sois IMPITOYABLE. C'est une vie en jeu !
+Be RUTHLESS. A life is at stake!
 """
 
         response = self.client.models.generate_content(
@@ -260,36 +257,36 @@ Sois IMPITOYABLE. C'est une vie en jeu !
 
     def analyser_patient(self, data_input: Dict[str, Any]) -> Dict[str, Any]:
         """
-        Pipeline complet : Normalisation → Synthèse → Critique
-        Point d'entrée principal de l'agent
+        Complete pipeline: Normalization → Synthesis → Critique
+        Main entry point of the agent
         """
-        # Étape 0 : Normaliser l'input
+        # Step 0: Normalize input
         data_normalized = self.normaliser_input(data_input)
         patient_data = data_normalized.get("patient_normalized", {})
 
-        # Étape 1 : Phase Jekyll (Synthèse)
+        # Step 1: Jekyll Phase (Synthesis)
         synthese = self.phase_synthese(patient_data)
 
-        # Étape 2 : Phase Hyde (Critique)
+        # Step 2: Hyde Phase (Critique)
         critique = self.phase_critique(patient_data, synthese)
 
-        # Étape 3 : Fusion des résultats
+        # Step 3: Merge results
         resultat_final = {
             "agent_type": "SYNTHETISEUR_CRITIQUE",
             "patient_id": patient_data.get("id", "UNKNOWN"),
             "source_type": patient_data.get("source_type", "UNKNOWN"),
             
-            # Phase Jekyll
+            # Jekyll Phase
             "synthesis": synthese,
             
-            # Phase Hyde
+            # Hyde Phase
             "critical_alerts": critique.get("critical_alerts", []),
             "data_inconsistencies": critique.get("data_inconsistencies", []),
             "reliability_assessment": critique.get("reliability_assessment", {}),
             "clinical_scores": critique.get("clinical_scores", []),
             "deterioration_analysis": critique.get("deterioration_analysis", {}),
             
-            # Données brutes conservées
+            # Preserved raw data
             "raw_patient_data": patient_data
         }
 
@@ -298,61 +295,61 @@ Sois IMPITOYABLE. C'est une vie en jeu !
 
 def format_output_for_ui(resultat: Dict[str, Any]) -> str:
     """
-    Formate le résultat pour l'affichage dans l'interface ADK
+    Formats the result for display in the ADK interface
     """
     output = []
     
-    # En-tête
+    # Header
     output.append("=" * 80)
-    output.append(f"🏥 AGENT SYNTHÉTISEUR - Analyse Patient {resultat.get('patient_id', 'N/A')}")
+    output.append(f"🏥 SYNTHESIZER AGENT - Patient Analysis {resultat.get('patient_id', 'N/A')}")
     output.append("=" * 80)
     
-    # Synthèse
+    # Summary
     synthese = resultat.get('synthesis', {})
-    output.append("\n📋 SYNTHÈSE CLINIQUE")
+    output.append("\n📋 CLINICAL SUMMARY")
     output.append("-" * 80)
     output.append(f"{synthese.get('summary', 'N/A')}")
-    output.append(f"\n🎯 Sévérité : {synthese.get('severity', 'N/A')}")
-    output.append(f"📊 Trajectoire : {synthese.get('clinical_trajectory', 'N/A')}")
+    output.append(f"\n🎯 Severity: {synthese.get('severity', 'N/A')}")
+    output.append(f"📊 Trajectory: {synthese.get('clinical_trajectory', 'N/A')}")
     
     if synthese.get('key_problems'):
-        output.append("\n⚠️  Problèmes clés :")
+        output.append("\n⚠️  Key problems:")
         for problem in synthese['key_problems']:
             output.append(f"   • {problem}")
     
-    # Alertes critiques
+    # Critical alerts
     alertes = resultat.get('critical_alerts', [])
     if alertes:
-        output.append("\n\n🚨 ALERTES CRITIQUES")
+        output.append("\n\n🚨 CRITICAL ALERTS")
         output.append("-" * 80)
         for i, alerte in enumerate(alertes, 1):
             emoji = "🔴" if alerte.get('severity') == 'CRITICAL' else "🟡"
-            output.append(f"\n{emoji} Alerte #{i} - {alerte.get('type', 'N/A')}")
-            output.append(f"   Sévérité : {alerte.get('severity', 'N/A')}")
-            output.append(f"   Finding : {alerte.get('finding', 'N/A')}")
-            output.append(f"   💊 Action : {alerte.get('action_required', 'N/A')}")
+            output.append(f"\n{emoji} Alert #{i} - {alerte.get('type', 'N/A')}")
+            output.append(f"   Severity: {alerte.get('severity', 'N/A')}")
+            output.append(f"   Finding: {alerte.get('finding', 'N/A')}")
+            output.append(f"   💊 Action: {alerte.get('action_required', 'N/A')}")
     
-    # Évaluation de fiabilité
+    # Reliability assessment
     reliability = resultat.get('reliability_assessment', {})
     if reliability:
-        output.append("\n\n🔍 ÉVALUATION DE FIABILITÉ")
+        output.append("\n\n🔍 RELIABILITY ASSESSMENT")
         output.append("-" * 80)
         completeness = reliability.get('dossier_completeness', 0)
-        output.append(f"📊 Complétude : {completeness:.0%}")
-        output.append(f"🎯 Confiance : {reliability.get('confidence_level', 'N/A')}")
+        output.append(f"📊 Completeness: {completeness:.0%}")
+        output.append(f"🎯 Confidence: {reliability.get('confidence_level', 'N/A')}")
         
         if reliability.get('critical_data_missing'):
-            output.append("\n⚠️  Données manquantes critiques :")
+            output.append("\n⚠️  Critical missing data:")
             for data in reliability['critical_data_missing']:
                 output.append(f"   ❌ {data}")
     
-    # Scores cliniques
+    # Clinical scores
     scores = resultat.get('clinical_scores', [])
     if scores:
-        output.append("\n\n📊 SCORES CLINIQUES")
+        output.append("\n\n📊 CLINICAL SCORES")
         output.append("-" * 80)
         for score in scores:
-            output.append(f"\n📈 {score.get('score_name', 'N/A')} : {score.get('value', 'N/A')}")
+            output.append(f"\n📈 {score.get('score_name', 'N/A')}: {score.get('value', 'N/A')}")
             output.append(f"   {score.get('interpretation', 'N/A')}")
     
     output.append("\n" + "=" * 80)
@@ -361,7 +358,7 @@ def format_output_for_ui(resultat: Dict[str, Any]) -> str:
 
 
 # ============================================================================
-# CONFIGURATION ADK ROOT AGENT
+# ADK ROOT AGENT CONFIGURATION
 # ============================================================================
 
 root_agent = LlmAgent(
@@ -370,65 +367,65 @@ root_agent = LlmAgent(
     model="gemini-2.5-flash",
     
     description="""
-Agent médical de synthèse et d'autocritique utilisant la méthode Jekyll/Hyde.
-Analyse les données patient, crée une synthèse puis s'autocritique pour détecter
-les incohérences, alertes critiques et dégradations silencieuses.
+Medical synthesis and self-criticism agent using the Jekyll/Hyde method.
+Analyzes patient data, creates a synthesis then self-criticizes to detect
+inconsistencies, critical alerts and silent deteriorations.
 
-CAPACITÉS :
-- Normalisation multi-formats (hospitalier, SAMU, auto-détection)
-- Synthèse clinique intelligente
-- Autocritique et détection d'incohérences
-- Détection de dégradation silencieuse
-- Calcul de scores cliniques (SOFA, qSOFA, NEWS, etc.)
-- Évaluation de fiabilité des données
+CAPABILITIES:
+- Multi-format normalization (hospital, EMS, auto-detection)
+- Intelligent clinical synthesis
+- Self-criticism and inconsistency detection
+- Silent deterioration detection
+- Clinical score calculation (SOFA, qSOFA, NEWS, etc.)
+- Data reliability assessment
 """,
     
     instruction="""
-Tu es un agent médical expert en analyse clinique avec deux modes de fonctionnement :
+You are an expert medical agent in clinical analysis with two modes of operation:
 
-MODE JEKYLL (Synthèse) :
-- Crée des résumés cliniques clairs et structurés
-- Identifie les problèmes clés du patient
-- Évalue la sévérité et la trajectoire clinique
+JEKYLL MODE (Synthesis):
+- Creates clear and structured clinical summaries
+- Identifies patient key problems
+- Evaluates severity and clinical trajectory
 
-MODE HYDE (Critique) :
-- Challenge impitoyablement les données et conclusions
-- Détecte les incohérences et données manquantes
-- Identifie les risques non évidents
-- Calcule les scores cliniques pertinents
-- Prédit les dégradations potentielles
+HYDE MODE (Critique):
+- Ruthlessly challenges data and conclusions
+- Detects inconsistencies and missing data
+- Identifies non-obvious risks
+- Calculates relevant clinical scores
+- Predicts potential deteriorations
 
-PRINCIPES :
-- Toujours privilégier la sécurité patient
-- Être précis et factuel
-- Signaler tout élément préoccupant
-- Ne jamais inventer de données
-- Adapter l'analyse au contexte (urgence pré-hospitalière vs hospitalière)
+PRINCIPLES:
+- Always prioritize patient safety
+- Be precise and factual
+- Report any concerning element
+- Never invent data
+- Adapt analysis to context (pre-hospital emergency vs hospital)
 
-FORMATS ACCEPTÉS :
-1. Format hospitalier : {"patient_normalized": {...}}
-2. Format SAMU : {"input": {"text": "..."}, "expected_output": {...}}
-3. Texte libre : "Patient de X ans, ..."
+ACCEPTED FORMATS:
+1. Hospital format: {"patient_normalized": {...}}
+2. EMS format: {"input": {"text": "..."}, "expected_output": {...}}
+3. Free text: "Patient aged X years, ..."
 
-PROCESSUS D'ANALYSE :
-1. Normaliser l'input (détecter le format automatiquement)
-2. Phase Jekyll : Créer une synthèse complète et structurée
-3. Phase Hyde : S'autocritiquer pour trouver les failles
-4. Retourner une analyse complète avec alertes prioritaires
+ANALYSIS PROCESS:
+1. Normalize input (automatically detect format)
+2. Jekyll Phase: Create a complete and structured synthesis
+3. Hyde Phase: Self-criticize to find flaws
+4. Return a complete analysis with priority alerts
 """
 )
 
 
-# Point d'entrée pour les tests standalone
+# Entry point for standalone tests
 if __name__ == "__main__":
-    # Exemple de test
+    # Test example
     test_case = {
         "patient_normalized": {
             "id": "TEST_001",
             "age": 65,
             "admission": {
                 "type": "EMERGENCY",
-                "chief_complaint": "Douleur thoracique",
+                "chief_complaint": "Chest pain",
                 "date": "2024-10-25T14:00:00"
             },
             "vitals_current": {
@@ -439,9 +436,9 @@ if __name__ == "__main__":
             },
             "symptoms": {
                 "pain": {
-                    "location": "poitrine",
+                    "location": "chest",
                     "intensity": "8/10",
-                    "radiation": "bras gauche"
+                    "radiation": "left arm"
                 }
             }
         }
