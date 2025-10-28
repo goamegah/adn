@@ -66,10 +66,10 @@ def analyze_transcript(session_data, new_text, is_interim=False):
                     "type": "critique",
                     "symptom": symptom,
                     "text": new_text,
-                    "message": f"⚠️ SYMPTÔME CRITIQUE: '{symptom}' détecté",
+                    "message": f"SYMPTÔME CRITIQUE: '{symptom}' détecté",
                     "timestamp": time.time()
                 })
-                print(f"🚨 CRITIQUE: {symptom}")
+                print(f"CRITIQUE: {symptom}")
                 return
         
         # Mots-clés urgents
@@ -80,19 +80,19 @@ def analyze_transcript(session_data, new_text, is_interim=False):
                     "type": "urgence",
                     "keyword": keyword,
                     "text": new_text,
-                    "message": f"🚨 URGENCE: '{keyword}' détecté",
+                    "message": f"URGENCE: '{keyword}' détecté",
                     "timestamp": time.time()
                 })
-                print(f"🚨 URGENCE: {keyword}")
+                print(f"URGENCE: {keyword}")
                 return
         
         # Analyse simple (phrases finales seulement)
         if not is_interim:
             symptoms = ["fievre", "mal", "toux", "vomit", "fatigue"]
             if any(s in text_lower for s in symptoms):
-                session_data.analysis.append(f"ℹ️ Symptôme: {new_text}")
+                session_data.analysis.append(f"Symptôme: {new_text}")
             else:
-                session_data.analysis.append(f"ℹ️ Info: {new_text}")
+                session_data.analysis.append(f"Info: {new_text}")
     except Exception as e:
         print(f"Erreur analyse: {e}")
 
@@ -123,7 +123,7 @@ def transcription_thread(session_id, session_data):
             channels=1,
             callback=callback,
         ):
-            print(f"🎤 Session {session_id} démarrée")
+            print(f"Session {session_id} démarrée")
             
             requests = (
                 speech.StreamingRecognizeRequest(audio_content=chunk)
@@ -146,7 +146,7 @@ def transcription_thread(session_id, session_data):
                 if result.is_final:
                     session_data.transcript.append(transcript_text)
                     session_data.current_text = ""
-                    print(f"✅ {transcript_text}")
+                    print(f"Final: {transcript_text}")
                     
                     # Analyse asynchrone
                     threading.Thread(
@@ -169,11 +169,11 @@ def transcription_thread(session_id, session_data):
                             ).start()
                     
     except Exception as e:
-        print(f"❌ Erreur: {e}")
+        print(f"Erreur: {e}")
         import traceback
         traceback.print_exc()
     
-    print(f"🛑 Session {session_id} terminée")
+    print(f"Session {session_id} terminée")
 
 @router.post("/start")
 async def start_call(request: StartCallRequest):
