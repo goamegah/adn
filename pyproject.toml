@@ -1,66 +1,48 @@
 [project]
-name = "adn"
+name = "adn-agent"
 version = "0.1.0"
-description = "Agentic Diagnosis Navigator using Agent Development Kit"
+description = ""
 authors = [
-    { name = "Godwin", email = "komlan.godwin.amegah@gmail.com" },
-    { name = "André", email = "andretd1809@gmail.com" },
-    { name = "Brooklyn", email = "brooklynwafellman@gmail.com" },
-    { name = "Karim", email = "chikhikarim912@gmail.com" },
-    { name = "Anis", email = "adjaoudanis2021@gmail.com" }
+    {name = "Your Name", email = "your@email.com"},
 ]
-license = "Apache-2.0"
-# readme = "README.md"
 dependencies = [
-    "google-cloud-aiplatform[adk,agent-engines]>=1.93.0",
-    "google-adk>=1.0.0",
-    "pydantic-settings>=2.8.1",
-    "tabulate>=0.9.0",
-    "cloudpickle>=3.1.1",
-    "jsonschema>=4.23.0",
-    "typing-extensions>=4.14.0"
+    "google-adk>=1.15.0,<2.0.0",
+    "opentelemetry-exporter-gcp-trace>=1.9.0,<2.0.0",
+    "google-cloud-logging>=3.12.0,<4.0.0",
+    "google-cloud-aiplatform[evaluation]>=1.118.0,<2.0.0",
+    "fastapi~=0.115.8",
+    "uvicorn~=0.34.0",
+    "psycopg2-binary>=2.9.10,<3.0.0",
+    # --
+    # sudo apt update
+    # sudo apt install libportaudio2 libportaudiocpp0 portaudio19-dev
+    "sounddevice~=0.5.3",
+    "google-cloud-speech~=2.34.0"
 ]
 
-requires-python = ">=3.10,<3.13"
+requires-python = ">=3.10,<3.14"
+
 
 [dependency-groups]
 dev = [
-    "pytest>=8.3.5",
-    "pytest-mock>=3.14.0",
-    "pytest-cov>=6.0.0",
-    "pytest-asyncio>=0.25.3",
-    "flake8-pyproject>=1.2.3",
-    "pylint>=3.3.6",
-    "pyink>=24.10.1",
-    "jsonschema>=4.23.0",
-    "google-cloud-aiplatform[adk,agent-engines,evaluation]>=1.93.0",
-    "google-adk[eval]>=1.14"
-    # "agent-starter-pack>=0.14.1"
+    "pytest>=8.3.4,<9.0.0",
+    "pytest-asyncio>=0.23.8,<1.0.0",
+    "nest-asyncio>=1.6.0,<2.0.0",
+    "agent-starter-pack>=0.14.1",
 ]
 
 [project.optional-dependencies]
-lint = [
-    "ruff>=0.4.6",
-    "mypy>=1.15.0",
-    "codespell>=2.2.0",
-    "types-pyyaml>=6.0.12.20240917",
-    "types-requests>=2.32.0.20240914",
+
+jupyter = [
+    "jupyter>=1.0.0,<2.0.0",
 ]
-
-
-[tool.pytest.ini_options]
-console_output_style = "progress"
-addopts = "-vv -s"
-#addopts = "-vv -s --pdb"
-testpaths = ["tests/", "eval/"]
-markers = ["unit"]
-log_level = "ERROR"
-log_cli = false
-log_auto_indent = true
-log_cli_date_format = "%Y-%m-%d %H:%M:%S"
-log_cli_format = "[%(asctime)s] %(levelname)s (%(funcName)s) \t [%(pathname)s:%(lineno)d] %(message)s"
-filterwarnings = ["ignore::UserWarning"]
-
+lint = [
+    "ruff>=0.4.6,<1.0.0",
+    "mypy>=1.15.0,<2.0.0",
+    "codespell>=2.2.0,<3.0.0",
+    "types-pyyaml>=6.0.12.20240917,<7.0.0",
+    "types-requests>=2.32.0.20240914,<3.0.0",
+]
 
 [tool.ruff]
 line-length = 88
@@ -77,10 +59,10 @@ select = [
     "UP", # pyupgrade
     "RUF", # ruff specific rules
 ]
-ignore = ["E501", "C901"] # ignore line too long, too complex
+ignore = ["E501", "C901", "B006"] # ignore line too long, too complex
 
 [tool.ruff.lint.isort]
-known-first-party = ["agents"]
+known-first-party = ["app", "frontend"]
 
 [tool.mypy]
 disallow_untyped_calls = true
@@ -104,23 +86,15 @@ exclude = [".venv"]
 ignore-words-list = "rouge"
 skip = "./locust_env/*,uv.lock,.venv,./frontend,**/*.ipynb"
 
+
 [build-system]
-requires = ["uv_build>=0.8.14,<0.9.0"]
-build-backend = "uv_build"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
-[tool.uv.build-backend]
-module-name = "agents"
-module-root = ""
 
-[tool.pyink]
-line-length = 80
-pyink-indentation = 4
-pyink-use-majority-quotes = true
+[tool.pytest.ini_options]
+pythonpath = "."
+asyncio_default_fixture_loop_scope = "function"
 
-# This configuration file is used by goo.gle/agent-starter-pack to power remote templating.
-# It defines the template's properties and settings.
-# [tool.agent-starter-pack]
-# example_question = "Hi there, I need help with my garden"
-
-# [tool.agent-starter-pack.settings]
-# agent_directory = "adn"
+[tool.hatch.build.targets.wheel]
+packages = ["app","frontend"]
