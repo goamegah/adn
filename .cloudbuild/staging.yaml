@@ -128,7 +128,7 @@ steps:
 
 substitutions:
   _STAGING_PROJECT_ID: YOUR_STAGING_PROJECT_ID
-  _REGION: us-central1
+  _REGION: europe-west1
 
 logsBucket: gs://${PROJECT_ID}-adn-agent-logs/build-logs
 options:
