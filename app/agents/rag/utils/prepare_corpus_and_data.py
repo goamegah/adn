@@ -23,10 +23,10 @@ if not LOCATION:
         "GOOGLE_CLOUD_LOCATION environment variable not set. Please set it in your .env file."
     )
 
-BUCKET_NAME = "adn-corpus-guide-aide-regulation"
-CORPUS_DISPLAY_NAME = "adn-corpus-guide-aide-regulation"
+BUCKET_NAME = "adn-chn-cicd-adn-agent-corpus-data"
+CORPUS_DISPLAY_NAME = "adn-agent-corpus-regulation"
 CORPUS_DESCRIPTION = "Corpus for the aide à la régulation project"
-ENV_FILE_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..", ".env"))
+ENV_FILE_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..", "..", ".env"))
 
 # Extensions de fichiers supportés par Vertex AI RAG
 SUPPORTED_EXTENSIONS = ['.pdf', '.txt', '.html', '.json', '.csv']
@@ -44,7 +44,7 @@ def initialize_vertex_ai():
 def get_or_create_corpus():
     """Creates a new corpus or retrieves an existing one."""
     embedding_model_config = rag.EmbeddingModelConfig(
-        publisher_model="publishers/google/models/text-embedding-004"
+        publisher_model="publishers/google/models/text-embedding-005"
     )
     
     existing_corpora = rag.list_corpora()

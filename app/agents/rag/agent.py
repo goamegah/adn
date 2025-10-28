@@ -14,6 +14,7 @@
 
 import os
 
+import google.auth
 from google.adk.agents import Agent
 from google.adk.tools.retrieval.vertex_ai_rag_retrieval import VertexAiRagRetrieval
 from vertexai.preview import rag
@@ -23,9 +24,16 @@ from .prompts import RAG_AGENT_INSTRUCTIONS
 
 load_dotenv()
 
+_, project_id = google.auth.default()
+os.environ.setdefault("GOOGLE_CLOUD_PROJECT", project_id)
+os.environ.setdefault("GOOGLE_CLOUD_LOCATION", "europe-west1")
+os.environ.setdefault("GOOGLE_GENAI_USE_VERTEXAI", "True")
+
+RAG_CORPUS = f'projects/{project_id}/locations/europe-west1/ragCorpora/2305843009213693952'
+rag_corpus = os.getenv("RAG_CORPUS", RAG_CORPUS)
+
 # Build tools list conditionally based on RAG_CORPUS availability
 tools = []
-rag_corpus = os.environ.get("RAG_CORPUS")
 
 if rag_corpus:
     ask_vertex_retrieval = VertexAiRagRetrieval(

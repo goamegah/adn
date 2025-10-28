@@ -52,7 +52,7 @@ async def analyze(req: AnalyzeRequest):
     if not req.query and not req.patient_id:
         raise HTTPException(status_code=400, detail="query ou patient_id requis")
 
-    logger.info(f"🚀 Analyse orchestrée - Patient: {req.patient_id}, Query length: {len(req.query)}")
+    logger.info(f"Analyse orchestrée - Patient: {req.patient_id}, Query length: {len(req.query)}")
 
     try:
         # Déterminer le mode (MIMIC-III ou texte médical)
@@ -94,12 +94,12 @@ async def analyze(req: AnalyzeRequest):
         response["analysis_id"] = analysis_id
         response["processing_time_ms"] = int((time.time() - start_time) * 1000)
         
-        logger.info(f"✅ Analyse terminée: {analysis_id} en {response['processing_time_ms']}ms")
+        logger.info(f"Analyse terminée: {analysis_id} en {response['processing_time_ms']}ms")
         
         return AnalyzeResponse(**response)
     
     except Exception as e:
-        logger.error(f"❌ Erreur analyse: {str(e)}")
+        logger.error(f"Erreur analyse: {str(e)}")
         import traceback
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=f"Erreur: {str(e)}")
@@ -180,11 +180,11 @@ def _formater_pour_frontend(resultat: Dict) -> Dict:
     severity = synthesis.get("severity", "N/A")
     
     chat_reply = (
-        f"✅ Analyse complétée\n\n"
-        f"📊 Sévérité: {severity}\n"
-        f"🧠 {nb_diagnostics} diagnostics différentiels identifiés\n"
-        f"🚨 {nb_alertes} alertes critiques détectées\n\n"
-        f"Consultez les panels pour les détails complets."
+        "Analyse complétée\n\n"
+        f"Sévérité: {severity}\n"
+        f"{nb_diagnostics} diagnostics différentiels identifiés\n"
+        f"{nb_alertes} alertes critiques détectées\n\n"
+        "Consultez les panels pour les détails complets."
     )
     
     return {

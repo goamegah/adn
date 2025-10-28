@@ -25,7 +25,7 @@ from app.utils.gcs import create_bucket_if_not_exists
 from app.utils.tracing import CloudTraceLoggingSpanExporter
 from app.utils.typing import Feedback
 
-from app.routes import call_routes, orchestrator_routes
+from app.routes import orchestrator_routes
 
 _, project_id = google.auth.default()
 logging_client = google_cloud_logging.Client()
@@ -73,7 +73,6 @@ def collect_feedback(feedback: Feedback) -> dict[str, str]:
     return {"status": "success"}
 
 
-app.include_router(call_routes.router)
 app.include_router(orchestrator_routes.router)
 
 # Main execution
