@@ -20,7 +20,7 @@ from google.genai import types
 
 from app.agents.clinical_agent.agent import root_agent
 
-
+# --- IGNORE ---
 def test_agent_stream() -> None:
     """
     Integration test for the agent stream functionality.
