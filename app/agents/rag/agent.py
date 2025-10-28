@@ -24,13 +24,21 @@ from .prompts import RAG_AGENT_INSTRUCTIONS
 
 load_dotenv()
 
+rag_corpus_config = {
+    "adn-chn-cicd": "projects/1017255190337/locations/europe-west1/ragCorpora/2305843009213693952",
+    "adn-chn-staging": "projects/744316316183/locations/europe-west1/ragCorpora/5764607523034234880",
+    "adn-chn-prod": "projects/193014075033/locations/europe-west1/ragCorpora/4611686018427387904",
+}
+
+def get_rag_corpus(project_id):
+    return rag_corpus_config.get(project_id, rag_corpus_config["adn-chn-cicd"])
+    
 _, project_id = google.auth.default()
 os.environ.setdefault("GOOGLE_CLOUD_PROJECT", project_id)
 os.environ.setdefault("GOOGLE_CLOUD_LOCATION", "europe-west1")
 os.environ.setdefault("GOOGLE_GENAI_USE_VERTEXAI", "True")
 
-RAG_CORPUS = f'projects/{project_id}/locations/europe-west1/ragCorpora/2305843009213693952'
-rag_corpus = os.getenv("RAG_CORPUS", RAG_CORPUS)
+rag_corpus = get_rag_corpus(project_id)
 
 # Build tools list conditionally based on RAG_CORPUS availability
 tools = []

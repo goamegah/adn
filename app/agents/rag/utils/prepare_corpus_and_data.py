@@ -23,8 +23,8 @@ if not LOCATION:
         "GOOGLE_CLOUD_LOCATION environment variable not set. Please set it in your .env file."
     )
 
-BUCKET_NAME = "adn-chn-cicd-adn-agent-corpus-data"
-CORPUS_DISPLAY_NAME = "adn-agent-corpus-regulation"
+BUCKET_NAME = "adn-chn-cicd-adn-agent-corpus-data-prod"
+CORPUS_DISPLAY_NAME = "adn-agent-corpus-regulation-prod"
 CORPUS_DESCRIPTION = "Corpus for the aide à la régulation project"
 ENV_FILE_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..", "..", ".env"))
 
