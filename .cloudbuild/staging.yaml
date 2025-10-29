@@ -157,7 +157,7 @@ steps:
         pip install locust==2.31.1 --user
         locust -f tests/load_test/load_test.py \
         --headless \
-        -H $$_STAGING_URL \
+        -H $_STAGING_URL \
         -t 30s -u 10 -r 0.5 \
         --csv=tests/load_test/.results/results \
         --html=tests/load_test/.results/report.html
@@ -172,10 +172,10 @@ steps:
       - "-c"
       - |
         export _TIMESTAMP=$(date +%Y%m%d-%H%M%S)
-        gsutil -m cp -r tests/load_test/.results gs://${_BUCKET_NAME_LOAD_TEST_RESULTS}/results-$${_TIMESTAMP}
+        gsutil -m cp -r tests/load_test/.results gs://${_BUCKET_NAME_LOAD_TEST_RESULTS}/results-$_TIMESTAMP
         echo "_________________________________________________________________________"
-        echo "Load test results copied to gs://${_BUCKET_NAME_LOAD_TEST_RESULTS}/results-$${_TIMESTAMP}"
-        echo "HTTP link: https://console.cloud.google.com/storage/browser/${_BUCKET_NAME_LOAD_TEST_RESULTS}/results-$${_TIMESTAMP}"
+        echo "Load test results copied to gs://${_BUCKET_NAME_LOAD_TEST_RESULTS}/results-$_TIMESTAMP"
+        echo "HTTP link: https://console.cloud.google.com/storage/browser/${_BUCKET_NAME_LOAD_TEST_RESULTS}/results-$_TIMESTAMP"
         echo "_________________________________________________________________________"
 
   # Trigger Prod Deployment
