@@ -36,11 +36,11 @@ steps:
       - |
         echo "🗄️ Running production database migrations..."
         
-        DB_PASSWORD=$(gcloud secrets versions access latest \
+        export DB_PASSWORD=$(gcloud secrets versions access latest \
           --secret=adn-agent-db-password-prod \
           --project=${_PROD_PROJECT_ID})
         
-        DB_HOST=$(gcloud sql instances describe adn-agent-db-prod \
+        export DB_HOST=$(gcloud sql instances describe adn-agent-db-prod \
           --project=${_PROD_PROJECT_ID} \
           --format="value(ipAddresses[0].ipAddress)")
         
@@ -122,11 +122,11 @@ steps:
       - |
         echo "🔌 Testing database connection..."
         
-        DB_PASSWORD=$(gcloud secrets versions access latest \
+        export DB_PASSWORD=$(gcloud secrets versions access latest \
           --secret=adn-agent-db-password-prod \
           --project=${_PROD_PROJECT_ID})
         
-        DB_HOST=$(gcloud sql instances describe adn-agent-db-prod \
+        export DB_HOST=$(gcloud sql instances describe adn-agent-db-prod \
           --project=${_PROD_PROJECT_ID} \
           --format="value(ipAddresses[0].ipAddress)")
         
@@ -150,7 +150,7 @@ steps:
         echo "🚀 PRODUCTION DEPLOYMENT SUCCESSFUL!"
         echo ""
         echo "Deployment Details:"
-        echo "  - Image: $_REGION-docker.pkg.dev/$PROJECT_ID/$_ARTIFACT_REGISTRY_REPO_NAME/$_CONTAINER_NAME:$COMMIT_SHA"
+        echo "  - Image: ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_ARTIFACT_REGISTRY_REPO_NAME}/${_CONTAINER_NAME}:${COMMIT_SHA}"
         echo "  - Database: ${_PROD_PROJECT_ID}:${_REGION}:adn-agent-db-prod"
         echo "  - Region: ${_REGION}"
         echo ""
