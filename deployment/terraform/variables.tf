@@ -103,7 +103,6 @@ variable "cicd_sa_deployment_required_roles" {
   ]
 }
 
-
 variable "repository_owner" {
   description = "Owner of the Git repository - username or organization"
   type        = string
@@ -114,7 +113,6 @@ variable "github_app_installation_id" {
   type        = string
   default     = null
 }
-
 
 variable "github_pat_secret_id" {
   description = "GitHub PAT Secret ID created by gcloud CLI"
@@ -134,3 +132,45 @@ variable "create_repository" {
   default     = false
 }
 
+variable "container_image" {
+  description = "URI de l'image du conteneur buildée et poussée dans Artifact Registry"
+  type        = string
+  default     = "us-docker.pkg.dev/cloudrun/container/hello"
+}
+
+# Cloud SQL Variables
+variable "postgres_version" {
+  description = "PostgreSQL version for Cloud SQL"
+  type        = string
+  default     = "POSTGRES_15"
+}
+
+variable "db_tier" {
+  description = "Machine type for Cloud SQL instance"
+  type        = string
+  default     = "db-g1-small"
+}
+
+variable "db_disk_size" {
+  description = "Disk size in GB for Cloud SQL instance"
+  type        = number
+  default     = 10
+}
+
+variable "database_name" {
+  description = "Name of the database to create"
+  type        = string
+  default     = "app_db"
+}
+
+variable "database_user" {
+  description = "Database user name"
+  type        = string
+  default     = "app_user"
+}
+
+variable "enable_public_ip" {
+  description = "Enable public IP for Cloud SQL (should be false in production with Private IP)"
+  type        = bool
+  default     = true
+}

@@ -1,0 +1,5 @@
+google-adk
+pandas
+sqlalchemy
+psycopg2-binary
+tqdm
