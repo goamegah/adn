@@ -1,89 +1,229 @@
 import os
 import sys
 import json
-
 import pandas as pd
 from google.adk.agents import LlmAgent, SequentialAgent
-from google.adk.runners import Runner
-from google.adk.sessions import InMemorySessionService
+from google.adk.tools import agent_tool
 from typing import Dict, Any, Optional
-import os
-from google.adk.agents import LlmAgent
-
 from sqlalchemy import create_engine, text
+import logging
 
-from sqlalchemy import create_engine, text
-import pandas as pd
-import os
-from typing import Dict, Any, Optional
+# Configuration du logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 
 class AgentCollecteur:
     """Agent 1 : Collecte les données patient depuis Cloud SQL (MIMIC-III importée)"""
 
     def __init__(
         self,
-        db_user: str = os.getenv("DB_USER", "adn_admin"),
-        db_password: str = os.getenv("DB_PASSWORD", "ChangeThisSuperSecurePassword"),
-        db_name: str = os.getenv("DB_NAME", "adn_emergency_db"),
-        db_host: str = os.getenv("DB_HOST", "34.186.39.96"),
-        db_port: int = int(os.getenv("DB_PORT", "5432")),
-        instance_conn_name: str = os.getenv("INSTANCE_CONNECTION_NAME", "ai-diagnostic-navigator-475316:us-east4:adn-postgres-us4"),
+        db_user: str = None,
+        db_password: str = None,
+        db_name: str = None,
+        db_host: str = None,
+        db_port: int = None,
+        instance_conn_name: str = None,
     ):
-        self.db_user = db_user
-        self.db_password = db_password
-        self.db_name = db_name
-        self.db_host = db_host
-        self.db_port = db_port
-        self.instance_conn_name = instance_conn_name
+        # 🔥 Mode MOCK pour les tests (PR checks, unit tests)
+        self.use_mock = os.getenv("USE_MOCK_DB", "false").lower() == "true"
+        
+        if self.use_mock:
+            logger.info("🧪 MODE MOCK ACTIVÉ - Pas de connexion réelle à Cloud SQL")
+            self.engine = None
+            return
+        
+        # Configuration réelle pour staging/prod
+        self.db_user = db_user or os.getenv("DB_USER", "app_user")
+        self.db_password = db_password or os.getenv("DB_PASSWORD")
+        self.db_name = db_name or os.getenv("DB_NAME", "app_db")
+        self.db_host = db_host or os.getenv("DB_HOST")
+        self.db_port = db_port or int(os.getenv("DB_PORT", "5432"))
+        self.instance_conn_name = instance_conn_name or os.getenv("INSTANCE_CONNECTION_NAME")
+
+        # Vérification des variables requises
+        if not self.db_password:
+            raise ValueError("❌ DB_PASSWORD requis en mode production")
 
         # 🔗 Connexion dynamique Cloud SQL / local
-        if os.path.exists(f"/cloudsql/{self.instance_conn_name}"):
-            connection_uri = f"postgresql+psycopg2://{db_user}:{db_password}@/{db_name}?host=/cloudsql/{self.instance_conn_name}"
-            print(f"🔗 Cloud SQL socket détecté : {self.instance_conn_name}")
-        else:
-            connection_uri = f"postgresql+psycopg2://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}?sslmode=require"
-            print(f"🌐 Connexion IP publique : {db_host}:{db_port}")
+        self._setup_connection()
 
+    def _setup_connection(self):
+        """Configure la connexion à Cloud SQL"""
         try:
-            self.engine = create_engine(connection_uri, pool_pre_ping=True)
+            # Priorité 1: Unix socket (Cloud Run avec Cloud SQL Proxy)
+            socket_path = f"/cloudsql/{self.instance_conn_name}"
+            if self.instance_conn_name and os.path.exists(socket_path):
+                connection_uri = (
+                    f"postgresql+psycopg2://{self.db_user}:{self.db_password}"
+                    f"@/{self.db_name}?host={socket_path}"
+                )
+                logger.info(f"🔗 Cloud SQL socket détecté : {self.instance_conn_name}")
+            
+            # Priorité 2: IP publique avec SSL
+            elif self.db_host:
+                connection_uri = (
+                    f"postgresql+psycopg2://{self.db_user}:{self.db_password}"
+                    f"@{self.db_host}:{self.db_port}/{self.db_name}?sslmode=require"
+                )
+                logger.info(f"🌐 Connexion IP publique : {self.db_host}:{self.db_port}")
+            
+            else:
+                raise ValueError("❌ Ni socket Cloud SQL ni DB_HOST configuré")
+
+            # Création du pool de connexions
+            self.engine = create_engine(
+                connection_uri,
+                pool_pre_ping=True,
+                pool_size=5,
+                max_overflow=10,
+                pool_recycle=3600,
+                echo=False
+            )
+            
+            # Test de connexion
             with self.engine.connect() as conn:
-                conn.execute(text("SELECT 1"))
-            print("✅ Connexion Cloud SQL réussie.")
+                result = conn.execute(text("SELECT version()"))
+                version = result.fetchone()[0]
+                logger.info(f"✅ Connexion Cloud SQL réussie - {version}")
+                
         except Exception as e:
-            print(f"❌ Erreur de connexion à Cloud SQL : {e}")
+            logger.error(f"❌ Erreur de connexion à Cloud SQL : {e}")
             raise
 
     def _load_table(self, name: str, limit: Optional[int] = 1000) -> pd.DataFrame:
-        """Charge une table depuis Cloud SQL"""
+        """Charge une table depuis Cloud SQL ou retourne des données mock"""
+        if self.use_mock:
+            logger.info(f"🧪 MOCK : Retour de données factices pour {name}")
+            return self._get_mock_data(name)
+        
         try:
             query = f"SELECT * FROM {name}"
             if limit:
                 query += f" LIMIT {limit}"
-            df = pd.read_sql(text(query), self.engine)
-            print(f"📊 Table {name} chargée ({len(df)} lignes).")
+            
+            with self.engine.connect() as conn:
+                df = pd.read_sql(text(query), conn)
+            
+            logger.info(f"📊 Table {name} chargée ({len(df)} lignes)")
             return df
+            
         except Exception as e:
-            print(f"⚠️ Erreur lors du chargement de {name}: {e}")
+            logger.warning(f"⚠️ Erreur lors du chargement de {name}: {e}")
             return pd.DataFrame()
 
-    def collecter_donnees_patient(self, subject_id: Optional[int] = None, texte_medical: Optional[str] = None) -> Dict[str, Any]:
+    def _get_mock_data(self, table_name: str) -> pd.DataFrame:
+        """Retourne des données mock pour les tests"""
+        mock_data = {
+            "patients": pd.DataFrame({
+                "subject_id": [12345, 12346, 12347],
+                "gender": ["M", "F", "M"],
+                "dob": ["1970-01-01", "1985-06-15", "1992-11-30"],
+                "expire_flag": [0, 0, 1],
+                "dod": [None, None, "2024-03-15"]
+            }),
+            "admissions": pd.DataFrame({
+                "subject_id": [12345, 12346, 12347],
+                "hadm_id": [100001, 100002, 100003],
+                "admittime": ["2024-01-01 10:00:00", "2024-01-02 14:30:00", "2024-01-03 08:15:00"],
+                "admission_type": ["EMERGENCY", "ELECTIVE", "EMERGENCY"],
+                "admission_location": ["EMERGENCY ROOM", "PHYSICIAN REFERRAL", "EMERGENCY ROOM"],
+                "diagnosis": ["Chest pain", "Scheduled surgery", "Septic shock"],
+                "hospital_expire_flag": [0, 0, 1]
+            }),
+            "icustays": pd.DataFrame({
+                "subject_id": [12345, 12347],
+                "hadm_id": [100001, 100003],
+                "intime": ["2024-01-01 11:00:00", "2024-01-03 09:00:00"],
+                "outtime": ["2024-01-02 08:00:00", "2024-01-03 20:00:00"]
+            }),
+            "diagnoses_icd": pd.DataFrame({
+                "hadm_id": [100001, 100001, 100003],
+                "icd9_code": ["410.71", "401.9", "038.9"],
+                "seq_num": [1, 2, 1]
+            }),
+            "procedures_icd": pd.DataFrame({
+                "hadm_id": [100001, 100003],
+                "icd9_code": ["99.04", "96.72"],
+                "seq_num": [1, 1]
+            }),
+            "prescriptions": pd.DataFrame({
+                "subject_id": [12345, 12345, 12347],
+                "hadm_id": [100001, 100001, 100003],
+                "drug": ["Aspirin", "Metoprolol", "Norepinephrine"],
+                "dose_val_rx": ["325", "50", "0.1"],
+                "route": ["PO", "PO", "IV"],
+                "startdate": ["2024-01-01", "2024-01-01", "2024-01-03"]
+            }),
+            "labevents": pd.DataFrame({
+                "subject_id": [12345, 12345, 12347, 12347],
+                "itemid": [50912, 50971, 50912, 51221],
+                "charttime": ["2024-01-01 11:00:00", "2024-01-01 11:00:00", 
+                             "2024-01-03 09:30:00", "2024-01-03 09:30:00"],
+                "value": ["140", "4.2", "180", "1.8"],
+                "valuenum": [140.0, 4.2, 180.0, 1.8],
+                "valueuom": ["mg/dL", "mmol/L", "mg/dL", "mg/dL"],
+                "flag": [None, None, "abnormal", "abnormal"]
+            }),
+            "chartevents": pd.DataFrame({
+                "subject_id": [12345, 12345, 12347, 12347],
+                "itemid": [220045, 220179, 220045, 220179],
+                "charttime": ["2024-01-01 11:00:00", "2024-01-01 11:00:00",
+                             "2024-01-03 09:30:00", "2024-01-03 09:30:00"],
+                "valuenum": [85.0, 120.0, 125.0, 80.0],
+                "valueuom": ["bpm", "mmHg", "bpm", "mmHg"]
+            }),
+            "microbiologyevents": pd.DataFrame({
+                "subject_id": [12347],
+                "charttime": ["2024-01-03 10:00:00"],
+                "spec_type_desc": ["BLOOD"],
+                "org_name": ["Staphylococcus aureus"],
+                "ab_name": ["Vancomycin"],
+                "interpretation": ["S"]
+            }),
+            "d_icd_diagnoses": pd.DataFrame({
+                "icd9_code": ["410.71", "401.9", "038.9"],
+                "short_title": ["AMI anterior wall", "Hypertension NOS", "Septicemia NOS"]
+            })
+        }
+        return mock_data.get(table_name, pd.DataFrame())
+
+    def collecter_donnees_patient(
+        self, 
+        subject_id: Optional[int] = None, 
+        texte_medical: Optional[str] = None
+    ) -> Dict[str, Any]:
+        """Point d'entrée principal de collecte"""
         if texte_medical:
-            print("🧾 Mode texte médical.")
+            logger.info("🧾 Mode texte médical")
             return self._collecter_depuis_texte(texte_medical)
+        
         if subject_id is None:
             raise ValueError("Il faut fournir soit subject_id soit texte_medical")
-        print(f"🩺 Collecte en cours pour patient {subject_id} ...")
+        
+        # En mode mock, utiliser un subject_id par défaut
+        if self.use_mock and subject_id not in [12345, 12346, 12347]:
+            logger.warning(f"⚠️ Subject {subject_id} non disponible en mode mock, utilisation de 12345")
+            subject_id = 12345
+            
+        logger.info(f"🩺 Collecte en cours pour patient {subject_id}...")
+        
         try:
             result = self._collecter_depuis_mimic(subject_id)
-            print(f"✅ Collecte terminée pour patient {subject_id}.")
-            return {"status": "ok", "subject_id": subject_id, "patient_normalized": result["patient_normalized"]}
+            logger.info(f"✅ Collecte terminée pour patient {subject_id}")
+            return {
+                "status": "ok",
+                "subject_id": subject_id,
+                "patient_normalized": result["patient_normalized"]
+            }
         except Exception as e:
-            print(f"❌ Erreur collecte patient {subject_id}: {e}")
-            return {"status": "error", "error": str(e), "subject_id": subject_id}
+            logger.error(f"❌ Erreur collecte patient {subject_id}: {e}")
+            return {
+                "status": "error",
+                "error": str(e),
+                "subject_id": subject_id
+            }
 
-    # ---------------------------------------------------------------------
-    # 🔹 Collecte depuis la BD MIMIC
-    # ---------------------------------------------------------------------
     def _collecter_depuis_mimic(self, subject_id: int) -> Dict[str, Any]:
         """Collecte depuis Cloud SQL (tables MIMIC-III importées)"""
         patient = self._load_table("patients").query(f"subject_id == {subject_id}").iloc[0]
@@ -104,18 +244,18 @@ class AgentCollecteur:
         chartevents = self._load_table("chartevents").query(f"subject_id == {subject_id}").tail(50)
         microevents = self._load_table("microbiologyevents").query(f"subject_id == {subject_id}")
         
-        # Normalisation (inchangée)
+        # Normalisation
         data_normalized = {
             "patient_normalized": {
                 "id": str(subject_id),
-                "source_type": "MIMIC_III_CLOUDSQL",
+                "source_type": "MIMIC_III_CLOUDSQL" if not self.use_mock else "MOCK_DATA",
                 "age": self._calculate_age(patient['dob'], admission['admittime']),
                 "sex": "homme" if patient['gender'] == 'M' else "femme",
                 
                 "admission": {
                     "type": admission['admission_type'],
                     "chief_complaint": admission['diagnosis'],
-                    "date": admission['admittime'],
+                    "date": str(admission['admittime']),
                     "location": admission['admission_location'],
                 },
                 
@@ -141,9 +281,6 @@ class AgentCollecteur:
         
         return data_normalized
 
-    # ---------------------------------------------------------------------
-    # 🔹 Fonctions auxiliaires (inchangées)
-    # ---------------------------------------------------------------------
     def _collecter_depuis_texte(self, texte: str) -> Dict[str, Any]:
         return {
             "patient_normalized": {
@@ -152,7 +289,11 @@ class AgentCollecteur:
                 "texte_brut": texte,
                 "age": None,
                 "sex": None,
-                "admission": {"type": "TEXTE_LIBRE", "chief_complaint": "Voir texte brut", "date": None},
+                "admission": {
+                    "type": "TEXTE_LIBRE",
+                    "chief_complaint": "Voir texte brut",
+                    "date": None
+                },
                 "vitals_current": {},
                 "labs": [],
                 "cultures": [],
@@ -222,10 +363,16 @@ class AgentCollecteur:
         return cultures
 
     def _extract_diagnoses(self, diagnoses: pd.DataFrame) -> list:
-        return [{"icd9_code": str(r['icd9_code']), "seq_num": int(r['seq_num'])} for _, r in diagnoses.iterrows()]
+        return [
+            {"icd9_code": str(r['icd9_code']), "seq_num": int(r['seq_num'])}
+            for _, r in diagnoses.iterrows()
+        ]
 
     def _extract_procedures(self, procedures: pd.DataFrame) -> list:
-        return [{"icd9_code": str(r['icd9_code']), "seq_num": int(r['seq_num'])} for _, r in procedures.iterrows()]
+        return [
+            {"icd9_code": str(r['icd9_code']), "seq_num": int(r['seq_num'])}
+            for _, r in procedures.iterrows()
+        ]
 
     def _extract_medications(self, prescriptions: pd.DataFrame) -> list:
         meds = []
@@ -251,17 +398,21 @@ class AgentCollecteur:
             return []
 
 
+# Initialisation du collecteur
 collecteur = AgentCollecteur()
+
 
 def tool_collecter_par_id(subject_id: int) -> Dict[str, Any]:
     """Tool: collecte les données patient depuis MIMIC-III"""
     return collecteur.collecter_donnees_patient(subject_id=subject_id)
+
 
 def tool_collecter_depuis_texte(texte_medical: str) -> Dict[str, Any]:
     """Tool: collecte les données patient depuis texte libre"""
     return collecteur.collecter_donnees_patient(texte_medical=texte_medical)
 
 
+# Configuration des agents ADK
 collecteur_agent_adk = LlmAgent(
     name="collecteur_agent",
     model="gemini-2.0-flash",
@@ -280,20 +431,14 @@ sous la clé 'patient_normalized'.
 )
 
 
-# ============================================================================
-# AGENT SYNTHÉTISEUR (Jekyll/Hyde)
-# ============================================================================
-
 synthetiseur_agent = LlmAgent(
     name="synthetiseur_agent",
     model="gemini-2.0-flash",
-    
     description="""
 Medical synthesis and self-criticism agent using the Jekyll/Hyde method.
 Analyzes patient data, creates a synthesis then self-criticizes to detect
 inconsistencies, critical alerts and silent deteriorations.
 """,
-    
     instruction="""
 You are an expert medical agent in clinical analysis with two modes of operation:
 
@@ -322,25 +467,18 @@ ANALYSIS PROCESS:
 
 IMPORTANT: Use the output_key to store your synthesis for the next agent.
 """,
-    
-    output_key="synthese_clinique"  # Stocke le résultat pour l'agent suivant
+    output_key="synthese_clinique"
 )
 
-
-# ============================================================================
-# AGENT EXPERT (Validation + Diagnostics)
-# ============================================================================
 
 expert_agent = LlmAgent(
     name="expert_agent",
     model="gemini-2.0-flash",
-    
     description="""
 Agent médical expert en validation clinique et diagnostics différentiels.
 Analyse les alertes de l'Agent Synthétiseur, valide contre les guidelines médicales,
 génère des diagnostics différentiels et propose des plans d'action sourcés.
 """,
-    
     instruction="""
 Tu es un professeur de médecine expert en médecine d'urgence et infectiologie.
 
@@ -353,8 +491,10 @@ PHASE 1 - DIAGNOSTICS DIFFÉRENTIELS :
 - Pour chaque diagnostic : probabilité, confiance, preuves POUR/CONTRE
 
 PHASE 2 - VALIDATION GUIDELINES :
-- Valide chaque alerte contre guidelines reconnues (Surviving Sepsis, ESC, AHA, etc.)
-- Cite systématiquement les sources avec force d'évidence
+PRINCIPES :
+- Toujours privilégier la sécurité patient
+- Base toutes tes recommandations sur des guidelines reconnues
+- Cite systématiquement tes sources avec force de l'évidence
 
 PHASE 3 - SCORES DE RISQUE :
 - Calcule scores pertinents selon diagnostics (SOFA, qSOFA, APACHE II, GRACE, TIMI, etc.)
@@ -366,44 +506,21 @@ PHASE 4 - PLAN D'ACTION :
 
 PHASE 5 - SYNTHÈSE PREUVES :
 - Compilation de toutes les références utilisées
-
-PROCESSUS EN 5 PHASES :
-
-PHASE 1 - DIAGNOSTICS DIFFÉRENTIELS :
-- Génère une liste complète et pertinente de diagnostics
-- Pour chaque diagnostic : probabilité, confiance, preuves POUR/CONTRE
-
-PHASE 2 - VALIDATION GUIDELINES :
-PRINCIPES :
-- Toujours privilégier la sécurité patient
-- Base toutes tes recommandations sur des guidelines reconnues
-- Cite systématiquement tes sources avec force de l'évidence
 """,
-    
-    output_key="validation_expert"  # Stocke le résultat final
+    output_key="validation_expert"
 )
 
 
-from google.adk.tools import agent_tool
-
-# ----------------------------------------------------------------------------
-# Wrapping des agents comme outils ADK
-# ----------------------------------------------------------------------------
+# Configuration du pipeline
 collecteur_tool = agent_tool.AgentTool(agent=collecteur_agent_adk)
 synthetiseur_tool = agent_tool.AgentTool(agent=synthetiseur_agent)
 expert_tool = agent_tool.AgentTool(agent=expert_agent)
 
-
-from google.adk.agents import SequentialAgent
-
-# Pipeline complet : Collecte → Synthèse → Validation
 pipeline_clinique = SequentialAgent(
     name="pipeline_clinique",
     sub_agents=[collecteur_agent_adk, synthetiseur_agent, expert_agent],
 )
 
-
-from google.adk.tools import agent_tool
 pipeline_tool = agent_tool.AgentTool(agent=pipeline_clinique)
 
 root_agent = LlmAgent(
@@ -414,7 +531,7 @@ root_agent = LlmAgent(
     Il orchestre la collecte, la synthèse et la validation médicale des données patients.
     """,
     instruction="""
-Tu es le coordinateur clinique principal d’un système multi-agent médical.
+Tu es le coordinateur clinique principal d'un système multi-agent médical.
 Ton rôle est de diriger intelligemment les sous-agents disponibles selon le type de demande utilisateur.
 
 =========================
@@ -424,162 +541,33 @@ Tu dois déterminer dynamiquement quelles étapes du raisonnement clinique exéc
 - Si le contexte contient un **identifiant patient (subject_id)** → exécute le pipeline complet `pipeline_clinique`.
 - Si le contexte contient un **texte médical brut** (compte rendu, observation, courrier, etc.) → exécute aussi `pipeline_clinique`.
 - Si la demande concerne uniquement une **vérification, une validation ou un avis clinique** et que la synthèse existe déjà (`synthese_clinique` dans le contexte) → appelle uniquement `expert_agent`.
-- Si la demande concerne la **génération d’une synthèse clinique à partir de données déjà collectées** (`donnees_patient` présentes dans le contexte) → appelle `synthetiseur_agent`.
+- Si la demande concerne la **génération d'une synthèse clinique à partir de données déjà collectées** (`donnees_patient` présentes dans le contexte) → appelle `synthetiseur_agent`.
 - Si la demande concerne **la simple collecte de données patient** → appelle `collecteur_agent`.
 
 =========================
 🩺 PIPELINE CLINIQUE
 =========================
-Le pipeline complet `pipeline_clinique` exécute dans l’ordre :
+Le pipeline complet `pipeline_clinique` exécute dans l'ordre :
 1️⃣ `collecteur_agent` — collecte les données patient depuis MIMIC-III ou texte libre.  
 2️⃣ `synthetiseur_agent` — produit une synthèse clinique (mode Jekyll/Hyde).  
 3️⃣ `expert_agent` — valide la synthèse et produit les recommandations médicales.  
-
-Si l’utilisateur demande une **analyse complète** (par exemple :  
-> “Analyse complète du patient 12548”  
-ou  
-> “Analyse complète du patient suivant : [texte médical]”)  
-alors tu dois **appeler `pipeline_clinique` directement** avec les bons paramètres.
 
 =========================
 ⚙️ OUTILS DISPONIBLES
 =========================
 - `pipeline_clinique(subject_id=..., texte_medical=...)`
-  → Exécute tout le pipeline (Collecte → Synthèse → Validation).
 - `collecteur_agent(subject_id=..., texte_medical=...)`
-  → Collecte uniquement les données patient.
 - `synthetiseur_agent(donnees_patient=...)`
-  → Produit une synthèse clinique et une auto-critique.
 - `expert_agent(synthese_clinique=...)`
-  → Fait la validation experte et les diagnostics différentiels.
 
 =========================
 💡 DIRECTIVES
 =========================
 - Tu dois toujours répondre avec un ton professionnel et structuré.
 - Résume les conclusions cliniques finales du pipeline de façon claire.
-- Si un outil échoue ou manque de contexte (ex. synthèse non trouvée),
-  propose automatiquement l’étape précédente pour reconstituer le contexte.
-- N’invente jamais de données patient : tu dois te baser sur les sorties des outils.
+- Si un outil échoue ou manque de contexte, propose automatiquement l'étape précédente.
+- N'invente jamais de données patient : tu dois te baser sur les sorties des outils.
 - Termine toujours ta réponse par une **conclusion clinique synthétique**.
-
-=========================
-🔁 EXEMPLES
-=========================
-🧩 Exemple 1 :
-Utilisateur : "Analyse complète du patient 14532"
-→ Appelle `pipeline_clinique(subject_id=14532)`
-
-🧩 Exemple 2 :
-Utilisateur : "Voici un texte médical à analyser : ..."
-→ Appelle `pipeline_clinique(texte_medical="...")`
-
-🧩 Exemple 3 :
-Utilisateur : "Valide la synthèse clinique précédente."
-→ Appelle `expert_agent(synthese_clinique={synthese_clinique?})`
-
-🧩 Exemple 4 :
-Utilisateur : "Montre-moi seulement les données patient du sujet 125."
-→ Appelle `collecteur_agent(subject_id=125)`
-
-=========================
-🎯 OBJECTIF FINAL
-=========================
-Fournir une réponse clinique complète, logique et hiérarchisée :
-- Résumé patient
-- Synthèse médicale (Jekyll)
-- Auto-critique (Hyde)
-- Validation experte
-- Plan d’action et recommandations
-""",
-    tools=[pipeline_tool, collecteur_tool, synthetiseur_tool, expert_tool],
-)
-
-root_agent = LlmAgent(
-    name="root_agent_clinique",
-    model="gemini-2.0-flash",
-    description="""
-    Agent coordinateur principal du système clinique multi-agent.
-    Il orchestre la collecte, la synthèse et la validation médicale des données patients.
-    """,
-    instruction="""
-Tu es le coordinateur clinique principal d’un système multi-agent médical.
-Ton rôle est de diriger intelligemment les sous-agents disponibles selon le type de demande utilisateur.
-
-=========================
-🧠 RÔLE GLOBAL
-=========================
-Tu dois déterminer dynamiquement quelles étapes du raisonnement clinique exécuter :
-- Si le contexte contient un **identifiant patient (subject_id)** → exécute le pipeline complet `pipeline_clinique`.
-- Si le contexte contient un **texte médical brut** (compte rendu, observation, courrier, etc.) → exécute aussi `pipeline_clinique`.
-- Si la demande concerne uniquement une **vérification, une validation ou un avis clinique** et que la synthèse existe déjà (`synthese_clinique` dans le contexte) → appelle uniquement `expert_agent`.
-- Si la demande concerne la **génération d’une synthèse clinique à partir de données déjà collectées** (`donnees_patient` présentes dans le contexte) → appelle `synthetiseur_agent`.
-- Si la demande concerne **la simple collecte de données patient** → appelle `collecteur_agent`.
-
-=========================
-🩺 PIPELINE CLINIQUE
-=========================
-Le pipeline complet `pipeline_clinique` exécute dans l’ordre :
-1️⃣ `collecteur_agent` — collecte les données patient depuis MIMIC-III ou texte libre.  
-2️⃣ `synthetiseur_agent` — produit une synthèse clinique (mode Jekyll/Hyde).  
-3️⃣ `expert_agent` — valide la synthèse et produit les recommandations médicales.  
-
-Si l’utilisateur demande une **analyse complète** (par exemple :  
-> “Analyse complète du patient 12548”  
-ou  
-> “Analyse complète du patient suivant : [texte médical]”)  
-alors tu dois **appeler `pipeline_clinique` directement** avec les bons paramètres.
-
-=========================
-⚙️ OUTILS DISPONIBLES
-=========================
-- `pipeline_clinique(subject_id=..., texte_medical=...)`
-  → Exécute tout le pipeline (Collecte → Synthèse → Validation).
-- `collecteur_agent(subject_id=..., texte_medical=...)`
-  → Collecte uniquement les données patient.
-- `synthetiseur_agent(donnees_patient=...)`
-  → Produit une synthèse clinique et une auto-critique.
-- `expert_agent(synthese_clinique=...)`
-  → Fait la validation experte et les diagnostics différentiels.
-
-=========================
-💡 DIRECTIVES
-=========================
-- Tu dois toujours répondre avec un ton professionnel et structuré.
-- Résume les conclusions cliniques finales du pipeline de façon claire.
-- Si un outil échoue ou manque de contexte (ex. synthèse non trouvée),
-  propose automatiquement l’étape précédente pour reconstituer le contexte.
-- N’invente jamais de données patient : tu dois te baser sur les sorties des outils.
-- Termine toujours ta réponse par une **conclusion clinique synthétique**.
-
-=========================
-🔁 EXEMPLES
-=========================
-🧩 Exemple 1 :
-Utilisateur : "Analyse complète du patient 14532"
-→ Appelle `pipeline_clinique(subject_id=14532)`
-
-🧩 Exemple 2 :
-Utilisateur : "Voici un texte médical à analyser : ..."
-→ Appelle `pipeline_clinique(texte_medical="...")`
-
-🧩 Exemple 3 :
-Utilisateur : "Valide la synthèse clinique précédente."
-→ Appelle `expert_agent(synthese_clinique={synthese_clinique?})`
-
-🧩 Exemple 4 :
-Utilisateur : "Montre-moi seulement les données patient du sujet 125."
-→ Appelle `collecteur_agent(subject_id=125)`
-
-=========================
-🎯 OBJECTIF FINAL
-=========================
-Fournir une réponse clinique complète, logique et hiérarchisée :
-- Résumé patient
-- Synthèse médicale (Jekyll)
-- Auto-critique (Hyde)
-- Validation experte
-- Plan d’action et recommandations
 """,
     tools=[pipeline_tool, collecteur_tool, synthetiseur_tool, expert_tool],
 )
