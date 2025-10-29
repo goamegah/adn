@@ -47,12 +47,12 @@ steps:
         echo "🗄️ Running database migrations..."
         
         # Get database password from Secret Manager
-        DB_PASSWORD=$(gcloud secrets versions access latest \
+        export DB_PASSWORD=$(gcloud secrets versions access latest \
           --secret=adn-agent-db-password-staging \
           --project=${_STAGING_PROJECT_ID})
         
         # Get Cloud SQL connection info
-        DB_HOST=$(gcloud sql instances describe adn-agent-db-staging \
+        export DB_HOST=$(gcloud sql instances describe adn-agent-db-staging \
           --project=${_STAGING_PROJECT_ID} \
           --format="value(ipAddresses[0].ipAddress)")
         
@@ -69,7 +69,7 @@ steps:
         # docker run --rm \
         #   -e DB_HOST=$DB_HOST \
         #   -e DB_PASSWORD=$DB_PASSWORD \
-        #   $_REGION-docker.pkg.dev/$PROJECT_ID/$_ARTIFACT_REGISTRY_REPO_NAME/$_CONTAINER_NAME:$COMMIT_SHA \
+        #   ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_ARTIFACT_REGISTRY_REPO_NAME}/${_CONTAINER_NAME}:${COMMIT_SHA} \
         #   python manage.py migrate
         
         echo "✅ Migrations completed"
