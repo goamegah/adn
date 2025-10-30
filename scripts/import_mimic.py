@@ -22,19 +22,19 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-db_host_config = {
-    "adn-app-chn-staging": "adn-app-chn-staging:europe-west1:adn-app-db-staging",
-    "adn-app-chn-prod": "adn-app-chn-prod:europe-west1:adn-app-db-prod",
-}
+# db_host_config = {
+#     "adn-app-chn-staging": "adn-app-chn-staging:europe-west1:adn-app-db-staging",
+#     "adn-app-chn-prod": "adn-app-chn-prod:europe-west1:adn-app-db-prod",
+# }
 
-def get_db_host(project_id):
-    return db_host_config.get(project_id, db_host_config["adn-app-chn-staging"])
+# def get_db_host(project_id):
+#     return db_host_config.get(project_id, db_host_config["adn-app-chn-staging"])
 
-_, project_id = google.auth.default()
-os.environ.setdefault("DB_HOST", get_db_host(project_id))
-os.environ.setdefault("DB_USER", "adn_user")
-os.environ.setdefault("DB_NAME", "adn_database")
-os.environ.setdefault("DB_PORT", "5432")
+# _, project_id = google.auth.default()
+# os.environ.setdefault("DB_HOST", get_db_host(project_id))
+# os.environ.setdefault("DB_USER", "adn_user")
+# os.environ.setdefault("DB_NAME", "adn_database")
+# os.environ.setdefault("DB_PORT", "5432")
 
 
 # Tables MIMIC-III
