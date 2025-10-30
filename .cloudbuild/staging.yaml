@@ -38,7 +38,7 @@ steps:
     args:
       - "run"
       - "deploy"
-      - "adn-agent"
+      - "adn-app"
       - "--image"
       - "$_REGION-docker.pkg.dev/$PROJECT_ID/$_ARTIFACT_REGISTRY_REPO_NAME/$_CONTAINER_NAME"
       - "--region"
@@ -130,7 +130,7 @@ substitutions:
   _STAGING_PROJECT_ID: YOUR_STAGING_PROJECT_ID
   _REGION: europe-west1
 
-logsBucket: gs://${PROJECT_ID}-adn-agent-logs/build-logs
+logsBucket: gs://${PROJECT_ID}-adn-app-logs/build-logs
 options:
   substitutionOption: ALLOW_LOOSE
   defaultLogsBucketBehavior: REGIONAL_USER_OWNED_BUCKET

@@ -7,7 +7,7 @@ resource "google_storage_bucket" "mimic_data_staging" {
   location                    = var.region
   project                     = var.staging_project_id
   uniform_bucket_level_access = true
-  force_destroy               = false
+  force_destroy               = true
 
   versioning {
     enabled = true
@@ -30,7 +30,7 @@ resource "google_storage_bucket" "mimic_data_prod" {
   location                    = var.region
   project                     = var.prod_project_id
   uniform_bucket_level_access = true
-  force_destroy               = false
+  force_destroy               = true
 
   versioning {
     enabled = true

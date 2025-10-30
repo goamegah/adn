@@ -95,7 +95,7 @@ substitutions:
   _DATA_BUCKET: adn-app-chn-staging-mimic-data
   _SUBSET_FLAG: ""
 
-logsBucket: gs://${PROJECT_ID}-adn-agent-logs/build-logs
+logsBucket: gs://${PROJECT_ID}-adn-app-logs/build-logs
 options:
   timeout: "7200s"
   substitutionOption: ALLOW_LOOSE
