@@ -55,8 +55,8 @@ app: FastAPI = get_fast_api_app(
     allow_origins=allow_origins,
     session_service_uri=session_service_uri,
 )
-app.title = "adn-agent"
-app.description = "API for interacting with the Agent adn-agent"
+app.title = "adn-app"
+app.description = "API for interacting with the Agent adn-app."
 
 
 @app.post("/feedback")
