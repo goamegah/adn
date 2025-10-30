@@ -9,6 +9,7 @@ import sys
 import argparse
 import re
 from pathlib import Path
+from urllib.parse import quote_plus  # ✅ AJOUT IMPORTANT
 import pandas as pd
 from sqlalchemy import create_engine
 from google.cloud import storage, secretmanager
@@ -86,8 +87,12 @@ def create_db_engine(env: str, project_id: str):
     logger.info(f"🔑 Récupération du mot de passe depuis Secret Manager ({secret_id})...")
     db_password = get_secret(project_id, secret_id)
     
+    # ✅ ENCODER le mot de passe pour gérer les caractères spéciaux (@, :, /, etc.)
+    db_password_encoded = quote_plus(db_password)
+    logger.info(f"🔒 Mot de passe encodé pour URL (longueur: {len(db_password_encoded)} caractères)")
+    
     connection_string = (
-        f"postgresql://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}"
+        f"postgresql://{db_user}:{db_password_encoded}@{db_host}:{db_port}/{db_name}"
     )
     
     logger.info("✅ Création du moteur SQLAlchemy...")
