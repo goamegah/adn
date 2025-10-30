@@ -1,17 +1,58 @@
 import os
-import sys
-import json
 import pandas as pd
-from google.adk.agents import LlmAgent, SequentialAgent
-from google.adk.tools import agent_tool
 from typing import Dict, Any, Optional
+import google.auth
 from sqlalchemy import create_engine, text
 import logging
+from dotenv import load_dotenv
+from urllib.parse import quote_plus
+from google.adk.agents import LlmAgent, SequentialAgent
+from google.adk.tools import agent_tool
+
+
+# Charger les variables d'environnement depuis le fichier .env
+load_dotenv()
 
 # Configuration du logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
+def get_db_password_from_secret_manager(project_id: str) -> str:
+    """Récupère la chaîne de connexion DB depuis Google Cloud Secret Manager"""
+    from google.cloud import secretmanager
+
+    client = secretmanager.SecretManagerServiceClient()
+    secret_name = f"adn-app-db-password-{'staging' if 'staging' in project_id else 'prod'}"
+    name = f"projects/{project_id}/secrets/{secret_name}/versions/latest"
+    response = client.access_secret_version(name=name)
+    return response.payload.data.decode("UTF-8")
+
+def get_cloudsql_db_host(project_id: str) -> str:
+    """Récupère l'IP publique de l'instance Cloud SQL depuis Google Cloud SQL Admin API"""
+    from googleapiclient import discovery
+
+    sqladmin = discovery.build('sqladmin', 'v1beta4')
+    instance_name = f"adn-app-db-{'staging' if 'staging' in project_id else 'prod'}"
+    request = sqladmin.instances().get(project=project_id, instance=instance_name)
+    response = request.execute()
+    ip_addresses = response.get('ipAddresses', [])
+    for ip_info in ip_addresses:
+        if ip_info.get('type') == 'PRIMARY':
+            return ip_info.get('ipAddress')
+    raise ValueError("Aucune IP publique trouvée pour l'instance Cloud SQL")
+
+
+_, project_id = google.auth.default()
+os.environ.setdefault("GOOGLE_CLOUD_PROJECT", project_id)
+os.environ.setdefault("GOOGLE_CLOUD_LOCATION", "europe-west1")
+os.environ.setdefault("GOOGLE_GENAI_USE_VERTEXAI", "True")
+
+os.environ.setdefault("DB_USER", "adn_user")
+os.environ.setdefault("DB_NAME", "adn_database")
+os.environ.setdefault("DB_PORT", "5432")
+os.environ.setdefault("DB_HOST", get_cloudsql_db_host(project_id))
+os.environ.setdefault("DB_PASSWORD", get_db_password_from_secret_manager(project_id))
 
 class AgentCollecteur:
     """Agent 1 : Collecte les données patient depuis Cloud SQL (MIMIC-III importée)"""
@@ -25,6 +66,8 @@ class AgentCollecteur:
         db_port: int = None,
         instance_conn_name: str = None,
     ):
+        self.engine = None
+
         # 🔥 Mode MOCK pour les tests (PR checks, unit tests)
         self.use_mock = os.getenv("USE_MOCK_DB", "false").lower() == "true"
         
@@ -54,14 +97,28 @@ class AgentCollecteur:
     def _setup_connection(self):
         """Configure la connexion à Cloud SQL"""
         try:
-            # ✅ CORRECTION: Détecter automatiquement l'environnement
+            # 🔍 DEBUG: Afficher la configuration
+            logger.info("=" * 60)
+            logger.info("🔍 CONFIGURATION DE CONNEXION")
+            logger.info(f"DB_USER: {self.db_user}")
+            logger.info(f"DB_PASSWORD: {'***' if self.db_password else 'MANQUANT'}")
+            logger.info(f"DB_NAME: {self.db_name}")
+            logger.info(f"DB_HOST: {self.db_host or 'NON DÉFINI'}")
+            logger.info(f"DB_PORT: {self.db_port}")
+            logger.info(f"INSTANCE_CONNECTION_NAME: {self.instance_conn_name or 'NON DÉFINI'}")
+            logger.info(f"ENVIRONMENT: {os.getenv('ENVIRONMENT', 'NON DÉFINI')}")
+            logger.info("=" * 60)
+            
             connection_uri = self._build_connection_uri()
             
             if not connection_uri:
-                logger.warning("⚠️ Aucune configuration de connexion valide détectée")
+                logger.error("❌ connection_uri est None - aucune méthode de connexion configurée")
                 return
 
-            # Création du pool de connexions
+            # Masquer le mot de passe dans les logs
+            safe_uri = connection_uri.replace(self.db_password, '***') if self.db_password else connection_uri
+            logger.info(f"🔗 URI de connexion: {safe_uri}")
+            
             self.engine = create_engine(
                 connection_uri,
                 pool_pre_ping=True,
@@ -71,62 +128,84 @@ class AgentCollecteur:
                 echo=False,
                 connect_args={
                     "connect_timeout": 10,
-                    # ✅ SSL requis pour connexions externes
                     "sslmode": "require" if self.db_host else "disable"
                 }
             )
             
-            # Test de connexion
+            # Test de connexion avec plus de détails
+            logger.info("🧪 Test de connexion à la base...")
             with self.engine.connect() as conn:
                 result = conn.execute(text("SELECT version()"))
                 version = result.fetchone()[0]
                 logger.info(f"✅ Connexion Cloud SQL réussie - {version[:50]}...")
                 
+                # Test de lecture des tables
+                result = conn.execute(text("""
+                    SELECT table_name 
+                    FROM information_schema.tables 
+                    WHERE table_schema = 'public'
+                    LIMIT 5
+                """))
+                tables = [row[0] for row in result]
+                logger.info(f"📋 Tables disponibles: {', '.join(tables)}")
+                    
         except Exception as e:
-            logger.error(f"❌ Erreur de connexion à Cloud SQL : {e}")
-            # ✅ CORRECTION: Ne pas raise en développement
+            logger.error(f"❌ Erreur de connexion à Cloud SQL : {type(e).__name__}: {e}")
+            import traceback
+            logger.error(traceback.format_exc())
+            
             if os.getenv("ENVIRONMENT") == "prod":
                 raise
             logger.warning("⚠️ Continuation en mode dégradé sans connexion DB")
             self.engine = None
 
     def _build_connection_uri(self) -> Optional[str]:
-        """
-        Construit l'URI de connexion selon l'environnement
+        """Construit l'URI de connexion selon l'environnement"""
         
-        Priorité:
-        1. Unix socket Cloud SQL (Cloud Run)
-        2. Cloud SQL Proxy local (développement)
-        3. IP publique avec SSL (temporaire, import de données)
-        """
-        # Priorité 1: Unix socket (Cloud Run avec Cloud SQL Proxy)
-        if self.instance_conn_name:
-            socket_path = f"/cloudsql/{self.instance_conn_name}"
-            if os.path.exists(socket_path):
-                logger.info(f"🔗 Connexion via socket Cloud SQL: {self.instance_conn_name}")
-                return (
-                    f"postgresql+psycopg2://{self.db_user}:{self.db_password}"
-                    f"@/{self.db_name}?host={socket_path}"
-                )
-            
-            # Priorité 2: Cloud SQL Proxy local (développement)
-            # Le proxy écoute sur localhost:5432 par défaut
-            logger.info("🔗 Tentative de connexion via Cloud SQL Proxy local")
-            return (
-                f"postgresql+psycopg2://{self.db_user}:{self.db_password}"
-                f"@localhost:5432/{self.db_name}"
-            )
+        # 🔥 ENCODER les caractères spéciaux
+        encoded_user = quote_plus(self.db_user) if self.db_user else ""
+        encoded_password = quote_plus(self.db_password) if self.db_password else ""
         
-        # Priorité 3: IP publique avec SSL (import de données, temporaire)
-        elif self.db_host:
+        logger.info(f"🔍 instance_conn_name: {self.instance_conn_name}")
+        logger.info(f"🔍 db_host: {self.db_host}")
+        
+        # ✅ PRIORITÉ 1 : IP publique (choix explicite de l'utilisateur)
+        # Si DB_HOST est défini, on l'utilise directement
+        # C'est le cas pour développement local avec firewall ouvert (0.0.0.0/0)
+        if self.db_host:
             logger.info(f"🌐 Connexion IP publique: {self.db_host}:{self.db_port}")
+            logger.info("💡 Pour utiliser Cloud SQL Proxy, retirez DB_HOST du .env")
             return (
-                f"postgresql+psycopg2://{self.db_user}:{self.db_password}"
+                f"postgresql+psycopg2://{encoded_user}:{encoded_password}"
                 f"@{self.db_host}:{self.db_port}/{self.db_name}?sslmode=require"
             )
         
+        # ✅ PRIORITÉ 2 : Cloud SQL Proxy / Unix socket
+        # Utilisé seulement si DB_HOST n'est PAS défini
+        elif self.instance_conn_name:
+            # Cas 1: Unix socket (Cloud Run avec sidecar proxy)
+            socket_path = f"/cloudsql/{self.instance_conn_name}"
+            if os.path.exists(socket_path):
+                logger.info(f"✅ Connexion via Unix socket: {socket_path}")
+                return (
+                    f"postgresql+psycopg2://{encoded_user}:{encoded_password}"
+                    f"@/{self.db_name}?host={socket_path}"
+                )
+            
+            # Cas 2: Cloud SQL Proxy local (développement avec proxy)
+            else:
+                logger.info("🔗 Connexion via Cloud SQL Proxy local (127.0.0.1:5432)")
+                logger.warning("⚠️ Assurez-vous que cloud-sql-proxy est démarré !")
+                logger.info(f"💡 Commande: cloud-sql-proxy --port 5432 {self.instance_conn_name}")
+                return (
+                    f"postgresql+psycopg2://{encoded_user}:{encoded_password}"
+                    f"@127.0.0.1:5432/{self.db_name}"
+                )
+        
+        # ❌ Aucune configuration trouvée
         else:
-            logger.warning("❌ Aucune configuration de connexion trouvée")
+            logger.error("❌ Aucune configuration de connexion trouvée")
+            logger.error("💡 Définissez soit DB_HOST (IP publique) soit INSTANCE_CONNECTION_NAME (proxy)")
             return None
 
     def _load_table(self, name: str, limit: Optional[int] = 1000) -> pd.DataFrame:
@@ -278,6 +357,8 @@ class AgentCollecteur:
         """Collecte depuis Cloud SQL (tables MIMIC-III importées)"""
         patient_df = self._load_table("patients")
         
+        # print(patient_df.head())
+
         # ✅ CORRECTION: Gérer le cas où le DataFrame est vide
         if patient_df.empty:
             raise ValueError(f"Table patients vide ou inaccessible")
