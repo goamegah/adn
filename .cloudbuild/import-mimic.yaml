@@ -16,15 +16,36 @@ steps:
         pip3 install --break-system-packages pandas sqlalchemy psycopg2-binary google-cloud-storage google-cloud-secret-manager tqdm
         
         echo "🔍 Récupération des informations de connexion..."
-        DB_HOST=$$(gcloud sql instances describe ${_CONTAINER_NAME}-db-${_ENV} \
+        
+        # Récupérer l'IP de l'instance Cloud SQL
+        DB_HOST_RAW=$$(gcloud sql instances describe ${_CONTAINER_NAME}-db-${_ENV} \
           --project=${_TARGET_PROJECT_ID} \
           --format="value(ipAddresses[0].ipAddress)")
+        
+        # Nettoyer l'IP (enlever tout préfixe potentiel)
+        DB_HOST=$$(echo "$$DB_HOST_RAW" | grep -oE '[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+' | head -1)
+        
+        echo "✅ IP de la base de données: $$DB_HOST"
+        
+        # Vérifier que l'IP est valide
+        if [ -z "$$DB_HOST" ]; then
+          echo "❌ Erreur: Impossible de récupérer l'IP de la base de données"
+          echo "Valeur brute reçue: $$DB_HOST_RAW"
+          exit 1
+        fi
         
         export DB_HOST
         export DB_PORT=5432
         export DB_NAME=adn_database
         export DB_USER=adn_user
         
+        echo "📊 Configuration de connexion:"
+        echo "  • Host: $$DB_HOST"
+        echo "  • Port: $$DB_PORT"
+        echo "  • Database: $$DB_NAME"
+        echo "  • User: $$DB_USER"
+        
+        echo ""
         echo "📊 Lancement de l'import MIMIC-III..."
         python3 scripts/import_mimic.py \
           --env=${_ENV} \
@@ -50,9 +71,15 @@ steps:
           --secret=${_CONTAINER_NAME}-db-password-${_ENV} \
           --project=${_TARGET_PROJECT_ID})
         
-        DB_HOST=$$(gcloud sql instances describe ${_CONTAINER_NAME}-db-${_ENV} \
+        # Récupérer l'IP de l'instance Cloud SQL
+        DB_HOST_RAW=$$(gcloud sql instances describe ${_CONTAINER_NAME}-db-${_ENV} \
           --project=${_TARGET_PROJECT_ID} \
           --format="value(ipAddresses[0].ipAddress)")
+        
+        # Nettoyer l'IP (enlever tout préfixe potentiel)
+        DB_HOST=$$(echo "$$DB_HOST_RAW" | grep -oE '[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+' | head -1)
+        
+        echo "✅ Connexion à la base: $$DB_HOST"
         
         apt-get update && apt-get install -y postgresql-client
         
@@ -64,6 +91,12 @@ steps:
           -t -c "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = 'public';")
         
         echo "✅ Nombre de tables: $$TABLE_COUNT"
+        
+        # Vérifier qu'il y a des tables
+        if [ "$$TABLE_COUNT" -eq 0 ]; then
+          echo "❌ Erreur: Aucune table trouvée dans la base de données"
+          exit 1
+        fi
         
         # Afficher un aperçu
         echo "📋 Aperçu de la table 'patients':"
