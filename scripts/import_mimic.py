@@ -9,7 +9,7 @@ import sys
 import argparse
 import re
 from pathlib import Path
-from urllib.parse import quote_plus  # ✅ AJOUT IMPORTANT
+from urllib.parse import quote_plus
 import pandas as pd
 from sqlalchemy import create_engine
 from google.cloud import storage, secretmanager
@@ -35,7 +35,7 @@ TABLES = [
 def clean_db_host(db_host: str) -> str:
     """Nettoie et valide l'IP/hostname de la base de données"""
     if not db_host:
-        raise ValueError("❌ DB_HOST est vide")
+        raise ValueError("DB_HOST est vide")
     
     # Extraire seulement l'IP si elle contient des caractères parasites
     # Chercher un pattern IP valide (xxx.xxx.xxx.xxx)
@@ -45,7 +45,7 @@ def clean_db_host(db_host: str) -> str:
     if match:
         clean_ip = match.group(0)
         if clean_ip != db_host:
-            logger.warning(f"⚠️  DB_HOST nettoyé: '{db_host}' → '{clean_ip}'")
+            logger.warning(f"DB_HOST nettoyé: '{db_host}' -> '{clean_ip}'")
         return clean_ip
     
     # Si pas de pattern IP trouvé, retourner tel quel (peut être un hostname)
@@ -59,7 +59,7 @@ def get_secret(project_id: str, secret_id: str) -> str:
         response = client.access_secret_version(request={"name": name})
         return response.payload.data.decode("UTF-8")
     except Exception as e:
-        logger.error(f"❌ Erreur lors de la récupération du secret {secret_id}: {e}")
+        logger.error(f"Erreur lors de la récupération du secret {secret_id}: {e}")
         raise
 
 def create_db_engine(env: str, project_id: str):
@@ -70,32 +70,32 @@ def create_db_engine(env: str, project_id: str):
     db_port = os.getenv("DB_PORT", "5432")
     
     if not db_host_raw:
-        raise ValueError("❌ DB_HOST n'est pas défini dans les variables d'environnement")
+        raise ValueError("DB_HOST n'est pas défini dans les variables d'environnement")
     
     # Nettoyer l'IP
     db_host = clean_db_host(db_host_raw)
     
-    logger.info(f"🔗 Connexion à la base de données:")
-    logger.info(f"  • Host (raw): {db_host_raw}")
-    logger.info(f"  • Host (clean): {db_host}")
-    logger.info(f"  • Port: {db_port}")
-    logger.info(f"  • Database: {db_name}")
-    logger.info(f"  • User: {db_user}")
+    logger.info(f"Connexion à la base de données:")
+    logger.info(f"  Host (raw): {db_host_raw}")
+    logger.info(f"  Host (clean): {db_host}")
+    logger.info(f"  Port: {db_port}")
+    logger.info(f"  Database: {db_name}")
+    logger.info(f"  User: {db_user}")
     
     # Récupérer le password depuis Secret Manager
     secret_id = f"adn-app-db-password-{env}"
-    logger.info(f"🔑 Récupération du mot de passe depuis Secret Manager ({secret_id})...")
+    logger.info(f"Récupération du mot de passe depuis Secret Manager ({secret_id})...")
     db_password = get_secret(project_id, secret_id)
     
-    # ✅ ENCODER le mot de passe pour gérer les caractères spéciaux (@, :, /, etc.)
+    # Encoder le mot de passe pour gérer les caractères spéciaux
     db_password_encoded = quote_plus(db_password)
-    logger.info(f"🔒 Mot de passe encodé pour URL (longueur: {len(db_password_encoded)} caractères)")
+    logger.info(f"Mot de passe encodé pour URL (longueur: {len(db_password_encoded)} caractères)")
     
     connection_string = (
         f"postgresql://{db_user}:{db_password_encoded}@{db_host}:{db_port}/{db_name}"
     )
     
-    logger.info("✅ Création du moteur SQLAlchemy...")
+    logger.info("Création du moteur SQLAlchemy...")
     return create_engine(
         connection_string,
         connect_args={"connect_timeout": 30},
@@ -111,30 +111,30 @@ def download_from_gcs(bucket_name: str, blob_name: str, local_path: Path):
         blob = bucket.blob(blob_name)
         
         if not blob.exists():
-            raise FileNotFoundError(f"❌ Le fichier {blob_name} n'existe pas dans le bucket {bucket_name}")
+            raise FileNotFoundError(f"Le fichier {blob_name} n'existe pas dans le bucket {bucket_name}")
         
         blob.download_to_filename(str(local_path))
         file_size_mb = local_path.stat().st_size / (1024 * 1024)
-        logger.info(f"✅ Téléchargé: {blob_name} ({file_size_mb:.2f} MB)")
+        logger.info(f"Téléchargé: {blob_name} ({file_size_mb:.2f} MB)")
     except Exception as e:
-        logger.error(f"❌ Erreur lors du téléchargement de {blob_name}: {e}")
+        logger.error(f"Erreur lors du téléchargement de {blob_name}: {e}")
         raise
 
 def import_csv_table(engine, csv_path: Path, table_name: str):
     """Import un CSV dans PostgreSQL"""
     try:
-        logger.info(f"📥 Import de {table_name}...")
+        logger.info(f"Import de {table_name}...")
         
         # Lire le CSV
         df = pd.read_csv(csv_path, low_memory=False)
-        logger.info(f"  • {len(df):,} lignes détectées")
-        logger.info(f"  • {len(df.columns)} colonnes: {', '.join(df.columns[:5].tolist())}{'...' if len(df.columns) > 5 else ''}")
+        logger.info(f"  {len(df):,} lignes détectées")
+        logger.info(f"  {len(df.columns)} colonnes: {', '.join(df.columns[:5].tolist())}{'...' if len(df.columns) > 5 else ''}")
         
         # Normaliser les noms de colonnes
         df.columns = df.columns.str.lower().str.replace(' ', '_')
         
         # Import par chunks
-        logger.info(f"  • Import en cours...")
+        logger.info(f"  Import en cours...")
         df.to_sql(
             table_name.lower(),
             engine,
@@ -144,11 +144,11 @@ def import_csv_table(engine, csv_path: Path, table_name: str):
             chunksize=5000
         )
         
-        logger.info(f"✅ {table_name}: {len(df):,} lignes importées")
+        logger.info(f"{table_name}: {len(df):,} lignes importées")
         return True
         
     except Exception as e:
-        logger.error(f"❌ Erreur sur {table_name}: {e}")
+        logger.error(f"Erreur sur {table_name}: {e}")
         import traceback
         logger.error(traceback.format_exc())
         return False
@@ -163,17 +163,17 @@ def main():
     args = parser.parse_args()
     
     logger.info("=" * 80)
-    logger.info(f"🚀 Import MIMIC-III vers Cloud SQL ({args.env})")
-    logger.info(f"📦 Project ID: {args.project_id}")
-    logger.info(f"🗄️  Bucket: {args.bucket}")
+    logger.info(f"Import MIMIC-III vers Cloud SQL ({args.env})")
+    logger.info(f"Project ID: {args.project_id}")
+    logger.info(f"Bucket: {args.bucket}")
     logger.info("=" * 80)
     
     # Afficher les variables d'environnement pour debug
-    logger.info("🔍 Variables d'environnement:")
-    logger.info(f"  • DB_HOST (env): {os.getenv('DB_HOST', 'NOT SET')}")
-    logger.info(f"  • DB_PORT (env): {os.getenv('DB_PORT', 'NOT SET')}")
-    logger.info(f"  • DB_NAME (env): {os.getenv('DB_NAME', 'NOT SET')}")
-    logger.info(f"  • DB_USER (env): {os.getenv('DB_USER', 'NOT SET')}")
+    logger.info("Variables d'environnement:")
+    logger.info(f"  DB_HOST (env): {os.getenv('DB_HOST', 'NOT SET')}")
+    logger.info(f"  DB_PORT (env): {os.getenv('DB_PORT', 'NOT SET')}")
+    logger.info(f"  DB_NAME (env): {os.getenv('DB_NAME', 'NOT SET')}")
+    logger.info(f"  DB_USER (env): {os.getenv('DB_USER', 'NOT SET')}")
     logger.info("")
     
     # Créer le moteur DB
@@ -181,9 +181,9 @@ def main():
         engine = create_db_engine(args.env, args.project_id)
         # Test de connexion
         with engine.connect() as conn:
-            logger.info("✅ Connexion à la base de données réussie")
+            logger.info("Connexion à la base de données réussie")
     except Exception as e:
-        logger.error(f"❌ Impossible de se connecter à la base de données: {e}")
+        logger.error(f"Impossible de se connecter à la base de données: {e}")
         import traceback
         logger.error(traceback.format_exc())
         return 1
@@ -191,11 +191,11 @@ def main():
     # Dossier temporaire
     temp_dir = Path("/tmp/mimic_import")
     temp_dir.mkdir(exist_ok=True)
-    logger.info(f"📁 Dossier temporaire: {temp_dir}")
+    logger.info(f"Dossier temporaire: {temp_dir}")
     
     # Déterminer les tables à importer
     tables_to_import = TABLES[:args.subset] if args.subset else TABLES
-    logger.info(f"📊 Nombre de tables à importer: {len(tables_to_import)}")
+    logger.info(f"Nombre de tables à importer: {len(tables_to_import)}")
     logger.info("")
     
     # Import de chaque table
@@ -204,7 +204,7 @@ def main():
     
     for i, table in enumerate(tables_to_import, 1):
         logger.info(f"{'=' * 80}")
-        logger.info(f"📊 Table {i}/{len(tables_to_import)}: {table}")
+        logger.info(f"Table {i}/{len(tables_to_import)}: {table}")
         logger.info(f"{'=' * 80}")
         
         csv_filename = f"{table}.csv"
@@ -223,10 +223,10 @@ def main():
             # Nettoyer
             if local_path.exists():
                 local_path.unlink()
-                logger.info(f"🗑️  Fichier temporaire supprimé")
+                logger.info(f"Fichier temporaire supprimé")
             
         except Exception as e:
-            logger.error(f"❌ Erreur globale sur {table}: {e}")
+            logger.error(f"Erreur globale sur {table}: {e}")
             import traceback
             logger.error(traceback.format_exc())
             failed_tables.append(table)
@@ -239,16 +239,16 @@ def main():
     
     # Résumé
     logger.info("=" * 80)
-    logger.info("📊 RÉSUMÉ DE L'IMPORT")
+    logger.info("RÉSUMÉ DE L'IMPORT")
     logger.info("=" * 80)
-    logger.info(f"✅ Tables importées avec succès: {success_count}/{len(tables_to_import)}")
+    logger.info(f"Tables importées avec succès: {success_count}/{len(tables_to_import)}")
     
     if failed_tables:
-        logger.warning(f"⚠️  Tables échouées ({len(failed_tables)}): {', '.join(failed_tables)}")
+        logger.warning(f"Tables échouées ({len(failed_tables)}): {', '.join(failed_tables)}")
         logger.info("=" * 80)
         return 1
     else:
-        logger.info("🎉 Toutes les tables ont été importées avec succès !")
+        logger.info("Toutes les tables ont été importées avec succès!")
         logger.info("=" * 80)
         return 0
 
