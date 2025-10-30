@@ -1,112 +1,50 @@
 # Copyright 2025 Google LLC
-# Licensed under the Apache License, Version 2.0
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 steps:
-  # Build and Push Docker Image
+  # Build and Push
   - name: "gcr.io/cloud-builders/docker"
-    id: build-image
     args:
       [
         "build",
         "-t",
-        "${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_ARTIFACT_REGISTRY_REPO_NAME}/${_CONTAINER_NAME}:${COMMIT_SHA}",
-        "-t",
-        "${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_ARTIFACT_REGISTRY_REPO_NAME}/${_CONTAINER_NAME}:latest",
+        "$_REGION-docker.pkg.dev/$PROJECT_ID/$_ARTIFACT_REGISTRY_REPO_NAME/$_CONTAINER_NAME",
         "--build-arg",
-        "COMMIT_SHA=${COMMIT_SHA}",
+        "COMMIT_SHA=$COMMIT_SHA",
         ".",
       ]
-
   - name: "gcr.io/cloud-builders/docker"
-    id: push-image
     args:
       [
         "push",
-        "--all-tags",
-        "${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_ARTIFACT_REGISTRY_REPO_NAME}/${_CONTAINER_NAME}",
+        "$_REGION-docker.pkg.dev/$PROJECT_ID/$_ARTIFACT_REGISTRY_REPO_NAME/$_CONTAINER_NAME",
       ]
 
-  # Run Database Migrations (optional)
-  - name: "gcr.io/cloud-builders/gcloud"
-    id: run-migrations
-    entrypoint: /bin/bash
-    args:
-      - "-c"
-      - |
-        echo "🗄️ Running database migrations..."
-        
-        # Get database password from Secret Manager
-        DB_PASSWORD=$(gcloud secrets versions access latest \
-          --secret=${_CONTAINER_NAME}-db-password-staging \
-          --project=${_STAGING_PROJECT_ID})
-        
-        # Get Cloud SQL connection info
-        DB_HOST=$(gcloud sql instances describe ${_CONTAINER_NAME}-db-staging \
-          --project=${_STAGING_PROJECT_ID} \
-          --format="value(ipAddresses[0].ipAddress)")
-        
-        echo "Database host: $DB_HOST"
-        
-        # Install PostgreSQL client
-        apt-get update && apt-get install -y postgresql-client
-        
-        # Run migrations (adapt to your migration tool)
-        # Example with psql:
-        # PGPASSWORD=$DB_PASSWORD psql -h $DB_HOST -U app_user -d app_db -f migrations/schema.sql
-        
-        echo "✅ Migrations completed"
-
-  # Deploy to Cloud Run Staging
+  # Deploy to Staging
   - name: "gcr.io/cloud-builders/gcloud"
     id: deploy-staging
     entrypoint: gcloud
     args:
       - "run"
       - "deploy"
-      - "${_CONTAINER_NAME}"
+      - "adn-agent"
       - "--image"
-      - "${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_ARTIFACT_REGISTRY_REPO_NAME}/${_CONTAINER_NAME}:${COMMIT_SHA}"
+      - "$_REGION-docker.pkg.dev/$PROJECT_ID/$_ARTIFACT_REGISTRY_REPO_NAME/$_CONTAINER_NAME"
       - "--region"
       - "${_REGION}"
       - "--project"
       - "${_STAGING_PROJECT_ID}"
-      - "--add-cloudsql-instances"
-      - "${_STAGING_PROJECT_ID}:${_REGION}:${_CONTAINER_NAME}-db-staging"
-      - "--set-env-vars"
-      - "DB_NAME=app_db,DB_USER=app_user,INSTANCE_CONNECTION_NAME=${_STAGING_PROJECT_ID}:${_REGION}:${_CONTAINER_NAME}-db-staging,USE_MOCK_DB=false"
-      - "--set-secrets"
-      - "DB_PASSWORD=${_CONTAINER_NAME}-db-password-staging:latest"
-      - "--allow-unauthenticated"
-      - "--max-instances"
-      - "10"
-      - "--min-instances"
-      - "1"
-
-  # Health Check
-  - name: "gcr.io/cloud-builders/gcloud"
-    id: health-check
-    entrypoint: /bin/bash
-    args:
-      - "-c"
-      - |
-        echo "🏥 Running health check..."
-        SERVICE_URL=$(gcloud run services describe ${_CONTAINER_NAME} \
-          --region ${_REGION} \
-          --project ${_STAGING_PROJECT_ID} \
-          --format="value(status.url)")
-        
-        # Wait for service to be ready
-        sleep 10
-        
-        # Check health endpoint
-        HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" $SERVICE_URL/health || echo "000")
-        
-        if [ "$HTTP_CODE" = "200" ]; then
-          echo "✅ Health check passed"
-        else
-          echo "❌ Health check failed with code: $HTTP_CODE"
-          exit 1
-        fi
 
   # Fetch Staging Service URL
   - name: "gcr.io/cloud-builders/gcloud"
@@ -115,9 +53,8 @@ steps:
     args:
       - "-c"
       - |
-        gcloud run services describe ${_CONTAINER_NAME} \
-        --region ${_REGION} --project ${_STAGING_PROJECT_ID} \
-        --format="value(status.url)" > staging_url.txt
+        echo $(gcloud run services describe adn-agent \
+        --region ${_REGION} --project ${_STAGING_PROJECT_ID} --format="value(status.url)") > staging_url.txt
 
   # Fetch ID Token
   - name: gcr.io/cloud-builders/gcloud
@@ -126,7 +63,7 @@ steps:
     args:
       - "-c"
       - |
-        gcloud auth print-identity-token -q > id_token.txt
+        echo $(gcloud auth print-identity-token -q) > id_token.txt
 
   # Load Testing
   - name: "python:3.12-slim"
@@ -140,7 +77,7 @@ steps:
         pip install locust==2.31.1 --user
         locust -f tests/load_test/load_test.py \
         --headless \
-        -H $_STAGING_URL \
+        -H $$_STAGING_URL \
         -t 30s -u 10 -r 0.5 \
         --csv=tests/load_test/.results/results \
         --html=tests/load_test/.results/report.html
@@ -154,11 +91,11 @@ steps:
     args:
       - "-c"
       - |
-        TIMESTAMP=$(date +%Y%m%d-%H%M%S)
-        gsutil -m cp -r tests/load_test/.results gs://${_BUCKET_NAME_LOAD_TEST_RESULTS}/results-$TIMESTAMP
+        export _TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+        gsutil -m cp -r tests/load_test/.results gs://${_BUCKET_NAME_LOAD_TEST_RESULTS}/results-$${_TIMESTAMP}
         echo "_________________________________________________________________________"
-        echo "Load test results copied to gs://${_BUCKET_NAME_LOAD_TEST_RESULTS}/results-$TIMESTAMP"
-        echo "HTTP link: https://console.cloud.google.com/storage/browser/${_BUCKET_NAME_LOAD_TEST_RESULTS}/results-$TIMESTAMP"
+        echo "Load test results copied to gs://${_BUCKET_NAME_LOAD_TEST_RESULTS}/results-$${_TIMESTAMP}"
+        echo "HTTP link: https://console.cloud.google.com/storage/browser/${_BUCKET_NAME_LOAD_TEST_RESULTS}/results-$${_TIMESTAMP}"
         echo "_________________________________________________________________________"
 
   # Trigger Prod Deployment
@@ -170,13 +107,13 @@ steps:
       - "builds"
       - "triggers"
       - "run"
-      - "deploy-${_CONTAINER_NAME}"
+      - "deploy-adn-agent"
       - "--region"
-      - "${LOCATION}"
+      - "$LOCATION"
       - "--project"
-      - "${PROJECT_ID}"
+      - "$PROJECT_ID"
       - "--sha"
-      - "${COMMIT_SHA}"
+      - $COMMIT_SHA
 
   - name: gcr.io/cloud-builders/gcloud
     id: echo-view-build-trigger-link
@@ -185,19 +122,15 @@ steps:
       - "-c"
       - |
         echo "_________________________________________________________________________"
-        echo "✅ Staging deployment successful!"
-        echo "Production deployment triggered. View progress and/or approve on:"
-        echo "https://console.cloud.google.com/cloud-build/builds;region=${LOCATION}"
+        echo "Production deployment triggered. View progress and / or approve on the Cloud Build Console:"
+        echo "https://console.cloud.google.com/cloud-build/builds;region=$LOCATION"
         echo "_________________________________________________________________________"
 
 substitutions:
   _STAGING_PROJECT_ID: YOUR_STAGING_PROJECT_ID
   _REGION: europe-west1
-  _CONTAINER_NAME: adn-agent
-  _ARTIFACT_REGISTRY_REPO_NAME: adn-agent-repo
 
-logsBucket: gs://${PROJECT_ID}-${_CONTAINER_NAME}-logs/build-logs
+logsBucket: gs://${PROJECT_ID}-adn-agent-logs/build-logs
 options:
   substitutionOption: ALLOW_LOOSE
   defaultLogsBucketBehavior: REGIONAL_USER_OWNED_BUCKET
-  machineType: 'E2_HIGHCPU_8'

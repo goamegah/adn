@@ -18,8 +18,8 @@ provider "google" {
 }
 
 # corpus data bucket
-resource "google_storage_bucket" "bucket_corpus_data" {
-  name                        = "${var.cicd_runner_project_id}-${var.project_name}-corpus-data"
+resource "google_storage_bucket" "bucket_regulation_corpus_cicd" {
+  name                        = "${var.cicd_runner_project_id}-${var.project_name}-regulation-corpus-cicd"
   location                    = var.region
   project                     = var.cicd_runner_project_id
   uniform_bucket_level_access = true
@@ -27,8 +27,8 @@ resource "google_storage_bucket" "bucket_corpus_data" {
   depends_on                  = [resource.google_project_service.cicd_services, resource.google_project_service.deploy_project_services]
 }
 
-resource "google_storage_bucket" "bucket_corpus_data_staging" {
-  name                        = "${var.cicd_runner_project_id}-${var.project_name}-corpus-data-staging"
+resource "google_storage_bucket" "bucket_regulation_corpus_staging" {
+  name                        = "${var.cicd_runner_project_id}-${var.project_name}-regulation-corpus-staging"
   location                    = var.region
   project                     = var.staging_project_id
   uniform_bucket_level_access = true
@@ -36,8 +36,8 @@ resource "google_storage_bucket" "bucket_corpus_data_staging" {
   depends_on                  = [resource.google_project_service.cicd_services, resource.google_project_service.deploy_project_services]
 }
 
-resource "google_storage_bucket" "bucket_corpus_data_prod" {
-  name                        = "${var.cicd_runner_project_id}-${var.project_name}-corpus-data-prod"
+resource "google_storage_bucket" "bucket_regulation_corpus_prod" {
+  name                        = "${var.cicd_runner_project_id}-${var.project_name}-regulation-corpus-prod"
   location                    = var.region
   project                     = var.prod_project_id
   uniform_bucket_level_access = true
@@ -65,6 +65,8 @@ resource "google_storage_bucket" "logs_data_bucket" {
   depends_on = [resource.google_project_service.cicd_services, resource.google_project_service.deploy_project_services]
 }
 
+#  
+
 resource "google_artifact_registry_repository" "repo-artifacts-genai" {
   location      = var.region
   repository_id = "${var.project_name}-repo"
@@ -73,6 +75,5 @@ resource "google_artifact_registry_repository" "repo-artifacts-genai" {
   project       = var.cicd_runner_project_id
   depends_on    = [resource.google_project_service.cicd_services, resource.google_project_service.deploy_project_services]
 }
-
 
 
