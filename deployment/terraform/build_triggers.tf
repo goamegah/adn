@@ -122,3 +122,62 @@ resource "google_cloudbuild_trigger" "deploy_to_prod_pipeline" {
   ]
 
 }
+
+# e. create Import MIMIC trigger
+resource "google_cloudbuild_trigger" "import_mimic_staging_trigger" {
+  name            = "import-mimic-staging-${var.project_name}"
+  project         = var.cicd_runner_project_id
+  location        = var.region
+  description     = "Trigger for importing MIMIC-III data to staging"
+  service_account = resource.google_service_account.cicd_runner_sa.id
+
+  repository_event_config {
+    repository = "projects/${var.cicd_runner_project_id}/locations/${var.region}/connections/${var.host_connection_name}/repositories/${var.repository_name}"
+  }
+  filename = ".cloudbuild/import-mimic.yaml"
+  include_build_logs = "INCLUDE_BUILD_LOGS_WITH_STATUS"
+  substitutions = {
+    _ENV                = "staging"
+    _TARGET_PROJECT_ID  = var.staging_project_id
+    _DATA_BUCKET        = google_storage_bucket.mimic_data_staging.name
+    _SUBSET_FLAG        = ""  # Vide = import complet, ou "--subset 5" pour test
+
+    _CONTAINER_NAME     = var.project_name
+  }
+  depends_on = [
+    resource.google_project_service.cicd_services, 
+    resource.google_project_service.deploy_project_services, 
+    google_cloudbuildv2_connection.github_connection, 
+    google_cloudbuildv2_repository.repo,
+    google_storage_bucket.mimic_data_staging
+  ]
+}
+
+# e. create Import MIMIC to prod trigger
+resource "google_cloudbuild_trigger" "import_mimic_prod_trigger" {
+  name            = "import-mimic-prod-${var.project_name}"
+  project         = var.cicd_runner_project_id
+  location        = var.region
+  description     = "Trigger for importing MIMIC-III data to prod"
+  service_account = resource.google_service_account.cicd_runner_sa.id
+  repository_event_config {
+    repository = "projects/${var.cicd_runner_project_id}/locations/${var.region}/connections/${var.host_connection_name}/repositories/${var.repository_name}"
+  }
+  filename = ".cloudbuild/import-mimic.yaml"
+  include_build_logs = "INCLUDE_BUILD_LOGS_WITH_STATUS"
+  substitutions = {
+    _ENV                = "prod"
+    _TARGET_PROJECT_ID  = var.prod_project_id
+    _DATA_BUCKET        = google_storage_bucket.mimic_data_prod.name
+    _SUBSET_FLAG        = ""  # Vide = import complet, ou "--subset 5" pour test
+
+    _CONTAINER_NAME     = var.project_name
+  }
+  depends_on = [
+    resource.google_project_service.cicd_services, 
+    resource.google_project_service.deploy_project_services, 
+    google_cloudbuildv2_connection.github_connection, 
+    google_cloudbuildv2_repository.repo,
+    google_storage_bucket.mimic_data_prod
+  ]
+}

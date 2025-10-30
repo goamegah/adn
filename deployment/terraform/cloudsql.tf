@@ -1,16 +1,5 @@
 # Copyright 2025 Google LLC
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# Licensed under the Apache License, Version 2.0
 
 # Generate random passwords for database users
 resource "random_password" "db_password" {
@@ -48,9 +37,10 @@ resource "google_sql_database_instance" "postgres" {
   region           = var.region
 
   settings {
-    tier              = var.db_tier
+    # ⚠️ IMPORTANT: Augmenter les ressources pour l'import MIMIC-III
+    tier              = each.key == "prod" ? "db-custom-4-16384" : "db-custom-2-8192"
     availability_type = each.key == "prod" ? "REGIONAL" : "ZONAL"
-    disk_size         = var.db_disk_size
+    disk_size         = each.key == "prod" ? 100 : 50  # Plus d'espace pour MIMIC-III
     disk_type         = "PD_SSD"
 
     backup_configuration {
@@ -64,14 +54,16 @@ resource "google_sql_database_instance" "postgres" {
     }
 
     ip_configuration {
-      ipv4_enabled    = true
+      # ✅ IP publique TEMPORAIRE pour l'import initial
+      # À désactiver après l'import (voir guide)
+      ipv4_enabled    = var.enable_public_ip
       private_network = null
       
-      # Autoriser Cloud Build et Cloud Run à se connecter
+      # Autoriser uniquement Cloud Build pour l'import
       dynamic "authorized_networks" {
         for_each = var.enable_public_ip ? [{
           name  = "allow-cloud-build"
-          value = "0.0.0.0/0"  # À restreindre en production
+          value = "0.0.0.0/0"  # ⚠️ À restreindre après l'import
         }] : []
         content {
           name  = authorized_networks.value.name
@@ -86,16 +78,6 @@ resource "google_sql_database_instance" "postgres" {
       update_track = "stable"
     }
 
-    database_flags {
-      name  = "max_connections"
-      value = "100"
-    }
-
-    database_flags {
-      name  = "shared_preload_libraries"
-      value = "pg_stat_statements"
-    }
-
     insights_config {
       query_insights_enabled  = true
       query_plans_per_minute  = 5
@@ -104,7 +86,7 @@ resource "google_sql_database_instance" "postgres" {
     }
   }
 
-  deletion_protection = each.key == "prod" ? true : false
+  # deletion_protection = each.key == "prod" ? true : false
 
   depends_on = [google_project_service.deploy_project_services]
 }

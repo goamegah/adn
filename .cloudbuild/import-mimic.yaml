@@ -1,0 +1,102 @@
+# Copyright 2025 Google LLC
+# Pipeline d'import MIMIC-III vers Cloud SQL
+
+steps:
+  # Import des données
+  - name: "python:3.12-slim"
+    id: import-data
+    entrypoint: /bin/bash
+    # ✅ CORRECTION: Utiliser automapSubstitutions au lieu de env manuel
+    automapSubstitutions: true
+    args:
+      - "-c"
+      - |
+        set -e
+        
+        echo "📦 Installation des dépendances..."
+        pip install --user pandas sqlalchemy psycopg2-binary google-cloud-storage google-cloud-secret-manager tqdm
+        
+        echo "🔍 Récupération des informations de connexion..."
+        # ✅ Les substitutions sont maintenant disponibles comme variables d'environnement
+        DB_HOST=$(gcloud sql instances describe $_CONTAINER_NAME-db-$_ENV \
+          --project=$_TARGET_PROJECT_ID \
+          --format="value(ipAddresses[0].ipAddress)")
+        
+        export DB_HOST
+        export DB_PORT=5432
+        export DB_NAME=adn_database
+        export DB_USER=adn_user
+        
+        echo "📊 Lancement de l'import MIMIC-III..."
+        python3 scripts/import_mimic.py \
+          --env=$_ENV \
+          --project-id=$_TARGET_PROJECT_ID \
+          --bucket=$_DATA_BUCKET \
+          $_SUBSET_FLAG
+        
+        echo "✅ Import terminé avec succès"
+
+  # Vérification de l'import
+  - name: "gcr.io/cloud-builders/gcloud"
+    id: verify-import
+    entrypoint: /bin/bash
+    automapSubstitutions: true
+    args:
+      - "-c"
+      - |
+        echo "🔍 Vérification de l'import..."
+        
+        # ✅ Variables disponibles directement
+        DB_PASSWORD=$(gcloud secrets versions access latest \
+          --secret=$_CONTAINER_NAME-db-password-$_ENV \
+          --project=$_TARGET_PROJECT_ID)
+        
+        DB_HOST=$(gcloud sql instances describe $_CONTAINER_NAME-db-$_ENV \
+          --project=$_TARGET_PROJECT_ID \
+          --format="value(ipAddresses[0].ipAddress)")
+        
+        apt-get update && apt-get install -y postgresql-client
+        
+        # Compter les tables
+        TABLE_COUNT=$(PGPASSWORD=$DB_PASSWORD psql \
+          -h $DB_HOST \
+          -U adn_user \
+          -d adn_database \
+          -t -c "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = 'public';")
+        
+        echo "✅ Nombre de tables: $TABLE_COUNT"
+        
+        # Afficher un aperçu
+        echo "📋 Aperçu de la table 'patients':"
+        PGPASSWORD=$DB_PASSWORD psql \
+          -h $DB_HOST \
+          -U adn_user \
+          -d adn_database \
+          -c "SELECT * FROM patients LIMIT 3;"
+        
+        echo "📊 Statistiques par table:"
+        PGPASSWORD=$DB_PASSWORD psql \
+          -h $DB_HOST \
+          -U adn_user \
+          -d adn_database \
+          -c "SELECT 
+                schemaname,
+                tablename,
+                pg_size_pretty(pg_total_relation_size(schemaname||'.'||tablename)) AS size
+              FROM pg_tables
+              WHERE schemaname = 'public'
+              ORDER BY pg_total_relation_size(schemaname||'.'||tablename) DESC
+              LIMIT 10;"
+
+substitutions:
+  _ENV: staging
+  _TARGET_PROJECT_ID: adn-app-chn-staging
+  _CONTAINER_NAME: adn-app
+  _DATA_BUCKET: adn-app-chn-staging-mimic-data
+  _SUBSET_FLAG: ""
+
+logsBucket: gs://${PROJECT_ID}-adn-app-logs/build-logs
+options:
+  timeout: "7200s"
+  substitutionOption: ALLOW_LOOSE
+  defaultLogsBucketBehavior: REGIONAL_USER_OWNED_BUCKET

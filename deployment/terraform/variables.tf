@@ -103,6 +103,7 @@ variable "cicd_sa_deployment_required_roles" {
   ]
 }
 
+
 variable "repository_owner" {
   description = "Owner of the Git repository - username or organization"
   type        = string
@@ -113,6 +114,7 @@ variable "github_app_installation_id" {
   type        = string
   default     = null
 }
+
 
 variable "github_pat_secret_id" {
   description = "GitHub PAT Secret ID created by gcloud CLI"
@@ -132,45 +134,50 @@ variable "create_repository" {
   default     = false
 }
 
-variable "container_image" {
-  description = "URI de l'image du conteneur buildée et poussée dans Artifact Registry"
-  type        = string
-  default     = "us-docker.pkg.dev/cloudrun/container/hello"
-}
 
-# Cloud SQL Variables
-variable "postgres_version" {
-  description = "PostgreSQL version for Cloud SQL"
+# cloud sql variables
+variable "database_name" {
   type        = string
-  default     = "POSTGRES_15"
+  description = "Name of the Cloud SQL database"
+  default     = "adn_database"
 }
-
-variable "db_tier" {
-  description = "Machine type for Cloud SQL instance"
+variable "database_user" {
   type        = string
-  default     = "db-g1-small"
+  description = "Cloud SQL database user name"
+  default     = "adn_user"
 }
-
-variable "db_disk_size" {
-  description = "Disk size in GB for Cloud SQL instance"
+variable "database_tier" {
+  type        = string
+  description = "Cloud SQL instance machine type"
+  default     = "db-f1-micro"
+}
+variable "database_disk_size" {
   type        = number
+  description = "Cloud SQL instance disk size in GB"
   default     = 10
 }
-
-variable "database_name" {
-  description = "Name of the database to create"
+variable "database_region" {
   type        = string
-  default     = "app_db"
+  description = "Cloud SQL instance region"
+  default     = "europe-west1"
 }
-
-variable "database_user" {
-  description = "Database user name"
+variable "database_availability_type" {
   type        = string
-  default     = "app_user"
+  description = "Cloud SQL instance availability type"
+  default     = "ZONAL"
 }
-
+variable "postgres_version" {
+  type        = string
+  description = "PostgreSQL version for Cloud SQL instance"
+  default     = "POSTGRES_14"
+}
 variable "enable_public_ip" {
-  description = "Enable public IP for Cloud SQL (should be false in production with Private IP)"
   type        = bool
+  description = "Flag to enable public IP for Cloud SQL instance"
   default     = true
+}
+variable "dev_project_id" {
+  type        = string
+  description = "**Development** Google Cloud Project ID for resource deployment."
+  default     = ""
 }
