@@ -46,6 +46,9 @@ steps:
         echo "  • User: $$DB_USER"
         
         echo ""
+        echo "🔍 Vérification du script Python..."
+        head -n 20 scripts/import_mimic.py
+        echo ""
         echo "📊 Lancement de l'import MIMIC-III..."
         python3 scripts/import_mimic.py \
           --env=${_ENV} \
