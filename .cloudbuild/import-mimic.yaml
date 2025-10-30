@@ -97,6 +97,5 @@ substitutions:
 
 logsBucket: gs://${PROJECT_ID}-adn-app-logs/build-logs
 options:
-  timeout: "7200s"
   substitutionOption: ALLOW_LOOSE
   defaultLogsBucketBehavior: REGIONAL_USER_OWNED_BUCKET
