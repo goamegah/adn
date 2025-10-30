@@ -6,6 +6,7 @@ steps:
   - name: "python:3.12-slim"
     id: import-data
     entrypoint: /bin/bash
+    automapSubstitutions: true
     args:
       - "-c"
       - |
@@ -15,8 +16,9 @@ steps:
         pip install --user pandas sqlalchemy psycopg2-binary google-cloud-storage google-cloud-secret-manager tqdm
         
         echo "🔍 Récupération des informations de connexion..."
-        DB_HOST=$(gcloud sql instances describe ${_CONTAINER_NAME}-db-${_ENV} \
-          --project=${_TARGET_PROJECT_ID} \
+        # Les substitutions sont disponibles comme variables d'environnement grâce à automapSubstitutions
+        DB_HOST=$(gcloud sql instances describe "$_CONTAINER_NAME-db-$_ENV" \
+          --project="$_TARGET_PROJECT_ID" \
           --format="value(ipAddresses[0].ipAddress)")
         
         export DB_HOST
@@ -26,10 +28,10 @@ steps:
         
         echo "📊 Lancement de l'import MIMIC-III..."
         python3 scripts/import_mimic.py \
-          --env=${_ENV} \
-          --project-id=${_TARGET_PROJECT_ID} \
-          --bucket=${_DATA_BUCKET} \
-          ${_SUBSET_FLAG}
+          --env="$_ENV" \
+          --project-id="$_TARGET_PROJECT_ID" \
+          --bucket="$_DATA_BUCKET" \
+          $_SUBSET_FLAG
         
         echo "✅ Import terminé avec succès"
 
@@ -37,6 +39,7 @@ steps:
   - name: "gcr.io/cloud-builders/gcloud"
     id: verify-import
     entrypoint: /bin/bash
+    automapSubstitutions: true
     args:
       - "-c"
       - |
@@ -44,13 +47,13 @@ steps:
         
         echo "🔍 Vérification de l'import..."
         
-        # Récupération du mot de passe depuis Secret Manager
+        # Récupération du mot de passe depuis Secret Manager (variable shell locale)
         DB_PASSWORD=$(gcloud secrets versions access latest \
-          --secret=${_CONTAINER_NAME}-db-password-${_ENV} \
-          --project=${_TARGET_PROJECT_ID})
+          --secret="$_CONTAINER_NAME-db-password-$_ENV" \
+          --project="$_TARGET_PROJECT_ID")
         
-        DB_HOST=$(gcloud sql instances describe ${_CONTAINER_NAME}-db-${_ENV} \
-          --project=${_TARGET_PROJECT_ID} \
+        DB_HOST=$(gcloud sql instances describe "$_CONTAINER_NAME-db-$_ENV" \
+          --project="$_TARGET_PROJECT_ID" \
           --format="value(ipAddresses[0].ipAddress)")
         
         apt-get update && apt-get install -y postgresql-client
