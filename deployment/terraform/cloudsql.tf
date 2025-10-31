@@ -1,6 +1,3 @@
-# Copyright 2025 Google LLC
-# Licensed under the Apache License, Version 2.0
-
 # Generate random passwords for database users
 resource "random_password" "db_password" {
   for_each = local.deploy_project_ids

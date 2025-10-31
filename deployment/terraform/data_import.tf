@@ -1,6 +1,3 @@
-# Copyright 2025 Google LLC
-# Licensed under the Apache License, Version 2.0
-
 # Buckets pour stocker les CSV MIMIC-III
 resource "google_storage_bucket" "mimic_data_staging" {
   name                        = "${var.staging_project_id}-mimic-data"
