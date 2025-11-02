@@ -33,11 +33,21 @@ class ChatStreamUser(HttpUser):
         headers = {"Content-Type": "application/json"}
         if os.environ.get("_ID_TOKEN"):
             headers["Authorization"] = f"Bearer {os.environ['_ID_TOKEN']}"
+        
         # Create session first
         user_id = f"user_{uuid.uuid4()}"
-        session_data = {"state": {"preferred_language": "English", "visit_count": 1}}
+        session_data = {
+            "user_id": user_id,
+            "initial_state": {
+                "state": {
+                    "preferred_language": "English",
+                    "visit_count": 1
+                }
+            }
+        }
 
-        session_url = f"{self.client.base_url}/apps/app/users/{user_id}/sessions"
+        # Use your custom endpoint instead of ADK endpoint
+        session_url = f"{self.client.base_url}/start_session"
         session_response = requests.post(
             session_url,
             headers=headers,
@@ -45,8 +55,8 @@ class ChatStreamUser(HttpUser):
             timeout=10,
         )
 
-        # Get session_id from response
-        session_id = session_response.json()["id"]
+        # Get session_id from response (your endpoint returns "session_id")
+        session_id = session_response.json()["session_id"]
 
         # Send chat message
         data = {
