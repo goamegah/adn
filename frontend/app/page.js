@@ -1,20 +1,18 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { PatientSynthesis, DiagnosticDifferentials, CriticalAlerts, ImmediateRecommendations } from '../components/PanelsNew'
-import ChatPro from '../components/ChatPro'
+import Panels from '../components/Panels'
 import ARMPanel from '../components/ARMPanel'
-import { analyze } from '../lib/api'
-import { Brain, Activity, MessageCircle, BarChart3, Phone } from '../components/icons'
+import SessionManager from '../components/SessionManager'
+import { Brain, Phone, Settings, MessageCircle } from '../components/icons'
 
 export default function Home() {
-  const [patientId, setPatientId] = useState('PAT-2024-1847')
-  const [activeTab, setActiveTab] = useState('adn') // 'adn' | 'arm'
-  const [view, setView] = useState('chat') // 'chat' | 'results' (pour ADN seulement)
+  const [activeTab, setActiveTab] = useState('session') // Défaut: Session
+  const [view, setView] = useState('chat') // 'chat' | 'results' pour mobile
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(false)
-  const [streamingStep, setStreamingStep] = useState(null)
   const [resultsCount, setResultsCount] = useState(0)
+  const [currentSession, setCurrentSession] = useState(null)
   const [isDesktop, setIsDesktop] = useState(false)
 
   // Détection desktop
@@ -25,215 +23,146 @@ export default function Home() {
     return () => window.removeEventListener('resize', checkDesktop)
   }, [])
 
-  // Simulation du streaming progressif
-  const simulateStreaming = async (responseData) => {
-    setData(null)
-    setStreamingStep('synthesis')
-    
-    await new Promise(resolve => setTimeout(resolve, 800))
-    setData({ patient_summary: responseData.patient_summary })
-    
-    setStreamingStep('diagnostics')
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    setData(prev => ({ ...prev, differentials: responseData.differentials }))
-    
-    setStreamingStep('alerts')
-    await new Promise(resolve => setTimeout(resolve, 600))
-    setData(prev => ({ ...prev, alerts: responseData.alerts }))
-    
-    setStreamingStep('recommendations')
-    await new Promise(resolve => setTimeout(resolve, 800))
-    setData(prev => ({ ...prev, recommendations: responseData.recommendations, ...responseData }))
-    
-    setStreamingStep(null)
+  const handleSessionCreated = (sessionId, responseData) => {
+    setCurrentSession({ id: sessionId, data: responseData })
+    console.log('✅ Session créée:', sessionId)
   }
 
-  const handleChatMessage = async (text) => {
+  // Handler pour l'onglet Session
+  const handleMessageSent = async (messageText) => {
+    console.log('💬 Message reçu:', messageText)
     setLoading(true)
+    
     try {
-      const res = await analyze(patientId, text)
+      // Attendre que les agents finissent de traiter
+      console.log('⏳ Attente du traitement par les agents (2s)...')
+      await new Promise(resolve => setTimeout(resolve, 2000))
       
-      await simulateStreaming(res)
+      // Récupérer les outputs structurés des agents
+      console.log('📡 Récupération des outputs des agents...')
+      const { getAgentOutputs } = await import('../lib/api')
+      const agentData = await getAgentOutputs()
       
-      const count = [
-        res.patient_summary,
-        res.differentials,
-        res.alerts,
-        res.recommendations
-      ].filter(Boolean).length
-      setResultsCount(count)
+      console.log('📊 Agent outputs reçus:', agentData)
+      console.log('📊 Available outputs:', agentData?.available_outputs)
       
-      if (typeof window !== 'undefined' && window.innerWidth < 1024) {
-        setTimeout(() => setView('results'), 1000)
+      // Vérifier que les données sont disponibles
+      if (!agentData || !agentData.available_outputs || agentData.available_outputs.length === 0) {
+        console.warn('⚠️ Aucun output disponible')
+      } else {
+        console.log('✅ Outputs disponibles:', agentData.available_outputs.join(', '))
       }
       
-      return `✅ Analyse terminée pour **${patientId}**.\n\n📊 **Résultats:**\n- ${res.differentials?.length || 0} diagnostics différentiels\n- ${res.alerts?.length || 0} alertes identifiées\n- ${res.recommendations?.length || 0} recommandations\n\nQue souhaitez-vous explorer ?`
-    } catch (e) {
-      return `❌ Erreur: ${e.message || String(e)}`
+      // Stocker les données
+      setData(agentData)
+      
+      // Compter les résultats
+      const count = [
+        agentData.patient,
+        agentData.synthesis,
+        agentData.expert
+      ].filter(Boolean).length
+      
+      setResultsCount(count)
+      console.log(`✅ ${count} agents ont produit des données`)
+      
+      // Basculer vers la vue résultats sur mobile
+      if (typeof window !== 'undefined' && window.innerWidth < 1024) {
+        setTimeout(() => setView('results'), 500)
+      }
+      
+    } catch (error) {
+      console.error('❌ Erreur lors de la récupération des outputs:', error)
+      setData(null)
     } finally {
       setLoading(false)
     }
   }
 
-  const panelVariants = {
-    hidden: { opacity: 0, x: 50, scale: 0.95 },
-    visible: { 
-      opacity: 1, 
-      x: 0, 
-      scale: 1,
-      transition: { duration: 0.5, ease: 'easeOut' }
-    },
-    exit: { opacity: 0, x: -50, scale: 0.95 }
-  }
-
   return (
-    <div className="h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white flex flex-col overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
       {/* Header */}
-      <header className="flex-shrink-0 border-b border-slate-700/50 bg-slate-900/50 backdrop-blur-sm">
-        <div className="px-4 md:px-6 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 lg:w-10 lg:h-10 bg-gradient-to-br from-blue-600 to-blue-500 rounded-lg flex items-center justify-center shadow-lg shadow-blue-500/20">
-              <Brain className="w-5 h-5 lg:w-6 lg:h-6" />
-            </div>
-            <div>
-              <h1 className="text-base lg:text-lg font-bold">ADN Pro</h1>
-              <p className="text-slate-400 text-xs hidden md:block">
-                {activeTab === 'adn' ? 'Agentic Diagnostic Navigator' : 'Assistant Régulation Médicale'}
-              </p>
-            </div>
-          </div>
-          <div className="flex items-center gap-3 text-xs">
-            <span className="flex items-center gap-2 text-slate-400">
-              <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
-              <span className="hidden sm:inline">Backend</span>
-            </span>
-            {data && activeTab === 'adn' && (
-              <span className="hidden md:flex items-center gap-2 text-slate-400">
-                <Activity className="w-4 h-4" />
-                {data.processing_time_ms}ms
-              </span>
-            )}
-          </div>
-        </div>
-
-        {/* Top Level Tabs - ADN vs ARM */}
-        <div className="flex border-t border-slate-700/50 bg-slate-900/80">
-          <button
-            onClick={() => {
-              setActiveTab('adn')
-              setView('chat')
-            }}
-            className={`flex-1 lg:flex-none lg:min-w-[200px] py-3 px-6 text-sm font-medium transition-colors relative ${
-              activeTab === 'adn' 
-                ? 'text-blue-400 bg-slate-800/50' 
-                : 'text-slate-400 hover:text-slate-300 hover:bg-slate-800/30'
-            }`}
-          >
-            <div className="flex items-center justify-center gap-2">
-              <Brain className="w-4 h-4" />
-              <span>ADN</span>
-            </div>
-            {activeTab === 'adn' && (
-              <motion.div
-                layoutId="activeTopTab"
-                className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-400"
-                initial={false}
-                transition={{ duration: 0.3 }}
-              />
-            )}
-          </button>
-
-          <button
-            onClick={() => setActiveTab('arm')}
-            className={`flex-1 lg:flex-none lg:min-w-[200px] py-3 px-6 text-sm font-medium transition-colors relative ${
-              activeTab === 'arm' 
-                ? 'text-blue-400 bg-slate-800/50' 
-                : 'text-slate-400 hover:text-slate-300 hover:bg-slate-800/30'
-            }`}
-          >
-            <div className="flex items-center justify-center gap-2">
-              <Phone className="w-4 h-4" />
-              <span>ARM</span>
-            </div>
-            {activeTab === 'arm' && (
-              <motion.div
-                layoutId="activeTopTab"
-                className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-400"
-                initial={false}
-                transition={{ duration: 0.3 }}
-              />
-            )}
-          </button>
-        </div>
-
-        {/* Sub-tabs pour ADN uniquement (Mobile) */}
-        {activeTab === 'adn' && (
-          <div className="lg:hidden flex border-t border-slate-700/50">
-            <button
-              onClick={() => setView('chat')}
-              className={`flex-1 py-3 text-sm font-medium transition-colors relative ${
-                view === 'chat' 
-                  ? 'text-blue-400 bg-slate-800/50' 
-                  : 'text-slate-400 hover:text-slate-300'
-              }`}
-            >
-              <div className="flex items-center justify-center gap-2">
-                <MessageCircle className="w-4 h-4" />
-                <span>Chat</span>
+      <header className="border-b border-slate-700/50 bg-slate-900/50 backdrop-blur-sm sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 py-3 md:py-4">
+          <div className="flex items-center justify-between">
+            {/* Logo */}
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                <Brain className="w-6 h-6" />
               </div>
-              {view === 'chat' && (
-                <motion.div
-                  layoutId="activeSubTab"
-                  className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-400"
-                  initial={false}
-                  transition={{ duration: 0.3 }}
-                />
-              )}
-            </button>
+              <div>
+                <h1 className="text-lg md:text-xl font-bold">ADN</h1>
+                <p className="text-xs text-slate-400">Agentic Diagnostic Navigator</p>
+              </div>
+            </div>
             
-            <button
-              onClick={() => setView('results')}
-              className={`flex-1 py-3 text-sm font-medium transition-colors relative ${
-                view === 'results' 
-                  ? 'text-blue-400 bg-slate-800/50' 
-                  : 'text-slate-400 hover:text-slate-300'
-              }`}
-            >
-              <div className="flex items-center justify-center gap-2">
-                <BarChart3 className="w-4 h-4" />
-                <span>Résultats</span>
-                {resultsCount > 0 && (
-                  <span className="px-1.5 py-0.5 bg-blue-600 rounded-full text-xs min-w-[1.25rem] text-center">
-                    {resultsCount}
-                  </span>
-                )}
-              </div>
-              {view === 'results' && (
-                <motion.div
-                  layoutId="activeSubTab"
-                  className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-400"
-                  initial={false}
-                  transition={{ duration: 0.3 }}
-                />
-              )}
-            </button>
+            {/* Navigation Tabs - Seulement ARM et Session */}
+            <nav className="flex gap-1 bg-slate-800/50 rounded-lg p-1">
+              {/* Onglet ARM */}
+              <button
+                onClick={() => {
+                  setActiveTab('arm')
+                  setData(null)
+                }}
+                className={`px-3 md:px-4 py-1.5 md:py-2 rounded-md text-xs md:text-sm font-medium transition-all flex items-center gap-2 ${
+                  activeTab === 'arm' 
+                    ? 'bg-blue-600 text-white' 
+                    : 'text-slate-400 hover:text-white hover:bg-slate-700/50'
+                }`}
+              >
+                <Phone className="w-4 h-4" />
+                <span className="hidden sm:inline">ARM</span>
+              </button>
+              
+              {/* Onglet Session */}
+              <button
+                onClick={() => {
+                  setActiveTab('session')
+                  setData(null)
+                }}
+                className={`px-3 md:px-4 py-1.5 md:py-2 rounded-md text-xs md:text-sm font-medium transition-all flex items-center gap-2 ${
+                  activeTab === 'session' 
+                    ? 'bg-blue-600 text-white' 
+                    : 'text-slate-400 hover:text-white hover:bg-slate-700/50'
+                }`}
+              >
+                <Settings className="w-4 h-4" />
+                <span className="hidden sm:inline">Session</span>
+              </button>
+            </nav>
           </div>
-        )}
+        </div>
       </header>
 
       {/* Main Content */}
-      <div className="flex-1 flex overflow-hidden">
+      <div className="h-[calc(100vh-73px)] md:h-[calc(100vh-81px)] overflow-hidden">
         <AnimatePresence mode="wait">
-          {/* ==================== ADN MODE ==================== */}
-          {activeTab === 'adn' && (
+          
+          {/* ARM Tab */}
+          {activeTab === 'arm' && (
             <motion.div
-              key="adn"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="flex-1 flex overflow-hidden"
+              key="arm"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 20 }}
+              transition={{ duration: 0.2 }}
+              className="h-full"
             >
-              {/* ADN: Chat Panel (gauche sur desktop) */}
+              <ARMPanel />
+            </motion.div>
+          )}
+          
+          {/* Session Tab */}
+          {activeTab === 'session' && (
+            <motion.div
+              key="session"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 20 }}
+              transition={{ duration: 0.2 }}
+              className="h-full flex flex-col lg:flex-row"
+            >
+              {/* Chat Panel - Gauche (40%) */}
               <AnimatePresence mode="wait">
                 {(view === 'chat' || isDesktop) && (
                   <motion.div
@@ -246,33 +175,15 @@ export default function Home() {
                       w-full lg:w-2/5 border-r border-slate-700/50 flex-col bg-slate-900/30 backdrop-blur-sm
                     `}
                   >
-                    <div className="flex-shrink-0 px-4 py-3 border-b border-slate-700/50">
-                      <input
-                        type="text"
-                        value={patientId}
-                        onChange={(e) => setPatientId(e.target.value)}
-                        className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors"
-                        placeholder="ID Patient"
-                      />
-                    </div>
-                    
-                    <div className="flex-1 overflow-hidden">
-                      <ChatPro 
-                        onSend={handleChatMessage}
-                        loading={loading}
-                        suggestions={[
-                          "Analyser les signes vitaux",
-                          "Quels examens complémentaires ?",
-                          "Risque d'interactions médicamenteuses ?",
-                          "Diagnostic le plus probable ?"
-                        ]}
-                      />
-                    </div>
+                    <SessionManager 
+                      onSessionCreated={handleSessionCreated}
+                      onMessageSent={handleMessageSent}
+                    />
                   </motion.div>
                 )}
               </AnimatePresence>
 
-              {/* ADN: Results Panel (droite sur desktop) */}
+              {/* Results Panel - Droite (60%) */}
               <AnimatePresence mode="wait">
                 {(view === 'results' || isDesktop) && (
                   <motion.div
@@ -285,21 +196,21 @@ export default function Home() {
                       flex-1 overflow-y-auto bg-slate-900/20 p-4 md:p-6
                     `}
                   >
-                    <AnimatePresence mode="wait">
+                    <div className="space-y-6 max-w-5xl w-full">
+                      {/* État vide */}
                       {!data && !loading && (
                         <motion.div
                           initial={{ opacity: 0 }}
                           animate={{ opacity: 1 }}
-                          exit={{ opacity: 0 }}
                           className="w-full h-full flex flex-col items-center justify-center text-center px-4"
                         >
                           <Brain className="w-12 h-12 lg:w-16 lg:h-16 text-slate-600 mb-4" />
                           <p className="text-slate-400 text-base lg:text-lg font-medium mb-2">
-                            Système d'Aide à la Décision Médicale
+                            Résultats des Agents
                           </p>
                           <p className="text-slate-500 text-sm max-w-md">
-                            Posez une question ou décrivez un cas clinique dans le chat.
-                            L'orchestrateur générera automatiquement les analyses des 4 agents spécialisés.
+                            Envoyez un message dans le chat pour analyser un patient.
+                            Les résultats des 3 agents apparaîtront ici avec les alertes.
                           </p>
                           <button
                             onClick={() => setView('chat')}
@@ -311,100 +222,47 @@ export default function Home() {
                         </motion.div>
                       )}
 
-                      {(data || loading) && (
-                        <div className="space-y-4 md:space-y-6 max-w-5xl w-full">
-                          {/* Panel 1: Synthèse Patient */}
-                          <AnimatePresence>
-                            {(data?.patient_summary || streamingStep === 'synthesis') && (
-                              <motion.div
-                                variants={panelVariants}
-                                initial="hidden"
-                                animate="visible"
-                                exit="exit"
-                              >
-                                {data?.patient_summary ? (
-                                  <PatientSynthesis data={data.patient_summary} />
-                                ) : (
-                                  <SkeletonPanel title="🧠 Synthèse Patient" />
-                                )}
-                              </motion.div>
-                            )}
-                          </AnimatePresence>
+                      {/* Loading */}
+                      {loading && (
+                        <motion.div
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          className="w-full h-full flex flex-col items-center justify-center"
+                        >
+                          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-500 mb-4"></div>
+                          <p className="text-slate-400 text-lg font-medium">Analyse en cours...</p>
+                          <p className="text-slate-500 text-sm mt-2">Les agents traitent votre requête</p>
+                        </motion.div>
+                      )}
 
-                          {/* Panel 2: Diagnostics Différentiels */}
-                          <AnimatePresence>
-                            {(data?.differentials || streamingStep === 'diagnostics') && (
-                              <motion.div
-                                variants={panelVariants}
-                                initial="hidden"
-                                animate="visible"
-                                exit="exit"
-                              >
-                                {data?.differentials ? (
-                                  <DiagnosticDifferentials data={data.differentials} />
-                                ) : (
-                                  <SkeletonPanel title="🔍 Diagnostics Différentiels" />
-                                )}
-                              </motion.div>
-                            )}
-                          </AnimatePresence>
-
-                          {/* Panel 3: Alertes Critiques */}
-                          <AnimatePresence>
-                            {(data?.alerts || streamingStep === 'alerts') && (
-                              <motion.div
-                                variants={panelVariants}
-                                initial="hidden"
-                                animate="visible"
-                                exit="exit"
-                              >
-                                {data?.alerts ? (
-                                  <CriticalAlerts data={data.alerts} />
-                                ) : (
-                                  <SkeletonPanel title="⚠️ Alertes Critiques" />
-                                )}
-                              </motion.div>
-                            )}
-                          </AnimatePresence>
-
-                          {/* Panel 4: Recommandations */}
-                          <AnimatePresence>
-                            {(data?.recommendations || streamingStep === 'recommendations') && (
-                              <motion.div
-                                variants={panelVariants}
-                                initial="hidden"
-                                animate="visible"
-                                exit="exit"
-                              >
-                                {data?.recommendations ? (
-                                  <ImmediateRecommendations data={data.recommendations} />
-                                ) : (
-                                  <SkeletonPanel title="💡 Recommandations Immédiates" />
-                                )}
-                              </motion.div>
-                            )}
-                          </AnimatePresence>
-
+                      {/* Résultats avec Panels */}
+                      {data && !loading && (
+                        <motion.div
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.4 }}
+                        >
+                          <Panels data={data} />
+                          
                           {/* Performance Metrics */}
-                          {data && data.analysis_id && (
+                          {resultsCount > 0 && (
                             <motion.div
                               initial={{ opacity: 0 }}
                               animate={{ opacity: 1 }}
-                              className="flex flex-wrap items-center gap-4 text-xs text-slate-500 pt-4 border-t border-slate-700/50"
+                              className="flex flex-wrap items-center gap-4 text-xs text-slate-500 pt-4 border-t border-slate-700/50 mt-6"
                             >
-                              <span>ID: {data.analysis_id}</span>
-                              {data.confidence && <span>Confiance: {(data.confidence * 100).toFixed(0)}%</span>}
-                              {data.processing_time_ms && <span>Temps: {data.processing_time_ms}ms</span>}
+                              <span>✅ {resultsCount} agents actifs</span>
+                              {data.processing_time_ms && <span>⏱️ {data.processing_time_ms}ms</span>}
                             </motion.div>
                           )}
-                        </div>
+                        </motion.div>
                       )}
-                    </AnimatePresence>
+                    </div>
                   </motion.div>
                 )}
               </AnimatePresence>
 
-              {/* Mobile FAB - Retour au chat depuis résultats */}
+              {/* Mobile FAB pour revenir au chat */}
               {view === 'results' && data && (
                 <motion.button
                   initial={{ scale: 0 }}
@@ -418,51 +276,9 @@ export default function Home() {
               )}
             </motion.div>
           )}
-
-          {/* ==================== ARM MODE ==================== */}
-          {activeTab === 'arm' && (
-            <motion.div
-              key="arm"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="flex-1"
-            >
-              <ARMPanel />
-            </motion.div>
-          )}
+          
         </AnimatePresence>
       </div>
     </div>
-  )
-}
-
-// Composant Skeleton pour le loading
-function SkeletonPanel({ title }) {
-  return (
-    <motion.div
-      animate={{
-        opacity: [0.5, 1, 0.5],
-      }}
-      transition={{
-        duration: 1.5,
-        repeat: Infinity,
-        ease: 'easeInOut'
-      }}
-      className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-4 md:p-6 backdrop-blur-sm"
-    >
-      <div className="flex items-center gap-3 mb-4">
-        <div className="w-8 h-8 md:w-10 md:h-10 bg-slate-700/50 rounded-lg animate-pulse"></div>
-        <div className="flex-1">
-          <div className="h-4 md:h-5 bg-slate-700/50 rounded w-1/3 mb-2 animate-pulse"></div>
-          <div className="h-3 bg-slate-700/30 rounded w-2/3 animate-pulse"></div>
-        </div>
-      </div>
-      <div className="space-y-3">
-        <div className="h-3 md:h-4 bg-slate-700/30 rounded animate-pulse"></div>
-        <div className="h-3 md:h-4 bg-slate-700/30 rounded w-5/6 animate-pulse"></div>
-        <div className="h-3 md:h-4 bg-slate-700/30 rounded w-4/6 animate-pulse"></div>
-      </div>
-    </motion.div>
   )
 }

@@ -1,0 +1,7 @@
+google-cloud-aiplatform>=1.42.0
+google-adk
+sqlalchemy
+psycopg2-binary
+pandas
+numpy
+requests
