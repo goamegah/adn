@@ -1,5 +1,6 @@
 // lib/api.js - Client API pour le backend clinical
 
+// const API_BASE_URL = 'http://0.0.0.0:8000'
 const API_BASE_URL = 'https://adn-app-759263279097.europe-west1.run.app'
 
 /**

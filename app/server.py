@@ -32,7 +32,9 @@ processor = export.BatchSpanProcessor(CloudTraceLoggingSpanExporter())
 provider.add_span_processor(processor)
 trace.set_tracer_provider(provider)
 
-AGENT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# AGENT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+AGENT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "agents")
+print(f"⚙️ Agent directory: {AGENT_DIR}")
 session_service_uri = None
 
 # ✅ Créer l'app Google ADK
@@ -225,6 +227,14 @@ async def send_message(req: SendMessageRequest = Body(...)):
                         break
                 if agent_response:
                     break
+        
+        # Dans send_message, après avoir extrait agent_response
+        if agent_response:
+            # Nettoyer la réponse
+            import re
+            agent_response = re.sub(r'\x00', '', agent_response)  # Null bytes
+            agent_response = re.sub(r'\x1b\[[0-9;]*m', '', agent_response)  # ANSI codes
+            agent_response = agent_response.strip()
 
         logger.log_struct({
             "event": "message_sent",
