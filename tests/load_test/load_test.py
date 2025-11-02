@@ -16,7 +16,6 @@ import os
 import time
 import uuid
 
-import requests
 from locust import HttpUser, between, task
 
 ENDPOINT = "/run_sse"
@@ -36,27 +35,29 @@ class ChatStreamUser(HttpUser):
         
         # Create session first
         user_id = f"user_{uuid.uuid4()}"
-        session_data = {
-            "user_id": user_id,
-            "initial_state": {
-                "state": {
-                    "preferred_language": "English",
-                    "visit_count": 1
-                }
-            }
-        }
+        session_data = {"state": {"preferred_language": "English", "visit_count": 1}}
 
-        # Use your custom endpoint instead of ADK endpoint
-        session_url = f"{self.client.base_url}/start_session"
-        session_response = requests.post(
-            session_url,
+        # Utiliser self.client pour tracer les métriques Locust
+        with self.client.post(
+            f"/apps/app/users/{user_id}/sessions",
             headers=headers,
             json=session_data,
-            timeout=10,
-        )
-
-        # Get session_id from response (your endpoint returns "session_id")
-        session_id = session_response.json()["session_id"]
+            catch_response=True,
+            name="/apps/.../sessions create",
+        ) as session_response:
+            if session_response.status_code != 200:
+                session_response.failure(
+                    f"Session creation failed: {session_response.status_code} - {session_response.text[:200]}"
+                )
+                return
+            
+            try:
+                # IMPORTANT: L'API ADK retourne "id", pas "session_id"
+                session_id = session_response.json()["id"]
+                session_response.success()
+            except (KeyError, ValueError) as e:
+                session_response.failure(f"Invalid session response: {str(e)}")
+                return
 
         # Send chat message
         data = {
@@ -96,8 +97,10 @@ class ChatStreamUser(HttpUser):
                                 response=response,
                                 context={},
                             )
+                
                 end_time = time.time()
                 total_time = end_time - start_time
+                
                 self.environment.events.request.fire(
                     request_type="POST",
                     name=f"{ENDPOINT} end",
@@ -106,5 +109,6 @@ class ChatStreamUser(HttpUser):
                     response=response,
                     context={},
                 )
+                response.success()
             else:
                 response.failure(f"Unexpected status code: {response.status_code}")
