@@ -10,11 +10,15 @@ const nextConfig = {
   images: {
     unoptimized: true, // Pour éviter les problèmes avec Cloud Run
   },
-  
+
   // Variables d'environnement publiques
   env: {
-    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'https://clinical-backend-service-329720391631.us-east4.run.app',
+    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'https://adn-app-759263279097.europe-west1.run.app',
   },
+
+  // Optimisations pour Cloud Run
+  compress: true,
+  poweredByHeader: false,
 }
 
 module.exports = nextConfig
