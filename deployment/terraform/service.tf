@@ -122,3 +122,159 @@ resource "google_cloud_run_v2_service" "app_prod" {
   # Make dependencies conditional to avoid errors.
   depends_on = [google_project_service.deploy_project_services]
 }
+
+
+# Service Cloud Run pour le Frontend (Staging)
+resource "google_cloud_run_v2_service" "frontend_staging" {
+  name                = "${var.project_name}-frontend"
+  location            = var.region
+  project             = var.staging_project_id
+  deletion_protection = false
+  ingress             = "INGRESS_TRAFFIC_ALL"
+  
+  labels = {
+    "created-by" = "adk"
+    "component"  = "frontend"
+  }
+
+  template {
+    containers {
+      # Placeholder, sera remplacé par le CI/CD
+      image = "us-docker.pkg.dev/cloudrun/container/hello"
+
+      env {
+        name  = "NEXT_PUBLIC_API_URL"
+        value = google_cloud_run_v2_service.app_staging.uri
+      }
+
+      resources {
+        limits = {
+          cpu    = "1"
+          memory = "512Mi"
+        }
+        cpu_idle = true
+      }
+
+      startup_probe {
+        initial_delay_seconds = 0
+        timeout_seconds       = 1
+        period_seconds        = 3
+        failure_threshold     = 3
+        tcp_socket {
+          port = 8080
+        }
+      }
+    }
+
+    service_account = google_service_account.app_sa["staging"].email
+    max_instance_request_concurrency = 80
+
+    scaling {
+      min_instance_count = 0
+      max_instance_count = 10
+    }
+  }
+
+  traffic {
+    type    = "TRAFFIC_TARGET_ALLOCATION_TYPE_LATEST"
+    percent = 100
+  }
+
+  lifecycle {
+    ignore_changes = [
+      template[0].containers[0].image,
+      template[0].containers[0].env,
+    ]
+  }
+
+  depends_on = [
+    google_project_service.deploy_project_services,
+    google_cloud_run_v2_service.app_staging
+  ]
+}
+
+# Service Cloud Run pour le Frontend (Prod)
+resource "google_cloud_run_v2_service" "frontend_prod" {
+  name                = "${var.project_name}-frontend"
+  location            = var.region
+  project             = var.prod_project_id
+  deletion_protection = false
+  ingress             = "INGRESS_TRAFFIC_ALL"
+  
+  labels = {
+    "created-by" = "adk"
+    "component"  = "frontend"
+  }
+
+  template {
+    containers {
+      image = "us-docker.pkg.dev/cloudrun/container/hello"
+
+      env {
+        name  = "NEXT_PUBLIC_API_URL"
+        value = google_cloud_run_v2_service.app_prod.uri
+      }
+
+      resources {
+        limits = {
+          cpu    = "2"
+          memory = "1Gi"
+        }
+        cpu_idle = false
+      }
+
+      startup_probe {
+        initial_delay_seconds = 0
+        timeout_seconds       = 1
+        period_seconds        = 3
+        failure_threshold     = 3
+        tcp_socket {
+          port = 8080
+        }
+      }
+    }
+
+    service_account = google_service_account.app_sa["prod"].email
+    max_instance_request_concurrency = 80
+
+    scaling {
+      min_instance_count = 1
+      max_instance_count = 20
+    }
+  }
+
+  traffic {
+    type    = "TRAFFIC_TARGET_ALLOCATION_TYPE_LATEST"
+    percent = 100
+  }
+
+  lifecycle {
+    ignore_changes = [
+      template[0].containers[0].image,
+      template[0].containers[0].env,
+    ]
+  }
+
+  depends_on = [
+    google_project_service.deploy_project_services,
+    google_cloud_run_v2_service.app_prod
+  ]
+}
+
+# Rendre le frontend accessible publiquement (Staging)
+resource "google_cloud_run_v2_service_iam_member" "frontend_staging_public" {
+  project  = var.staging_project_id
+  location = var.region
+  name     = google_cloud_run_v2_service.frontend_staging.name
+  role     = "roles/run.invoker"
+  member   = "allUsers"
+}
+
+# Rendre le frontend accessible publiquement (Prod)
+resource "google_cloud_run_v2_service_iam_member" "frontend_prod_public" {
+  project  = var.prod_project_id
+  location = var.region
+  name     = google_cloud_run_v2_service.frontend_prod.name
+  role     = "roles/run.invoker"
+  member   = "allUsers"
+}
