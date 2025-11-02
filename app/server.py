@@ -4,6 +4,7 @@ import uuid
 
 import google.auth
 from fastapi import FastAPI, Body, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from google.adk.cli.fast_api import get_fast_api_app
 from google.cloud import logging as google_cloud_logging
 from opentelemetry import trace
@@ -44,6 +45,15 @@ app: FastAPI = get_fast_api_app(
 )
 app.title = "Clinical Agent API"
 app.description = "API for interacting with the Clinical Agent (Google ADK + Custom Endpoints)."
+
+# === CONFIGURATION CORS ===
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # === CONFIGURATION POUR CLOUD RUN (si besoin d'appeler un autre service) ===
 EXTERNAL_SERVICE_URL = os.getenv("EXTERNAL_SERVICE_URL")  # Optionnel
