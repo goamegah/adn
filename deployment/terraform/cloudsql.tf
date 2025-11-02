@@ -1,6 +1,3 @@
-# Copyright 2025 Google LLC
-# Licensed under the Apache License, Version 2.0
-
 # Generate random passwords for database users
 resource "random_password" "db_password" {
   for_each = local.deploy_project_ids
@@ -86,7 +83,7 @@ resource "google_sql_database_instance" "postgres" {
     }
   }
 
-  # deletion_protection = each.key == "prod" ? true : false
+  deletion_protection = each.key == "prod" ? true : false
 
   depends_on = [google_project_service.deploy_project_services]
 }

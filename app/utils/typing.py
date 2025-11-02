@@ -12,9 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import uuid
-from typing import (
-    Literal,
-)
+from typing import (Literal, Optional, Dict, Any)
 
 from google.adk.events.event import Event
 from google.genai.types import Content
@@ -44,3 +42,18 @@ class Feedback(BaseModel):
     log_type: Literal["feedback"] = "feedback"
     service_name: Literal["adn-agent"] = "adn-agent"
     user_id: str = ""
+
+
+# === SCHEMAS PERSONNALISÉS ===
+class StartSessionRequest(BaseModel):
+    user_id: str
+    initial_state: Optional[Dict[str, Any]] = None
+
+class SendMessageRequest(BaseModel):
+    user_id: Optional[str] = None
+    session_id: Optional[str] = None
+    query: str
+
+class GetStateRequest(BaseModel):
+    user_id: Optional[str] = None
+    session_id: Optional[str] = None
