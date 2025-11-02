@@ -94,3 +94,22 @@ logs/
 *.log
 *.tmp
 *.bak
+
+# ========================
+# 🔐 Environment files (.env)
+# ========================
+
+# Root-level .env
+.env
+
+# .env in any subdirectory
+**/.env
+
+# Variants like .env.local, .env.dev, .env.production, etc.
+.env.*
+**/.env.*
+
+# Common local environment patterns
+.envrc
+.envrc.*
+*.env
