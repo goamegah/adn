@@ -139,11 +139,10 @@
 
 
 
-
 # .cloudbuild/staging.yaml
 steps:
   # ========================================
-  # 1. BUILD & PUSH BACKEND
+  # BACKEND
   # ========================================
   - name: "gcr.io/cloud-builders/docker"
     id: build-backend
@@ -161,9 +160,6 @@ steps:
       - "push"
       - "$_REGION-docker.pkg.dev/$PROJECT_ID/$_ARTIFACT_REGISTRY_REPO_NAME/$_CONTAINER_NAME"
 
-  # ========================================
-  # 2. DEPLOY BACKEND
-  # ========================================
   - name: "gcr.io/cloud-builders/gcloud"
     id: deploy-backend-staging
     entrypoint: gcloud
@@ -179,7 +175,7 @@ steps:
       - "${_STAGING_PROJECT_ID}"
 
   # ========================================
-  # 3. GET BACKEND URL (stocké dans fichier)
+  # FRONTEND
   # ========================================
   - name: "gcr.io/cloud-builders/gcloud"
     id: get-backend-url
@@ -187,15 +183,13 @@ steps:
     args:
       - "-c"
       - |
-        echo $(gcloud run services describe adn-app \
+        BACKEND_URL=$$(gcloud run services describe adn-app \
           --region ${_REGION} \
           --project ${_STAGING_PROJECT_ID} \
-          --format="value(status.url)") > backend_url.txt
-        echo "Backend URL: $(cat backend_url.txt)"
+          --format="value(status.url)")
+        echo "$$BACKEND_URL" > backend_url.txt
+        echo "Backend URL: $$BACKEND_URL"
 
-  # ========================================
-  # 4. BUILD & PUSH FRONTEND
-  # ========================================
   - name: "gcr.io/cloud-builders/docker"
     id: build-frontend
     waitFor: ['get-backend-url']
@@ -203,12 +197,12 @@ steps:
     args:
       - "-c"
       - |
-        BACKEND_URL=$(cat backend_url.txt)
-        echo "Building frontend with API URL: $BACKEND_URL"
+        BACKEND_URL=$$(cat backend_url.txt)
+        echo "Building frontend with NEXT_PUBLIC_API_URL=$$BACKEND_URL"
         
         docker build \
-          --build-arg NEXT_PUBLIC_API_URL=$BACKEND_URL \
-          -t $_REGION-docker.pkg.dev/$PROJECT_ID/$_ARTIFACT_REGISTRY_REPO_NAME/$_CONTAINER_NAME-frontend \
+          --build-arg NEXT_PUBLIC_API_URL=$$BACKEND_URL \
+          -t ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_ARTIFACT_REGISTRY_REPO_NAME}/${_CONTAINER_NAME}-frontend \
           -f frontend/Dockerfile \
           frontend/
 
@@ -216,28 +210,25 @@ steps:
     id: push-frontend
     args:
       - "push"
-      - "$_REGION-docker.pkg.dev/$PROJECT_ID/$_ARTIFACT_REGISTRY_REPO_NAME/$_CONTAINER_NAME-frontend"
+      - "${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_ARTIFACT_REGISTRY_REPO_NAME}/${_CONTAINER_NAME}-frontend"
 
-  # ========================================
-  # 5. DEPLOY FRONTEND
-  # ========================================
   - name: "gcr.io/cloud-builders/gcloud"
     id: deploy-frontend-staging
     entrypoint: /bin/bash
     args:
       - "-c"
       - |
-        BACKEND_URL=$(cat backend_url.txt)
+        BACKEND_URL=$$(cat backend_url.txt)
         
         gcloud run deploy adn-app-frontend \
-          --image $_REGION-docker.pkg.dev/$PROJECT_ID/$_ARTIFACT_REGISTRY_REPO_NAME/$_CONTAINER_NAME-frontend \
+          --image ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_ARTIFACT_REGISTRY_REPO_NAME}/${_CONTAINER_NAME}-frontend \
           --region ${_REGION} \
           --project ${_STAGING_PROJECT_ID} \
-          --set-env-vars NEXT_PUBLIC_API_URL=$BACKEND_URL \
+          --set-env-vars NEXT_PUBLIC_API_URL=$$BACKEND_URL \
           --allow-unauthenticated
 
   # ========================================
-  # 6. GET FRONTEND URL POUR TESTS
+  # TESTS
   # ========================================
   - name: "gcr.io/cloud-builders/gcloud"
     id: fetch-staging-url
@@ -245,19 +236,16 @@ steps:
     args:
       - "-c"
       - |
-        echo $(gcloud run services describe adn-app-frontend \
+        echo $$(gcloud run services describe adn-app-frontend \
         --region ${_REGION} --project ${_STAGING_PROJECT_ID} --format="value(status.url)") > staging_url.txt
 
-  # ========================================
-  # 7. TESTS DE CHARGE
-  # ========================================
   - name: gcr.io/cloud-builders/gcloud
     id: fetch-id-token
     entrypoint: /bin/bash
     args:
       - "-c"
       - |
-        echo $(gcloud auth print-identity-token -q) > id_token.txt
+        echo $$(gcloud auth print-identity-token -q) > id_token.txt
 
   - name: "python:3.12-slim"
     id: load_test
@@ -265,8 +253,8 @@ steps:
     args:
       - "-c"
       - |
-        export _ID_TOKEN=$(cat id_token.txt)
-        export _STAGING_URL=$(cat staging_url.txt)
+        export _ID_TOKEN=$$(cat id_token.txt)
+        export _STAGING_URL=$$(cat staging_url.txt)
         pip install locust==2.31.1 --user
         locust -f tests/load_test/load_test.py \
         --headless \
@@ -283,15 +271,15 @@ steps:
     args:
       - "-c"
       - |
-        export _TIMESTAMP=$(date +%Y%m%d-%H%M%S)
-        gsutil -m cp -r tests/load_test/.results gs://${_BUCKET_NAME_LOAD_TEST_RESULTS}/results-$${_TIMESTAMP}
+        export _TIMESTAMP=$$(date +%Y%m%d-%H%M%S)
+        gsutil -m cp -r tests/load_test/.results gs://${_BUCKET_NAME_LOAD_TEST_RESULTS}/results-$$_TIMESTAMP
         echo "_________________________________________________________________________"
-        echo "Load test results copied to gs://${_BUCKET_NAME_LOAD_TEST_RESULTS}/results-$${_TIMESTAMP}"
-        echo "HTTP link: https://console.cloud.google.com/storage/browser/${_BUCKET_NAME_LOAD_TEST_RESULTS}/results-$${_TIMESTAMP}"
+        echo "Load test results copied to gs://${_BUCKET_NAME_LOAD_TEST_RESULTS}/results-$$_TIMESTAMP"
+        echo "HTTP link: https://console.cloud.google.com/storage/browser/${_BUCKET_NAME_LOAD_TEST_RESULTS}/results-$$_TIMESTAMP"
         echo "_________________________________________________________________________"
 
   # ========================================
-  # 8. TRIGGER PROD DEPLOYMENT
+  # TRIGGER PROD
   # ========================================
   - name: gcr.io/cloud-builders/gcloud
     id: trigger-prod-deployment
