@@ -13,102 +13,180 @@
 # limitations under the License.
 
 import os
-import time
 import uuid
+import random
 
 from locust import HttpUser, between, task
 
-ENDPOINT = "/run_sse"
-
 
 class ChatStreamUser(HttpUser):
-    """Simulates a user interacting with the chat stream API."""
+    """Simulates a user interacting with the Clinical Agent API."""
 
     wait_time = between(1, 3)  # Wait 1-3 seconds between tasks
 
-    @task
+    # Liste de questions médicales pour varier les tests
+    MEDICAL_QUERIES = [
+        "Bonjour! Quels sont les symptômes d'un AVC?",
+        "Comment reconnaître un arrêt cardiaque?",
+        "Que faire en cas d'hémorragie importante?",
+        "Quels sont les signes d'une intoxication médicamenteuse?",
+        "Comment identifier une crise d'asthme sévère?",
+        "Quels sont les symptômes d'une allergie grave?",
+        "Comment réagir face à une convulsion?",
+        "Quels sont les signes d'un infarctus du myocarde?",
+    ]
+
+    @task(3)
     def chat_stream(self) -> None:
-        """Simulates a chat stream interaction."""
+        """Simulates a complete chat interaction (session + message)."""
         headers = {"Content-Type": "application/json"}
         if os.environ.get("_ID_TOKEN"):
             headers["Authorization"] = f"Bearer {os.environ['_ID_TOKEN']}"
         
-        # Create session first
+        # Create session using custom endpoint
         user_id = f"user_{uuid.uuid4()}"
-        session_data = {"state": {"preferred_language": "English", "visit_count": 1}}
-
-        # Utiliser self.client pour tracer les métriques Locust
+        
+        # Créer la session - Locust track automatiquement
         with self.client.post(
-            f"/apps/app/users/{user_id}/sessions",
+            "/start_session",
             headers=headers,
-            json=session_data,
+            json={"user_id": user_id},
             catch_response=True,
-            name="/apps/.../sessions create",
+            name="POST /start_session",
         ) as session_response:
             if session_response.status_code != 200:
                 session_response.failure(
-                    f"Session creation failed: {session_response.status_code} - {session_response.text[:200]}"
+                    f"Session creation failed: {session_response.status_code}"
                 )
                 return
             
             try:
-                # IMPORTANT: L'API ADK retourne "id", pas "session_id"
-                session_id = session_response.json()["id"]
+                session_data = session_response.json()
+                session_id = session_data["session_id"]
                 session_response.success()
             except (KeyError, ValueError) as e:
                 session_response.failure(f"Invalid session response: {str(e)}")
                 return
 
-        # Send chat message
-        data = {
-            "app_name": "app",
+        # Send chat message - Locust track automatiquement
+        message_data = {
             "user_id": user_id,
             "session_id": session_id,
-            "new_message": {
-                "role": "user",
-                "parts": [{"text": "Hello! What's recommendation for covid 19?"}],
-            },
-            "streaming": True,
+            "query": random.choice(self.MEDICAL_QUERIES),
         }
-        start_time = time.time()
 
         with self.client.post(
-            ENDPOINT,
-            name=f"{ENDPOINT} message",
+            "/send_message",
+            name="POST /send_message",
             headers=headers,
-            json=data,
+            json=message_data,
             catch_response=True,
-            stream=True,
-            params={"alt": "sse"},
         ) as response:
             if response.status_code == 200:
-                events = []
-                for line in response.iter_lines():
-                    if line:
-                        line_str = line.decode("utf-8")
-                        events.append(line_str)
-
-                        if "429 Too Many Requests" in line_str:
-                            self.environment.events.request.fire(
-                                request_type="POST",
-                                name=f"{ENDPOINT} rate_limited 429s",
-                                response_time=0,
-                                response_length=len(line),
-                                response=response,
-                                context={},
-                            )
-                
-                end_time = time.time()
-                total_time = end_time - start_time
-                
-                self.environment.events.request.fire(
-                    request_type="POST",
-                    name=f"{ENDPOINT} end",
-                    response_time=total_time * 1000,  # Convert to milliseconds
-                    response_length=len(events),
-                    response=response,
-                    context={},
-                )
-                response.success()
+                try:
+                    response_data = response.json()
+                    
+                    # Vérifier que la réponse contient bien une réponse de l'agent
+                    if response_data.get("success") and response_data.get("response"):
+                        response.success()
+                    else:
+                        response.failure("Response missing agent reply")
+                        
+                except Exception as e:
+                    response.failure(f"Failed to parse response: {str(e)}")
             else:
-                response.failure(f"Unexpected status code: {response.status_code}")
+                response.failure(f"Status code: {response.status_code}")
+
+    @task(1)
+    def get_session_state(self) -> None:
+        """Test the get_state endpoint."""
+        headers = {"Content-Type": "application/json"}
+        if os.environ.get("_ID_TOKEN"):
+            headers["Authorization"] = f"Bearer {os.environ['_ID_TOKEN']}"
+        
+        user_id = f"user_{uuid.uuid4()}"
+        
+        # Créer d'abord une session
+        with self.client.post(
+            "/start_session",
+            headers=headers,
+            json={"user_id": user_id},
+            catch_response=True,
+            name="POST /start_session (state)",
+        ) as session_response:
+            if session_response.status_code != 200:
+                return
+            
+            try:
+                session_data = session_response.json()
+                session_id = session_data["session_id"]
+                session_response.success()
+            except (KeyError, ValueError):
+                return
+
+        # Récupérer l'état de la session
+        with self.client.post(
+            "/get_state",
+            headers=headers,
+            json={"user_id": user_id, "session_id": session_id},
+            catch_response=True,
+            name="POST /get_state",
+        ) as response:
+            if response.status_code == 200:
+                try:
+                    state_data = response.json()
+                    if state_data.get("success"):
+                        response.success()
+                    else:
+                        response.failure("State retrieval unsuccessful")
+                except Exception as e:
+                    response.failure(f"Failed to parse state: {str(e)}")
+            else:
+                response.failure(f"Status code: {response.status_code}")
+
+    @task(1)
+    def get_agent_outputs(self) -> None:
+        """Test the get_agent_outputs endpoint."""
+        headers = {"Content-Type": "application/json"}
+        if os.environ.get("_ID_TOKEN"):
+            headers["Authorization"] = f"Bearer {os.environ['_ID_TOKEN']}"
+        
+        user_id = f"user_{uuid.uuid4()}"
+        
+        # Créer d'abord une session
+        with self.client.post(
+            "/start_session",
+            headers=headers,
+            json={"user_id": user_id},
+            catch_response=True,
+            name="POST /start_session (outputs)",
+        ) as session_response:
+            if session_response.status_code != 200:
+                return
+            
+            try:
+                session_data = session_response.json()
+                session_id = session_data["session_id"]
+                session_response.success()
+            except (KeyError, ValueError):
+                return
+
+        # Récupérer les outputs des agents
+        with self.client.post(
+            "/get_agent_outputs",
+            headers=headers,
+            json={"user_id": user_id, "session_id": session_id},
+            catch_response=True,
+            name="POST /get_agent_outputs",
+        ) as response:
+            if response.status_code == 200:
+                try:
+                    outputs_data = response.json()
+                    if outputs_data.get("success"):
+                        response.success()
+                    else:
+                        response.failure("Outputs retrieval unsuccessful")
+                except Exception as e:
+                    response.failure(f"Failed to parse outputs: {str(e)}")
+            else:
+                response.failure(f"Status code: {response.status_code}")
