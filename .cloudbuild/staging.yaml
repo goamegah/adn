@@ -170,9 +170,9 @@ steps:
       - "--image"
       - "$_REGION-docker.pkg.dev/$PROJECT_ID/$_ARTIFACT_REGISTRY_REPO_NAME/$_CONTAINER_NAME"
       - "--region"
-      - "${_REGION}"
+      - "$_REGION"
       - "--project"
-      - "${_STAGING_PROJECT_ID}"
+      - "$_STAGING_PROJECT_ID"
 
   # ========================================
   # FRONTEND
@@ -184,8 +184,8 @@ steps:
       - "-c"
       - |
         BACKEND_URL=$$(gcloud run services describe adn-app \
-          --region ${_REGION} \
-          --project ${_STAGING_PROJECT_ID} \
+          --region $_REGION \
+          --project $_STAGING_PROJECT_ID \
           --format="value(status.url)")
         echo "$$BACKEND_URL" > backend_url.txt
         echo "Backend URL: $$BACKEND_URL"
@@ -198,11 +198,11 @@ steps:
       - "-c"
       - |
         BACKEND_URL=$$(cat backend_url.txt)
-        echo "Building frontend with NEXT_PUBLIC_API_URL=$$BACKEND_URL"
+        echo "Building frontend with API: $$BACKEND_URL"
         
         docker build \
           --build-arg NEXT_PUBLIC_API_URL=$$BACKEND_URL \
-          -t ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_ARTIFACT_REGISTRY_REPO_NAME}/${_CONTAINER_NAME}-frontend \
+          -t $_REGION-docker.pkg.dev/$PROJECT_ID/$_ARTIFACT_REGISTRY_REPO_NAME/$_CONTAINER_NAME-frontend \
           -f frontend/Dockerfile \
           frontend/
 
@@ -210,7 +210,7 @@ steps:
     id: push-frontend
     args:
       - "push"
-      - "${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_ARTIFACT_REGISTRY_REPO_NAME}/${_CONTAINER_NAME}-frontend"
+      - "$_REGION-docker.pkg.dev/$PROJECT_ID/$_ARTIFACT_REGISTRY_REPO_NAME/$_CONTAINER_NAME-frontend"
 
   - name: "gcr.io/cloud-builders/gcloud"
     id: deploy-frontend-staging
@@ -221,9 +221,9 @@ steps:
         BACKEND_URL=$$(cat backend_url.txt)
         
         gcloud run deploy adn-app-frontend \
-          --image ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_ARTIFACT_REGISTRY_REPO_NAME}/${_CONTAINER_NAME}-frontend \
-          --region ${_REGION} \
-          --project ${_STAGING_PROJECT_ID} \
+          --image $_REGION-docker.pkg.dev/$PROJECT_ID/$_ARTIFACT_REGISTRY_REPO_NAME/$_CONTAINER_NAME-frontend \
+          --region $_REGION \
+          --project $_STAGING_PROJECT_ID \
           --set-env-vars NEXT_PUBLIC_API_URL=$$BACKEND_URL \
           --allow-unauthenticated
 
@@ -237,7 +237,7 @@ steps:
       - "-c"
       - |
         echo $$(gcloud run services describe adn-app-frontend \
-        --region ${_REGION} --project ${_STAGING_PROJECT_ID} --format="value(status.url)") > staging_url.txt
+        --region $_REGION --project $_STAGING_PROJECT_ID --format="value(status.url)") > staging_url.txt
 
   - name: gcr.io/cloud-builders/gcloud
     id: fetch-id-token
@@ -272,15 +272,11 @@ steps:
       - "-c"
       - |
         export _TIMESTAMP=$$(date +%Y%m%d-%H%M%S)
-        gsutil -m cp -r tests/load_test/.results gs://${_BUCKET_NAME_LOAD_TEST_RESULTS}/results-$$_TIMESTAMP
+        gsutil -m cp -r tests/load_test/.results gs://$_BUCKET_NAME_LOAD_TEST_RESULTS/results-$$_TIMESTAMP
         echo "_________________________________________________________________________"
-        echo "Load test results copied to gs://${_BUCKET_NAME_LOAD_TEST_RESULTS}/results-$$_TIMESTAMP"
-        echo "HTTP link: https://console.cloud.google.com/storage/browser/${_BUCKET_NAME_LOAD_TEST_RESULTS}/results-$$_TIMESTAMP"
+        echo "Load test results: gs://$_BUCKET_NAME_LOAD_TEST_RESULTS/results-$$_TIMESTAMP"
         echo "_________________________________________________________________________"
 
-  # ========================================
-  # TRIGGER PROD
-  # ========================================
   - name: gcr.io/cloud-builders/gcloud
     id: trigger-prod-deployment
     entrypoint: gcloud
@@ -304,7 +300,7 @@ steps:
       - "-c"
       - |
         echo "_________________________________________________________________________"
-        echo "Production deployment triggered. View progress and / or approve on the Cloud Build Console:"
+        echo "Production deployment triggered"
         echo "https://console.cloud.google.com/cloud-build/builds;region=$LOCATION"
         echo "_________________________________________________________________________"
 
