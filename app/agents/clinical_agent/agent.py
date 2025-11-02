@@ -1,6 +1,6 @@
 import os
 import pandas as pd
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, List, Literal
 import google.auth
 from sqlalchemy import create_engine, text
 import logging
@@ -9,6 +9,7 @@ from urllib.parse import quote_plus
 from google.adk.agents import LlmAgent, SequentialAgent
 from google.adk.tools import agent_tool
 
+from pydantic import BaseModel, Field
 
 # Charger les variables d'environnement depuis le fichier .env
 load_dotenv()
@@ -580,6 +581,7 @@ except Exception as e:
         raise
 
 
+
 def tool_collecter_par_id(subject_id: int) -> Dict[str, Any]:
     """Tool: collecte les données patient depuis MIMIC-III"""
     return collecteur.collecter_donnees_patient(subject_id=subject_id)
@@ -590,8 +592,7 @@ def tool_collecter_depuis_texte(texte_medical: str) -> Dict[str, Any]:
     return collecteur.collecter_donnees_patient(texte_medical=texte_medical)
 
 
-# Configuration des agents ADK (inchangée)
-collecteur_agent_adk = LlmAgent(
+collecteur_agent = LlmAgent(
     name="collecteur_agent",
     model="gemini-2.0-flash",
     description="Agent de collecte de données cliniques depuis MIMIC-III ou texte libre.",
@@ -609,44 +610,141 @@ sous la clé 'patient_normalized'.
 )
 
 
+# ============================================================
+# SYNTHETISEUR AGENT - Schemas et agent
+# ============================================================
+
+class CriticalAlert(BaseModel):
+    type: Literal[
+        "MISSING_DATA",
+        "INCONSISTENCY",
+        "DELAYED_ACTION",
+        "TREATMENT_MISMATCH",
+        "SILENT_DETERIORATION"
+    ] = Field(..., description="Category of the detected alert.")
+    severity: Literal["LOW", "MEDIUM", "HIGH", "CRITICAL"] = Field(..., description="Severity level of the alert.")
+    finding: str = Field(..., description="Precise description of the problem or inconsistency found.")
+    action_required: str = Field(..., description="Recommended immediate action to mitigate the issue.")
+
+
+class DataInconsistency(BaseModel):
+    field_1: str = Field(..., description="First data field name involved in inconsistency.")
+    value_1: str = Field(..., description="Value of the first field.")
+    field_2: str = Field(..., description="Second data field name involved in inconsistency.")
+    value_2: str = Field(..., description="Value of the second field.")
+    explanation: str = Field(..., description="Explanation of why these values are inconsistent.")
+
+
+class ReliabilityAssessment(BaseModel):
+    dossier_completeness: float = Field(..., ge=0.0, le=1.0, description="Completeness ratio of the patient dossier (0.0-1.0).")
+    confidence_level: Literal["LOW", "MEDIUM", "HIGH"] = Field(..., description="Overall confidence in data reliability.")
+    critical_data_missing: List[str] = Field(default_factory=list, description="List of critical missing data elements.")
+    data_quality_issues: List[str] = Field(default_factory=list, description="Detected issues affecting data quality.")
+
+
+class ClinicalScore(BaseModel):
+    score_name: str = Field(..., description="Name of the clinical score (SOFA, qSOFA, NEWS, GCS, etc.)")
+    value: str = Field(..., description="Numerical or qualitative value of the score.")
+    interpretation: str = Field(..., description="Interpretation of the score result.")
+    evidence: List[str] = Field(default_factory=list, description="Supporting evidence for the calculated score.")
+
+
+class DeteriorationAnalysis(BaseModel):
+    risk_level: Literal["LOW", "MEDIUM", "HIGH", "CRITICAL"] = Field(..., description="Predicted risk level of deterioration.")
+    warning_signs: List[str] = Field(default_factory=list, description="Clinical warning signs indicating potential deterioration.")
+    predicted_timeline: Optional[str] = Field(None, description="Estimated time frame for possible deterioration.")
+    evidence: List[str] = Field(default_factory=list, description="Clinical evidence supporting the prediction.")
+
+
+class SynthetiseurOutput(BaseModel):
+    """Structured output for the Synthétiseur (Jekyll/Hyde) agent."""
+    
+    critical_alerts: List[CriticalAlert] = Field(default_factory=list, description="List of identified critical alerts.")
+    data_inconsistencies: List[DataInconsistency] = Field(default_factory=list, description="Detected inconsistencies between data points.")
+    reliability_assessment: ReliabilityAssessment = Field(..., description="Global assessment of data reliability and completeness.")
+    clinical_scores: List[ClinicalScore] = Field(default_factory=list, description="Calculated clinical scores with interpretations.")
+    deterioration_analysis: DeteriorationAnalysis = Field(..., description="Predicted deterioration risks and evidence.")
+
+
 synthetiseur_agent = LlmAgent(
     name="synthetiseur_agent",
     model="gemini-2.0-flash",
-    description="""
-Medical synthesis and self-criticism agent using the Jekyll/Hyde method.
-Analyzes patient data, creates a synthesis then self-criticizes to detect
-inconsistencies, critical alerts and silent deteriorations.
-""",
-    instruction="""
-You are an expert medical agent in clinical analysis with two modes of operation:
+    description="Medical synthesis and self-criticism agent using the Jekyll/Hyde method.",
+    instruction="""Your RUTHLESS SELF-CRITICISM mission:
+1. Look for what is MISSING in the data
+2. Find INCONSISTENCIES between data points
+3. Detect ABNORMAL DELAYS
+4. Identify UNMENTIONED RISKS
+5. Spot INAPPROPRIATE TREATMENTS
 
-JEKYLL MODE (Synthesis):
-- Creates clear and structured clinical summaries
-- Identifies patient key problems
-- Evaluates severity and clinical trajectory
-
-HYDE MODE (Critique):
-- Ruthlessly challenges data and conclusions
-- Detects inconsistencies and missing data
-- Identifies non-obvious risks
-- Calculates relevant clinical scores
-- Predicts potential deteriorations
-
-ACCEPTED FORMATS:
-1. Hospital format: {"patient_normalized": {...}}
-2. EMS format: {"input": {"text": "..."}, "expected_output": {...}}
-3. Free text: "Patient aged X years, ..."
-
-ANALYSIS PROCESS:
-1. Normalize input (automatically detect format)
-2. Jekyll Phase: Create a complete and structured synthesis
-3. Hyde Phase: Self-criticize to find flaws
-4. Return a complete analysis with priority alerts
-
-IMPORTANT: Use the output_key to store your synthesis for the next agent.
-""",
+Output strictly as JSON matching the defined schema.""",
+    output_schema=SynthetiseurOutput,
     output_key="synthese_clinique"
 )
+
+
+# ============================================================
+# EXPERT AGENT - Schemas et agent
+# ============================================================
+
+class EvidenceItem(BaseModel):
+    source: Optional[str] = Field(None, description="Source de l'information ou référence clinique.")
+    statement: str = Field(..., description="Élément de preuve clinique (POUR ou CONTRE le diagnostic).")
+
+
+class DifferentialDiagnosis(BaseModel):
+    diagnosis: str = Field(..., description="Nom du diagnostic différentiel.")
+    probability: Literal["LOW", "MEDIUM", "HIGH", "VERY_HIGH"] = Field(..., description="Probabilité estimée du diagnostic.")
+    confidence: Literal["LOW", "MEDIUM", "HIGH"] = Field(..., description="Confiance dans l'évaluation du diagnostic.")
+    supporting_evidence: List[EvidenceItem] = Field(default_factory=list, description="Éléments soutenant le diagnostic.")
+    contradicting_evidence: List[EvidenceItem] = Field(default_factory=list, description="Éléments s'opposant au diagnostic.")
+
+
+class GuidelineValidation(BaseModel):
+    alert_type: str = Field(..., description="Type d'alerte ou problème évalué.")
+    guideline_source: str = Field(..., description="Nom de la guideline utilisée (ex: Surviving Sepsis, AHA, ESC, etc.).")
+    recommendation: str = Field(..., description="Recommandation issue de la guideline.")
+    compliance: Literal["COMPLIANT", "PARTIAL", "NON_COMPLIANT"] = Field(..., description="Niveau de conformité de la prise en charge.")
+    evidence_strength: Literal["LOW", "MODERATE", "HIGH", "STRONG"] = Field(..., description="Force de l'évidence selon la source.")
+    references: List[str] = Field(default_factory=list, description="Références bibliographiques ou liens vers guidelines.")
+
+
+class RiskScore(BaseModel):
+    score_name: str = Field(..., description="Nom du score (SOFA, qSOFA, APACHE II, GRACE, TIMI, etc.)")
+    value: str = Field(..., description="Valeur calculée du score.")
+    interpretation: str = Field(..., description="Signification clinique du score obtenu.")
+    guideline_reference: Optional[str] = Field(None, description="Référence guideline associée au score (optionnelle).")
+
+
+class ActionItem(BaseModel):
+    action: str = Field(..., description="Description de l'action à entreprendre.")
+    priority: Literal["IMMEDIATE", "URGENT", "ROUTINE"] = Field(..., description="Niveau de priorité de l'action.")
+    rationale: Optional[str] = Field(None, description="Justification clinique ou guideline de cette action.")
+    time_window: Optional[str] = Field(None, description="Fenêtre temporelle recommandée (ex: '<15 min', '<1h', etc.).")
+
+
+class ActionPlan(BaseModel):
+    immediate_actions: List[ActionItem] = Field(default_factory=list, description="Actions vitales à entreprendre immédiatement (<15 min).")
+    urgent_actions: List[ActionItem] = Field(default_factory=list, description="Actions importantes à entreprendre rapidement (<1h).")
+    diagnostic_workup: List[ActionItem] = Field(default_factory=list, description="Examens complémentaires ou investigations à prioriser.")
+
+
+class EvidenceSummary(BaseModel):
+    key_findings: List[str] = Field(default_factory=list, description="Résumés des points cliniques majeurs.")
+    references_used: List[str] = Field(default_factory=list, description="Liste complète des références citées ou consultées.")
+    methodology_note: Optional[str] = Field(None, description="Notes sur la méthodologie d'évaluation ou sur les limites de l'analyse.")
+
+
+class ExpertAgentOutput(BaseModel):
+    """
+    Sortie structurée de l'agent expert (validation clinique + diagnostic différentiel)
+    suivant le processus en 5 phases.
+    """
+    differential_diagnoses: List[DifferentialDiagnosis] = Field(default_factory=list, description="Diagnostics différentiels générés.")
+    guideline_validations: List[GuidelineValidation] = Field(default_factory=list, description="Validation des alertes selon les guidelines.")
+    risk_scores: List[RiskScore] = Field(default_factory=list, description="Scores de risque pertinents calculés.")
+    action_plan: ActionPlan = Field(..., description="Plan d'action clinique priorisé.")
+    evidence_summary: EvidenceSummary = Field(..., description="Synthèse finale des preuves et références utilisées.")
 
 
 expert_agent = LlmAgent(
@@ -659,44 +757,32 @@ génère des diagnostics différentiels et propose des plans d'action sourcés.
 """,
     instruction="""
 Tu es un professeur de médecine expert en médecine d'urgence et infectiologie.
-
-Tu reçois la synthèse clinique de l'agent précédent dans {synthese_clinique}.
-
-PROCESSUS EN 5 PHASES :
-
-PHASE 1 - DIAGNOSTICS DIFFÉRENTIELS :
-- Génère une liste complète et pertinente de diagnostics
-- Pour chaque diagnostic : probabilité, confiance, preuves POUR/CONTRE
-
-PHASE 2 - VALIDATION GUIDELINES :
-PRINCIPES :
-- Toujours privilégier la sécurité patient
-- Base toutes tes recommandations sur des guidelines reconnues
-- Cite systématiquement tes sources avec force de l'évidence
-
-PHASE 3 - SCORES DE RISQUE :
-- Calcule scores pertinents selon diagnostics (SOFA, qSOFA, APACHE II, GRACE, TIMI, etc.)
-
-PHASE 4 - PLAN D'ACTION :
-- IMMEDIATE (< 15 min) : actions vitales
-- URGENT (< 1h) : actions importantes
-- Workup diagnostique priorisé
-
-PHASE 5 - SYNTHÈSE PREUVES :
-- Compilation de toutes les références utilisées
+Analyse la synthèse clinique et suis rigoureusement le processus en 5 phases :
+1. Diagnostics différentiels
+2. Validation des guidelines
+3. Scores de risque
+4. Plan d'action
+5. Synthèse des preuves
+Retourne la sortie STRICTEMENT au format JSON conforme au schéma spécifié.
 """,
+    output_schema=ExpertAgentOutput,
     output_key="validation_expert"
 )
 
 
-# Configuration du pipeline
-collecteur_tool = agent_tool.AgentTool(agent=collecteur_agent_adk)
+# ============================================================
+# PIPELINE ET ROOT AGENT
+# ============================================================
+
+# Wrapping des agents comme outils ADK
+collecteur_tool = agent_tool.AgentTool(agent=collecteur_agent)
 synthetiseur_tool = agent_tool.AgentTool(agent=synthetiseur_agent)
 expert_tool = agent_tool.AgentTool(agent=expert_agent)
 
+# Pipeline complet : Collecte → Synthèse → Validation
 pipeline_clinique = SequentialAgent(
     name="pipeline_clinique",
-    sub_agents=[collecteur_agent_adk, synthetiseur_agent, expert_agent],
+    sub_agents=[collecteur_agent, synthetiseur_agent, expert_agent],
 )
 
 pipeline_tool = agent_tool.AgentTool(agent=pipeline_clinique)
@@ -730,22 +816,62 @@ Le pipeline complet `pipeline_clinique` exécute dans l'ordre :
 2️⃣ `synthetiseur_agent` — produit une synthèse clinique (mode Jekyll/Hyde).  
 3️⃣ `expert_agent` — valide la synthèse et produit les recommandations médicales.  
 
+Si l'utilisateur demande une **analyse complète** (par exemple :  
+> "Analyse complète du patient 12548"  
+ou  
+> "Analyse complète du patient suivant : [texte médical]")  
+alors tu dois **appeler `pipeline_clinique` directement** avec les bons paramètres.
+
 =========================
 ⚙️ OUTILS DISPONIBLES
 =========================
 - `pipeline_clinique(subject_id=..., texte_medical=...)`
+  → Exécute tout le pipeline (Collecte → Synthèse → Validation).
 - `collecteur_agent(subject_id=..., texte_medical=...)`
+  → Collecte uniquement les données patient.
 - `synthetiseur_agent(donnees_patient=...)`
+  → Produit une synthèse clinique et une auto-critique.
 - `expert_agent(synthese_clinique=...)`
+  → Fait la validation experte et les diagnostics différentiels.
 
 =========================
 💡 DIRECTIVES
 =========================
 - Tu dois toujours répondre avec un ton professionnel et structuré.
 - Résume les conclusions cliniques finales du pipeline de façon claire.
-- Si un outil échoue ou manque de contexte, propose automatiquement l'étape précédente.
+- Si un outil échoue ou manque de contexte (ex. synthèse non trouvée),
+  propose automatiquement l'étape précédente pour reconstituer le contexte.
 - N'invente jamais de données patient : tu dois te baser sur les sorties des outils.
 - Termine toujours ta réponse par une **conclusion clinique synthétique**.
+
+=========================
+📝 EXEMPLES
+=========================
+🧩 Exemple 1 :
+Utilisateur : "Analyse complète du patient 14532"
+→ Appelle `pipeline_clinique(subject_id=14532)`
+
+🧩 Exemple 2 :
+Utilisateur : "Voici un texte médical à analyser : ..."
+→ Appelle `pipeline_clinique(texte_medical="...")`
+
+🧩 Exemple 3 :
+Utilisateur : "Valide la synthèse clinique précédente."
+→ Appelle `expert_agent(synthese_clinique={synthese_clinique?})`
+
+🧩 Exemple 4 :
+Utilisateur : "Montre-moi seulement les données patient du sujet 125."
+→ Appelle `collecteur_agent(subject_id=125)`
+
+=========================
+🎯 OBJECTIF FINAL
+=========================
+Fournir une réponse clinique complète, logique et hiérarchisée :
+- Résumé patient
+- Synthèse médicale (Jekyll)
+- Auto-critique (Hyde)
+- Validation experte
+- Plan d'action et recommandations
 """,
     tools=[pipeline_tool, collecteur_tool, synthetiseur_tool, expert_tool],
 )
