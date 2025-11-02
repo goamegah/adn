@@ -1,316 +1,482 @@
-/* Panels.jsx — ADN dashboard with modern responsive UI */
+/* Panels.jsx - Compatible avec getAgentOutputs et données backend */
 'use client'
-import { Activity, Brain, AlertTriangle, Lightbulb, CheckCircle2, AlertCircle, Clock } from './icons'
+import { Activity, Brain, AlertTriangle, Lightbulb, CheckCircle2, AlertCircle, Clock, Shield, Target, TrendingUp } from './icons'
 
-function useMergedData(data){
-  const demo = {
-    summary: {
-      patientId: 'PAT-2024-1847',
-      name: 'Marie Dubois, 65 ans',
-      admission: '14:15 - Dyspnée aiguë',
-      allergies: 'Pénicilline',
-      antecedents: 'Hypertension (2019), Diabète Type 2 (2021), Fibrillation auriculaire (2023)',
-      meds: 'Metformine 1000mg, Bisoprolol 5mg, Apixaban 5mg',
-      vitals: 'TA: 145/92, FC: 110 irrég., SpO2: 89%, Temp: 37.8°C',
-    },
-    diagnostics: [
-      {
-        title: 'Embolie Pulmonaire',
-        probability: 'Élevée',
-        level: 'high',
-        evidence: 'Dyspnée aiguë + ATCD TVP (alerte) + D-dimères ↑ + FA',
-        extra: 'Score Wells: 7.5 (Risque élevé)',
-        action: 'Angio-TDM thoracique urgente',
-      },
-      {
-        title: 'Décompensation Cardiaque',
-        probability: 'Moyenne',
-        level: 'medium',
-        evidence: 'FA connue + HTA + Dyspnée',
-        counter: 'Absence de râles, BNP non élevé (dernière valeur)',
-        action: 'ECG, Rx Thorax, NTproBNP',
-      },
-      {
-        title: 'Pneumonie Atypique',
-        probability: 'Faible',
-        level: 'low',
-        evidence: 'Fébricule + Dyspnée',
-        counter: 'Absence de toux, CRP normale ce matin',
-        action: 'Rx Thorax si autres causes exclues',
-      },
-    ],
-    alerts: [
-      {
-        title: 'Antécédent de TVP Non Répertorié',
-        detail:
-          "Thrombose veineuse profonde documentée en 2018 (Note infirmière du 15/03/2018) absente de la liste des diagnostics actifs. Risque élevé d'embolie pulmonaire.",
-        level: 'high',
-      },
-      {
-        title: 'D-Dimères Élevés Non Signalés',
-        detail:
-          "Résultat laboratoire ce matin: D-Dimères à 2850 ng/mL (N < 500). Non mentionnés dans le rapport d'admission.",
-        level: 'medium',
-      },
-    ],
-    recommendations: [
-      "PRIORITÉ URGENTE: Angio-TDM thoracique pour éliminer l'embolie pulmonaire (ATCD TVP + D-dimères élevés)",
-      'Monitoring: Surveillance continue SpO2, installer O2 si < 92%',
-      'Biologie: Gazométrie artérielle, NT-proBNP, Troponines',
-      "Préparation: Prévenir l'équipe de réanimation si dégradation",
-    ],
-  }
-
-  // normalize summary from either `summary` or nested `synthesis`
-  const synthesis = data?.synthesis
-  let normalizedSummary = null
-  if (data?.summary && typeof data.summary === 'object') {
-    normalizedSummary = data.summary
-  } else if (synthesis && typeof synthesis === 'object') {
-    try {
-      const patientName = synthesis.patient?.name
-        ? `${synthesis.patient.name}${synthesis.patient.age != null ? ', ' + synthesis.patient.age + ' ans' : ''}`
-        : undefined
-      const admission = synthesis.admission?.reason
-      const allergies = Array.isArray(synthesis.allergies)
-        ? synthesis.allergies.map(a => a?.substance).filter(Boolean).join(', ')
-        : undefined
-      const antecedents = Array.isArray(synthesis.antecedents)
-        ? synthesis.antecedents
-            .map(a => {
-              const year = a?.year != null ? ` (${a.year})` : ''
-              return `${a?.pathology ?? ''}${year}`
-            })
-            .filter(s => s && s.trim())
-            .join(', ')
-        : undefined
-      const meds = Array.isArray(synthesis.current_medications)
-        ? synthesis.current_medications
-            .map(m => [m?.drug, m?.dosage].filter(Boolean).join(' '))
-            .filter(Boolean)
-            .join(', ')
-        : undefined
-      const vitals = synthesis.vital_signs
-        ? [
-            synthesis.vital_signs.blood_pressure
-              ? `TA: ${synthesis.vital_signs.blood_pressure.systolic}/${synthesis.vital_signs.blood_pressure.diastolic}`
-              : null,
-            synthesis.vital_signs.heart_rate
-              ? `FC: ${synthesis.vital_signs.heart_rate.value}${synthesis.vital_signs.heart_rate.rhythm ? ' ' + synthesis.vital_signs.heart_rate.rhythm : ''}`
-              : null,
-            synthesis.vital_signs.spo2 ? `SpO2: ${synthesis.vital_signs.spo2.value}%` : null,
-            synthesis.vital_signs.temperature ? `Temp: ${synthesis.vital_signs.temperature.value}°C` : null,
-          ]
-            .filter(Boolean)
-            .join(', ')
-        : undefined
-
-      normalizedSummary = {
-        patientId: data?.patient_id || undefined,
-        name: patientName,
-        admission,
-        allergies,
-        antecedents,
-        meds,
-        vitals,
-      }
-    } catch {
-      normalizedSummary = null
-    }
-  }
-
-  // normalize diagnostics from either `diagnostics` or `differentials`
-  let diagnostics = data?.diagnostics || data?.differentials || null
-  if (Array.isArray(diagnostics) && diagnostics.length && diagnostics[0]?.pathology) {
-    const levelMap = { 'Élevée': 'high', 'Elevée': 'high', 'Moyenne': 'medium', 'Faible': 'low', 'Haute': 'high' }
-    diagnostics = diagnostics.map(d => {
-      const probabilityLabel = d?.probability_label
-      const level = levelMap[probabilityLabel] || 'medium'
-      const evidenceText = Array.isArray(d?.evidence)
-        ? d.evidence.map(ev => ev?.text).filter(Boolean).join(' • ')
-        : undefined
-      const action = Array.isArray(d?.suggested_actions)
-        ? d.suggested_actions.map(a => a?.action).filter(Boolean).join(' | ')
-        : undefined
-      const extra = typeof d?.score === 'number' ? `Score: ${d.score}/10` : undefined
-      return {
-        title: d?.pathology,
-        probability: probabilityLabel,
-        level,
-        evidence: evidenceText,
-        extra,
-        action,
-      }
-    })
-  }
-
-  // normalize alerts (severity/description → level/detail)
-  let alerts = data?.alerts || null
-  if (Array.isArray(alerts) && alerts.length && alerts[0]?.severity) {
-    alerts = alerts.map(a => ({
-      title: a?.title,
-      detail: a?.description,
-      level: a?.severity === 'critical' ? 'high' : 'medium',
-      confidence: a?.confidence,
-    }))
-  }
-
-  const recommendations = data?.recommendations || null
-
-  return {
-    summary: normalizedSummary ?? demo.summary,
-    diagnostics: Array.isArray(diagnostics) && diagnostics.length ? diagnostics : demo.diagnostics,
-    alerts: Array.isArray(alerts) && alerts.length ? alerts : demo.alerts,
-    recommendations: Array.isArray(recommendations) && recommendations.length ? recommendations : demo.recommendations,
-  }
-}
-
-export default function Panels({ data }) {
-  const merged = useMergedData(data)
-
-  return (
-    <div className="panels-grid">
-      {/* Synthèse Patient */}
-      <section className="panel">
-        <div className="title">
-          <span>Synthèse Patient</span>
-          <span className="small-badge">Agent Synthétiseur</span>
+// Composant: Synthèse Patient (Agent Collecteur)
+export const PatientSynthesis = ({ data }) => {
+  console.log('PatientSynthesis data:', data)
+  
+  if (!data) {
+    return (
+      <div className="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-xl p-6">
+        <div className="flex items-center gap-2 mb-4">
+          <Activity className="w-5 h-5 text-blue-400" />
+          <h2 className="text-lg font-semibold">Synthèse Patient</h2>
+          <span className="text-xs text-slate-400 ml-auto">Agent Collecteur</span>
         </div>
-        <div className="patient-card">
-          {typeof merged.summary === 'object' ? (
-            <div>
-              {merged.summary.patientId && (
-                <div style={{marginBottom:8}}><strong>ID:</strong> {merged.summary.patientId}</div>
-              )}
-              {merged.summary.name && (
-                <div style={{marginBottom:8}}><strong>Patient:</strong> {merged.summary.name}</div>
-              )}
-              {merged.summary.admission && (
-                <div style={{marginBottom:8}}><strong>Admission:</strong> {merged.summary.admission}</div>
-              )}
-              {merged.summary.allergies && (
-                <div style={{marginBottom:8}}><strong>Allergies:</strong> {merged.summary.allergies}</div>
-              )}
-              {merged.summary.antecedents && (
-                <div className="list-item" style={{marginTop:10}}>
-                  <strong>Antécédents principaux:</strong>
-                  <div style={{marginTop:6, color:'var(--muted)'}}>{merged.summary.antecedents}</div>
+        <p className="text-slate-400 text-sm">Aucune donnée patient disponible</p>
+      </div>
+    )
+  }
+  
+  // Extraire les données patient
+  const patientData = data.patient || data
+  const admission = patientData.admission || {}
+  const labs = patientData.labs || []
+  const cultures = patientData.cultures || []
+  const medications = patientData.medications || []
+  const diagnoses = patientData.diagnoses || []
+  const vitals = patientData.vitals || {}
+  
+  return (
+    <div className="bg-gradient-to-br from-slate-800/80 to-slate-800/50 backdrop-blur border-2 border-slate-600 rounded-2xl p-6 shadow-2xl">
+      {/* Header */}
+      <div className="flex items-center gap-3 mb-6 pb-4 border-b-2 border-slate-700">
+        <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
+          <Activity className="w-7 h-7 text-white" />
+        </div>
+        <div className="flex-1">
+          <h2 className="text-xl font-bold text-white">Synthèse Patient</h2>
+          <p className="text-sm text-blue-300 font-medium">Agent Collecteur</p>
+        </div>
+        <div className="px-4 py-2 bg-blue-500/20 border border-blue-400/50 rounded-lg">
+          <span className="text-blue-300 text-xs font-semibold">ACTIF</span>
+        </div>
+      </div>
+      
+      {/* Contenu */}
+      <div className="space-y-5">
+        {/* Info patient */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {patientData.id && (
+            <div className="bg-slate-900/50 rounded-xl p-4 border border-slate-700">
+              <p className="text-slate-400 text-xs font-semibold uppercase tracking-wider mb-2">Patient ID</p>
+              <p className="text-white font-bold text-lg">
+                #{patientData.id}
+                {patientData.age && <span className="text-slate-300 font-normal text-base ml-2">· {patientData.age} ans</span>}
+                {patientData.sex && <span className="text-slate-400 font-normal text-sm ml-2">({patientData.sex})</span>}
+              </p>
+            </div>
+          )}
+          
+          {admission.chief_complaint && (
+            <div className="bg-slate-900/50 rounded-xl p-4 border border-slate-700">
+              <p className="text-slate-400 text-xs font-semibold uppercase tracking-wider mb-2">Motif d'admission</p>
+              <p className="text-white font-semibold text-base">{admission.chief_complaint}</p>
+              {admission.type && <p className="text-slate-400 text-xs mt-1">{admission.type}</p>}
+            </div>
+          )}
+        </div>
+
+        {/* Médicaments */}
+        {medications.length > 0 && (
+          <div className="bg-slate-900/30 rounded-xl p-5 border border-slate-700">
+            <div className="flex items-center gap-2 mb-3">
+              <Target className="w-5 h-5 text-green-400" />
+              <p className="text-slate-300 text-sm font-bold uppercase tracking-wider">Médicaments actuels</p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+              {medications.slice(0, 6).map((med, i) => (
+                <div key={i} className="bg-slate-800/50 rounded-lg p-3 border border-slate-700">
+                  <p className="text-white font-semibold text-sm">{med.drug}</p>
+                  {med.dose && <p className="text-slate-400 text-xs mt-1">{med.dose} {med.route && `(${med.route})`}</p>}
                 </div>
-              )}
-              {merged.summary.meds && (
-                <div className="list-item">
-                  <strong>Médicaments actuels:</strong>
-                  <div style={{marginTop:6, color:'var(--muted)'}}>{merged.summary.meds}</div>
+              ))}
+            </div>
+            {medications.length > 6 && (
+              <p className="text-slate-400 text-xs mt-2">+ {medications.length - 6} autres médicaments</p>
+            )}
+          </div>
+        )}
+
+        {/* Cultures positives */}
+        {cultures.filter(c => c.isPositive).length > 0 && (
+          <div className="bg-red-500/10 border-l-4 border-red-500 rounded-xl p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <AlertCircle className="w-5 h-5 text-red-400" />
+              <p className="text-red-300 text-sm font-bold uppercase tracking-wider">⚠️ Cultures Positives</p>
+            </div>
+            <div className="space-y-2">
+              {cultures.filter(c => c.isPositive).map((culture, i) => (
+                <div key={i} className="bg-red-900/20 rounded-lg p-3">
+                  <p className="text-red-200 font-semibold text-sm">{culture.organism}</p>
+                  <p className="text-red-300/70 text-xs">{culture.spec_type}</p>
+                  {culture.antibiotic && (
+                    <p className="text-xs mt-1">
+                      <span className="text-slate-400">{culture.antibiotic}: </span>
+                      <span className={`font-semibold ${
+                        culture.isSensitive ? 'text-green-300' :
+                        culture.isResistant ? 'text-red-300' :
+                        'text-yellow-300'
+                      }`}>
+                        {culture.interpretation === 'S' ? 'Sensible' :
+                         culture.interpretation === 'R' ? 'Résistant' :
+                         'Intermédiaire'}
+                      </span>
+                    </p>
+                  )}
                 </div>
-              )}
-              {merged.summary.vitals && (
-                <div className="list-item">
-                  <strong>Signes vitaux:</strong>
-                  <div style={{marginTop:6, color:'var(--muted)'}}>{merged.summary.vitals}</div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Diagnostics ICD */}
+        {diagnoses.length > 0 && (
+          <div className="bg-slate-900/30 rounded-xl p-5 border border-slate-700">
+            <div className="flex items-center gap-2 mb-3">
+              <Shield className="w-5 h-5 text-slate-400" />
+              <p className="text-slate-300 text-sm font-bold uppercase tracking-wider">Diagnostics (ICD-9)</p>
+            </div>
+            <div className="space-y-1">
+              {diagnoses.slice(0, 5).map((diag, i) => (
+                <div key={i} className="flex items-center gap-2 text-slate-200">
+                  <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                  <span className="text-sm font-medium">Code {diag.icd9_code}</span>
                 </div>
+              ))}
+              {diagnoses.length > 5 && (
+                <p className="text-slate-400 text-xs mt-2">+ {diagnoses.length - 5} autres diagnostics</p>
               )}
             </div>
-          ) : (
-            <pre style={{ whiteSpace: 'pre-wrap', margin: 0 }}>{String(merged.summary)}</pre>
-          )}
-        </div>
-      </section>
-
-      {/* Diagnostics Différentiels Suggérés */}
-      <section className="panel">
-        <div className="title">
-          <span>Diagnostics Différentiels Suggérés</span>
-          <span className="small-badge">Agent Expert</span>
-        </div>
-        <div>
-          {Array.isArray(merged.diagnostics) ? (
-            merged.diagnostics.map((dx, i) => (
-              <div key={i} className="list-item diff-item">
-                <div className="diff-left">
-                  <div style={{fontWeight:600}}>{dx.title || dx.name || `Hypothèse ${i+1}`}</div>
-                  {dx.evidence && (
-                    <div style={{marginTop:6, color:'var(--muted)'}}>
-                      <strong>Preuves Patient:</strong> {dx.evidence}
-                    </div>
-                  )}
-                  {dx.extra && (
-                    <div style={{marginTop:6, color:'var(--muted)'}}>{dx.extra}</div>
-                  )}
-                  {dx.counter && (
-                    <div style={{marginTop:6, color:'var(--muted)'}}>
-                      <strong>Contre:</strong> {dx.counter}
-                    </div>
-                  )}
-                  {dx.action && (
-                    <div style={{marginTop:6}}>
-                      <strong>Action suggérée:</strong> {dx.action}
-                    </div>
-                  )}
-                </div>
-                <div>
-                  <span className={`tag ${dx.level || 'medium'}`}>
-                    {dx.probability ? `Probabilité ${dx.probability}` : 'Probabilité' }
-                  </span>
-                </div>
-              </div>
-            ))
-          ) : (
-            <div className="list-item">Aucune hypothèse disponible.</div>
-          )}
-        </div>
-      </section>
-
-      {/* Alertes Critiques Proactives */}
-      <section className="panel">
-        <div className="title">
-          <span>Alertes Critiques Proactives</span>
-          <span className="small-badge">Agent Critique</span>
-        </div>
-        <div>
-          {Array.isArray(merged.alerts) ? (
-            merged.alerts.map((a, i) => (
-              <div key={i} className={`list-item ${a.level === 'high' ? 'alert-high' : a.level === 'medium' ? 'alert-medium' : ''}`}>
-                <div style={{fontWeight:600, marginBottom:6}}>{a.title || `Alerte ${i+1}`}</div>
-                <div style={{color:'var(--muted)'}}>{a.detail || a.text || ''}</div>
-              </div>
-            ))
-          ) : (
-            <div className="list-item">Aucune alerte détectée.</div>
-          )}
-        </div>
-      </section>
-
-      {/* Recommandations Immédiates */}
-      <section className="panel">
-        <div className="title">
-          <span>Recommandations Immédiates</span>
-        </div>
-        {Array.isArray(merged.recommendations) ? (
-          <ul className="reco-list">
-            {merged.recommendations.map((r, i) => (
-              <li key={i} className="list-item">
-                <strong style={{marginRight:8}}>{i + 1}.</strong>
-                {typeof r === 'object' && r !== null ? (
-                  <span>
-                    {[
-                      r.priority != null ? `#${r.priority}` : null,
-                      r.category || null,
-                      r.title || null,
-                    ].filter(Boolean).join(' • ')}
-                    {r.description ? ` — ${r.description}` : ''}
-                    {r.expected_delay ? ` (${r.expected_delay})` : ''}
-                  </span>
-                ) : (
-                  String(r)
-                )}
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <div className="list-item">Aucune recommandation disponible.</div>
+          </div>
         )}
-      </section>
+      </div>
     </div>
   )
 }
 
+// Composant: Diagnostics Différentiels (Agent Expert)
+export const DiagnosticDifferentials = ({ data }) => {
+  console.log('DiagnosticDifferentials data:', data)
+  
+  if (!data || !data.differential_diagnoses || data.differential_diagnoses.length === 0) {
+    return (
+      <div className="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-xl p-6">
+        <div className="flex items-center gap-2 mb-4">
+          <Brain className="w-5 h-5 text-purple-400" />
+          <h2 className="text-lg font-semibold">Diagnostics Différentiels</h2>
+          <span className="text-xs text-slate-400 ml-auto">Agent Expert</span>
+        </div>
+        <p className="text-slate-400 text-sm">Aucun diagnostic différentiel disponible</p>
+      </div>
+    )
+  }
+  
+  const diagnoses = data.differential_diagnoses || []
+  
+  return (
+    <div className="bg-gradient-to-br from-slate-800/80 to-slate-800/50 backdrop-blur border-2 border-slate-600 rounded-2xl p-6 shadow-2xl">
+      {/* Header */}
+      <div className="flex items-center gap-3 mb-6 pb-4 border-b-2 border-slate-700">
+        <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+          <Brain className="w-7 h-7 text-white" />
+        </div>
+        <div className="flex-1">
+          <h2 className="text-xl font-bold text-white">Diagnostics Différentiels</h2>
+          <p className="text-sm text-purple-300 font-medium">Agent Expert</p>
+        </div>
+        <div className="px-4 py-2 bg-purple-500/20 border border-purple-400/50 rounded-lg">
+          <span className="text-purple-300 text-xs font-semibold">{diagnoses.length} HYPOTHÈSES</span>
+        </div>
+      </div>
+
+      {/* Liste des diagnostics */}
+      <div className="space-y-4">
+        {diagnoses.map((diag, i) => {
+          const prob = diag.probability || 'MEDIUM'
+          const colors = {
+            'VERY_HIGH': { bg: 'bg-red-500/10', border: 'border-red-500/50', text: 'text-red-300', badge: 'bg-red-500/30 border-red-400 text-red-200' },
+            'HIGH': { bg: 'bg-red-500/10', border: 'border-red-500/50', text: 'text-red-300', badge: 'bg-red-500/30 border-red-400 text-red-200' },
+            'MEDIUM': { bg: 'bg-yellow-500/10', border: 'border-yellow-500/50', text: 'text-yellow-300', badge: 'bg-yellow-500/30 border-yellow-400 text-yellow-200' },
+            'LOW': { bg: 'bg-green-500/10', border: 'border-green-500/50', text: 'text-green-300', badge: 'bg-green-500/30 border-green-400 text-green-200' }
+          }
+          const style = colors[prob] || colors['MEDIUM']
+          
+          return (
+            <div
+              key={i}
+              className={`${style.bg} border-l-4 ${style.border} rounded-xl p-5 hover:scale-[1.02] transition-transform`}
+            >
+              {/* Header */}
+              <div className="flex items-start justify-between mb-4 gap-3">
+                <h3 className="font-bold text-white text-lg flex-1">{diag.diagnosis}</h3>
+                <span className={`px-4 py-2 rounded-lg text-xs font-bold uppercase border-2 ${style.badge} whitespace-nowrap`}>
+                  {prob}
+                </span>
+              </div>
+
+              {/* Preuves */}
+              {diag.supporting_evidence && diag.supporting_evidence.length > 0 && (
+                <div className="mb-4">
+                  <p className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">✓ Preuves</p>
+                  <div className="space-y-2">
+                    {diag.supporting_evidence.map((ev, j) => (
+                      <div key={j} className="flex items-start gap-2 bg-slate-800/30 rounded-lg p-3">
+                        <CheckCircle2 className="w-4 h-4 text-blue-400 flex-shrink-0 mt-0.5" />
+                        <div className="flex-1">
+                          <p className="text-sm text-slate-200 font-medium">{ev.statement}</p>
+                          <p className="text-xs text-slate-500 mt-1">Source: {ev.source}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Contre-preuves */}
+              {diag.contradicting_evidence && diag.contradicting_evidence.length > 0 && (
+                <div className="mb-4">
+                  <p className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">✗ Contre-indications</p>
+                  <div className="space-y-2">
+                    {diag.contradicting_evidence.map((ev, j) => (
+                      <div key={j} className="flex items-start gap-2 bg-slate-800/30 rounded-lg p-3">
+                        <AlertCircle className="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" />
+                        <div className="flex-1">
+                          <p className="text-sm text-slate-300">{ev.statement}</p>
+                          <p className="text-xs text-slate-500 mt-1">Source: {ev.source}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Confiance */}
+              <div className="pt-3 border-t border-slate-700 flex items-center gap-2">
+                <span className="text-xs text-slate-400 font-semibold">Confiance:</span>
+                <div className="flex-1 bg-slate-800 rounded-full h-2">
+                  <div
+                    className={`h-2 rounded-full transition-all ${
+                      diag.confidence === 'HIGH' ? 'bg-green-500 w-4/5' :
+                      diag.confidence === 'MEDIUM' ? 'bg-yellow-500 w-3/5' :
+                      'bg-red-500 w-2/5'
+                    }`}
+                  />
+                </div>
+                <span className="text-xs text-slate-300 font-bold">{diag.confidence}</span>
+              </div>
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
+// Composant: Alertes Critiques (Agent Synthétiseur)
+export const CriticalAlerts = ({ data }) => {
+  console.log('CriticalAlerts data:', data)
+  
+  if (!data) {
+    return (
+      <div className="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-xl p-6">
+        <div className="flex items-center gap-2 mb-4">
+          <AlertTriangle className="w-5 h-5 text-yellow-400" />
+          <h2 className="text-lg font-semibold">Alertes Critiques</h2>
+          <span className="text-xs text-slate-400 ml-auto">Agent Synthétiseur</span>
+        </div>
+        <p className="text-slate-400 text-sm">Agent Synthétiseur non disponible</p>
+      </div>
+    )
+  }
+  
+  const alerts = data.critical_alerts || []
+  
+  // Si pas d'alertes, afficher un message positif
+  if (alerts.length === 0) {
+    return (
+      <div className="bg-gradient-to-br from-slate-800/80 to-slate-800/50 backdrop-blur border-2 border-green-600 rounded-2xl p-6 shadow-2xl">
+        <div className="flex items-center gap-3 mb-4 pb-4 border-b-2 border-green-700">
+          <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg">
+            <CheckCircle2 className="w-7 h-7 text-white" />
+          </div>
+          <div className="flex-1">
+            <h2 className="text-xl font-bold text-white">Alertes Critiques</h2>
+            <p className="text-sm text-green-300 font-medium">Agent Synthétiseur</p>
+          </div>
+          <div className="px-4 py-2 bg-green-500/20 border border-green-400/50 rounded-lg">
+            <span className="text-green-300 text-xs font-semibold">0 ALERTE</span>
+          </div>
+        </div>
+        <div className="flex items-center gap-3 p-4 bg-green-500/10 border border-green-500/50 rounded-xl">
+          <CheckCircle2 className="w-6 h-6 text-green-400" />
+          <p className="text-green-200 text-sm font-medium">✅ Aucune alerte critique détectée</p>
+        </div>
+      </div>
+    )
+  }
+  
+  return (
+    <div className="bg-gradient-to-br from-slate-800/80 to-slate-800/50 backdrop-blur border-2 border-red-600 rounded-2xl p-6 shadow-2xl shadow-red-900/30">
+      {/* Header */}
+      <div className="flex items-center gap-3 mb-6 pb-4 border-b-2 border-red-700">
+        <div className="w-12 h-12 bg-gradient-to-br from-red-500 to-red-600 rounded-xl flex items-center justify-center shadow-lg animate-pulse">
+          <AlertTriangle className="w-7 h-7 text-white" />
+        </div>
+        <div className="flex-1">
+          <h2 className="text-xl font-bold text-white">Alertes Critiques</h2>
+          <p className="text-sm text-red-300 font-medium">Agent Synthétiseur</p>
+        </div>
+        <div className="px-4 py-2 bg-red-500/30 border-2 border-red-400 rounded-lg animate-pulse">
+          <span className="text-red-200 text-xs font-bold">{alerts.length} ALERTES</span>
+        </div>
+      </div>
+
+      {/* Liste des alertes */}
+      <div className="space-y-3">
+        {alerts.map((alert, i) => {
+          const isCritical = alert.severity === 'CRITICAL' || alert.isHigh
+          
+          return (
+            <div
+              key={i}
+              className={`rounded-xl p-5 border-l-4 ${
+                isCritical
+                  ? 'bg-red-500/20 border-red-500 shadow-lg shadow-red-900/20'
+                  : 'bg-yellow-500/20 border-yellow-500 shadow-lg shadow-yellow-900/20'
+              }`}
+            >
+              <div className="flex items-start gap-4">
+                <div className={`flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center ${
+                  isCritical ? 'bg-red-500/30' : 'bg-yellow-500/30'
+                }`}>
+                  {isCritical ? (
+                    <AlertCircle className="w-6 h-6 text-red-300" />
+                  ) : (
+                    <AlertTriangle className="w-6 h-6 text-yellow-300" />
+                  )}
+                </div>
+                
+                <div className="flex-1">
+                  <p className={`font-bold text-base mb-2 uppercase ${
+                    isCritical ? 'text-red-200' : 'text-yellow-200'
+                  }`}>
+                    {alert.type}
+                  </p>
+                  <p className="text-sm text-slate-200 leading-relaxed mb-3">
+                    {alert.finding}
+                  </p>
+                  
+                  {alert.action_required && (
+                    <div className="mt-3 pt-3 border-t border-slate-700">
+                      <p className="text-xs font-bold uppercase text-blue-300 mb-2">→ Action requise</p>
+                      <p className="text-sm text-blue-200">{alert.action_required}</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
+// Composant: Plan d'Action (Agent Expert)
+export const ActionPlan = ({ data }) => {
+  console.log('ActionPlan data:', data)
+  
+  if (!data || !data.action_plan) {
+    return null
+  }
+  
+  const plan = data.action_plan
+  const allActions = [
+    ...(plan.immediate_actions || []),
+    ...(plan.urgent_actions || []),
+    ...(plan.diagnostic_workup || [])
+  ]
+  
+  if (allActions.length === 0) return null
+  
+  return (
+    <div className="bg-gradient-to-br from-slate-800/80 to-slate-800/50 backdrop-blur border-2 border-slate-600 rounded-2xl p-6 shadow-2xl">
+      {/* Header */}
+      <div className="flex items-center gap-3 mb-6 pb-4 border-b-2 border-slate-700">
+        <div className="w-12 h-12 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-xl flex items-center justify-center shadow-lg">
+          <Lightbulb className="w-7 h-7 text-white" />
+        </div>
+        <div className="flex-1">
+          <h2 className="text-xl font-bold text-white">Plan d'Action</h2>
+          <p className="text-sm text-yellow-300 font-medium">Agent Expert</p>
+        </div>
+        <div className="px-4 py-2 bg-yellow-500/20 border border-yellow-400/50 rounded-lg">
+          <span className="text-yellow-300 text-xs font-semibold">{allActions.length} ACTIONS</span>
+        </div>
+      </div>
+
+      {/* Timeline des actions */}
+      <div className="space-y-4">
+        {allActions.map((action, i) => {
+          const priority = action.priority || 'URGENT'
+          const priorityColors = {
+            'IMMEDIATE': { bg: 'bg-red-500', text: 'text-red-200', border: 'border-red-500', ring: 'ring-red-500/30' },
+            'URGENT': { bg: 'bg-yellow-500', text: 'text-yellow-900', border: 'border-yellow-500', ring: 'ring-yellow-500/30' },
+            'ROUTINE': { bg: 'bg-blue-500', text: 'text-blue-200', border: 'border-blue-500', ring: 'ring-blue-500/30' }
+          }
+          const colors = priorityColors[priority] || priorityColors['URGENT']
+          
+          return (
+            <div key={i} className="flex gap-4">
+              <div className="flex flex-col items-center">
+                <div className={`w-10 h-10 rounded-full ${colors.bg} flex items-center justify-center text-sm font-bold ${colors.text} shadow-lg ring-4 ${colors.ring}`}>
+                  {i + 1}
+                </div>
+                {i < allActions.length - 1 && (
+                  <div className="w-0.5 flex-1 bg-gradient-to-b from-slate-600 to-transparent mt-2"></div>
+                )}
+              </div>
+              
+              <div className={`flex-1 bg-slate-800/50 border-2 ${colors.border} rounded-xl p-4 hover:scale-[1.02] transition-transform`}>
+                <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${
+                  priority === 'IMMEDIATE' ? 'text-red-300' : 'text-slate-400'
+                }`}>
+                  {priority} {action.time_window && `· ${action.time_window}`}
+                </p>
+                <p className="text-base text-white font-semibold mb-2">{action.action}</p>
+                {action.rationale && (
+                  <p className="text-sm text-slate-300 leading-relaxed">{action.rationale}</p>
+                )}
+              </div>
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
+// Export par défaut - Affiche tous les panels
+export default function Panels({ data }) {
+  console.log('=== Panels data received ===', data)
+  
+  if (!data) {
+    return (
+      <div className="text-center text-slate-400 py-12">
+        <p>Aucune donnée disponible</p>
+      </div>
+    )
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Agent Collecteur - Données patient */}
+      {data.patient && <PatientSynthesis data={data} />}
+      
+      {/* Agent Synthétiseur - Alertes */}
+      {data.synthesis && <CriticalAlerts data={data.synthesis} />}
+      
+      {/* Agent Expert - Diagnostics */}
+      {data.expert && data.expert.differential_diagnoses && data.expert.differential_diagnoses.length > 0 && (
+        <DiagnosticDifferentials data={data.expert} />
+      )}
+      
+      {/* Agent Expert - Plan d'action */}
+      {data.expert && data.expert.action_plan && (
+        <ActionPlan data={data.expert} />
+      )}
+    </div>
+  )
+}
