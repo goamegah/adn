@@ -83,7 +83,8 @@ resource "google_sql_database_instance" "postgres" {
     }
   }
 
-  deletion_protection = each.key == "prod" ? true : false
+  # deletion_protection = each.key == "prod" ? true : false
+  deletion_protection = false
 
   depends_on = [google_project_service.deploy_project_services]
 }
