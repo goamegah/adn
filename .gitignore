@@ -91,7 +91,7 @@ gcloud/
 data/
 *.pdf
 *.txt
-*.csv
+.csv
 *.xlsx
 *.json
 !package.json
