@@ -39,30 +39,30 @@ une fois effectuer vous pouvez déclencher depuis `Cloud Build` le pipeline impo
 Maintenant vous pouvez déclencher depuis Cloud build le pipeline ```staging.yml``` pour déployer l'agent dans `Cloud Run` du projet staging.
 
 
-![alt text](image.png)
+![alt text](assets/image.png)
 
 
 Vous pourrez donc consulter l'interface web Next.js de l'agent ADN via l'URL fournie par Cloud Run une fois le déploiement terminé. 
 
-![alt text](image-4.png)Pour cela:
+![alt text](assets/image-4.png)Pour cela:
 
 - Donner un accès public au backend de l'agent ADN depuis l'interface Cloud Run du projet staging.
 
-![alt text](image-3.png)
+![alt text](assets/image-3.png)
 
 - Faites de même pour le frontend.
 
-![alt text](image-1.png)
+![alt text](assets/image-1.png)
 
 
 Le lien vers le frontend vous amènera à la page suivante:
 
-![alt text](image-2.png)
+![alt text](assets/image-2.png)
 
 
 Vous pouvez maintenant interagir avec l'agent ADN via cette interface web Next.js
 
-![alt text](image-5.png)
+![alt text](assets/image-5.png)
 
 
 Vous trouverez une liste complémentaire d'id dans le fichier mimic3_ids.csv avec lequel vous pouvez tester l'agent ADN.
