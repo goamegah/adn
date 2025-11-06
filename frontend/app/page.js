@@ -7,7 +7,7 @@ import SessionManager from '../components/SessionManager'
 import { Brain, Phone, Settings, MessageCircle } from '../components/icons'
 
 export default function Home() {
-  const [activeTab, setActiveTab] = useState('session') // Défaut: Session
+  const [activeTab, setActiveTab] = useState('session')
   const [view, setView] = useState('chat') // 'chat' | 'results' pour mobile
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(false)
@@ -25,32 +25,32 @@ export default function Home() {
 
   const handleSessionCreated = (sessionId, responseData) => {
     setCurrentSession({ id: sessionId, data: responseData })
-    console.log('✅ Session créée:', sessionId)
+    console.log('[Session] Created:', sessionId)
   }
 
   // Handler pour l'onglet Session
   const handleMessageSent = async (messageText) => {
-    console.log('💬 Message reçu:', messageText)
+    console.log('[Message] Received:', messageText)
     setLoading(true)
     
     try {
       // Attendre que les agents finissent de traiter
-      console.log('⏳ Attente du traitement par les agents (2s)...')
+      console.log('[Processing] Waiting for agents (2s)...')
       await new Promise(resolve => setTimeout(resolve, 2000))
       
       // Récupérer les outputs structurés des agents
-      console.log('📡 Récupération des outputs des agents...')
+      console.log('[API] Fetching agent outputs...')
       const { getAgentOutputs } = await import('../lib/api')
       const agentData = await getAgentOutputs()
       
-      console.log('📊 Agent outputs reçus:', agentData)
-      console.log('📊 Available outputs:', agentData?.available_outputs)
+      console.log('[Data] Agent outputs received:', agentData)
+      console.log('[Data] Available outputs:', agentData?.available_outputs)
       
       // Vérifier que les données sont disponibles
       if (!agentData || !agentData.available_outputs || agentData.available_outputs.length === 0) {
-        console.warn('⚠️ Aucun output disponible')
+        console.warn('[Warning] No outputs available')
       } else {
-        console.log('✅ Outputs disponibles:', agentData.available_outputs.join(', '))
+        console.log('[Success] Available outputs:', agentData.available_outputs.join(', '))
       }
       
       // Stocker les données
@@ -64,7 +64,7 @@ export default function Home() {
       ].filter(Boolean).length
       
       setResultsCount(count)
-      console.log(`✅ ${count} agents ont produit des données`)
+      console.log(`[Results] ${count} agents produced data`)
       
       // Basculer vers la vue résultats sur mobile
       if (typeof window !== 'undefined' && window.innerWidth < 1024) {
@@ -72,7 +72,7 @@ export default function Home() {
       }
       
     } catch (error) {
-      console.error('❌ Erreur lors de la récupération des outputs:', error)
+      console.error('[Error] Failed to fetch outputs:', error)
       setData(null)
     } finally {
       setLoading(false)
@@ -251,8 +251,8 @@ export default function Home() {
                               animate={{ opacity: 1 }}
                               className="flex flex-wrap items-center gap-4 text-xs text-slate-500 pt-4 border-t border-slate-700/50 mt-6"
                             >
-                              <span>✅ {resultsCount} agents actifs</span>
-                              {data.processing_time_ms && <span>⏱️ {data.processing_time_ms}ms</span>}
+                              <span>{resultsCount} agents actifs</span>
+                              {data.processing_time_ms && <span>{data.processing_time_ms}ms</span>}
                             </motion.div>
                           )}
                         </motion.div>
