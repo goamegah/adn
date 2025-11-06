@@ -34,10 +34,10 @@ trace.set_tracer_provider(provider)
 
 # AGENT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 AGENT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "agents")
-print(f"⚙️ Agent directory: {AGENT_DIR}")
+print(f"Agent directory: {AGENT_DIR}")
 session_service_uri = None
 
-# ✅ Créer l'app Google ADK
+# Create Google ADK app
 app: FastAPI = get_fast_api_app(
     agents_dir=AGENT_DIR,
     web=True,
@@ -48,7 +48,7 @@ app: FastAPI = get_fast_api_app(
 app.title = "Clinical Agent API"
 app.description = "API for interacting with the Clinical Agent (Google ADK + Custom Endpoints)."
 
-# === CONFIGURATION CORS ===
+# CORS CONFIGURATION
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -57,28 +57,28 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# === CONFIGURATION POUR CLOUD RUN (si besoin d'appeler un autre service) ===
-EXTERNAL_SERVICE_URL = os.getenv("EXTERNAL_SERVICE_URL")  # Optionnel
+# CLOUD RUN CONFIGURATION (optional for calling other services)
+EXTERNAL_SERVICE_URL = os.getenv("EXTERNAL_SERVICE_URL")  # Optional
 APP_NAME = os.getenv("APP_NAME", "clinical_agent")
 
 
-# === UTILITAIRES ===
+# UTILITIES
 def ensure_session_exists_internal(app_name: str, user_id: str, session_id: str):
     """
-    Utilise TestClient pour vérifier/créer une session en interne.
+    Use TestClient to verify/create a session internally.
     """
     from fastapi.testclient import TestClient
     
     client = TestClient(app)
     
-    # Vérifier si la session existe
+    # Check if session exists
     response = client.get(f"/apps/{app_name}/users/{user_id}/sessions/{session_id}")
     
     if response.status_code == 200:
         return response.json()
     
-    # Créer la session si elle n'existe pas
-    print(f"⚙️ Création de la session {session_id}...")
+    # Create session if it doesn't exist
+    print(f"Creating session {session_id}...")
     create_response = client.post(
         f"/apps/{app_name}/users/{user_id}/sessions",
         json={
@@ -93,25 +93,25 @@ def ensure_session_exists_internal(app_name: str, user_id: str, session_id: str)
     if create_response.status_code >= 400:
         raise HTTPException(
             status_code=create_response.status_code,
-            detail=f"Échec création session: {create_response.text[:500]}"
+            detail=f"Session creation failed: {create_response.text[:500]}"
         )
     
     return create_response.json()
 
 
-# === ENDPOINTS PERSONNALISÉS ===
+# CUSTOM ENDPOINTS
 
 @app.post("/start_session")
 async def start_session(req: StartSessionRequest = Body(...)):
     """
-    Crée une session pour un utilisateur donné.
-    Wrapper simplifié autour de l'endpoint Google ADK.
+    Create a session for a given user.
+    Simplified wrapper around Google ADK endpoint.
     """
     user_id = req.user_id
     session_id = f"session_{uuid.uuid4().hex[:8]}"
     app_name = APP_NAME
 
-    print(f"🚀 Création session {session_id} pour {user_id}...")
+    print(f"Creating session {session_id} for {user_id}...")
 
     try:
         from fastapi.testclient import TestClient
@@ -133,7 +133,7 @@ async def start_session(req: StartSessionRequest = Body(...)):
         if response.status_code >= 400:
             raise HTTPException(
                 status_code=response.status_code,
-                detail=f"Erreur: {response.text[:500]}"
+                detail=f"Error: {response.text[:500]}"
             )
 
         data = response.json()
@@ -146,7 +146,7 @@ async def start_session(req: StartSessionRequest = Body(...)):
 
         return {
             "success": True,
-            "message": "Session créée avec succès ✅",
+            "message": "Session created successfully",
             "user_id": user_id,
             "session_id": data.get("id", session_id),
             "created_at": data.get("createdTime"),
@@ -156,29 +156,29 @@ async def start_session(req: StartSessionRequest = Body(...)):
     except HTTPException:
         raise
     except Exception as e:
-        print(f"❌ Erreur start_session: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Erreur: {str(e)}")
+        print(f"Error in start_session: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
 
 
 @app.post("/send_message")
 async def send_message(req: SendMessageRequest = Body(...)):
     """
-    Envoie un message à l'agent et retourne la réponse.
+    Send a message to the agent and return the response.
     """
     user_id = req.user_id or "user_backend"
     session_id = req.session_id or "session_api"
     app_name = APP_NAME
 
-    print(f"💬 Message de {user_id}/{session_id}: {req.query}")
+    print(f"Message from {user_id}/{session_id}: {req.query}")
 
     try:
         from fastapi.testclient import TestClient
         client = TestClient(app)
         
-        # S'assurer que la session existe
+        # Ensure session exists
         ensure_session_exists_internal(app_name, user_id, session_id)
 
-        # Envoyer le message via l'endpoint /run_sse
+        # Send message via /run_sse endpoint
         payload = {
             "app_name": app_name,
             "user_id": user_id,
@@ -195,15 +195,15 @@ async def send_message(req: SendMessageRequest = Body(...)):
         if response.status_code >= 400:
             raise HTTPException(
                 status_code=response.status_code,
-                detail=f"Erreur agent: {response.text[:500]}"
+                detail=f"Agent error: {response.text[:500]}"
             )
 
-        # Parser la réponse SSE
+        # Parse SSE response
         events = []
         for line in response.text.split('\n'):
             if line.startswith('data: '):
                 try:
-                    data_str = line[6:]  # Enlever "data: "
+                    data_str = line[6:]  # Remove "data: "
                     event_json = json.loads(data_str)
                     events.append(event_json)
                 except json.JSONDecodeError:
@@ -212,12 +212,12 @@ async def send_message(req: SendMessageRequest = Body(...)):
         if not events:
             raise HTTPException(
                 status_code=500,
-                detail="Aucun événement SSE reçu"
+                detail="No SSE events received"
             )
 
-        print(f"✅ {len(events)} événements reçus")
+        print(f"{len(events)} events received")
 
-        # Extraire le texte de la réponse
+        # Extract text from response
         agent_response = None
         for event in reversed(events):
             if "content" in event and "parts" in event["content"]:
@@ -228,9 +228,8 @@ async def send_message(req: SendMessageRequest = Body(...)):
                 if agent_response:
                     break
         
-        # Dans send_message, après avoir extrait agent_response
+        # Clean the response
         if agent_response:
-            # Nettoyer la réponse
             import re
             agent_response = re.sub(r'\x00', '', agent_response)  # Null bytes
             agent_response = re.sub(r'\x1b\[[0-9;]*m', '', agent_response)  # ANSI codes
@@ -255,20 +254,20 @@ async def send_message(req: SendMessageRequest = Body(...)):
     except HTTPException:
         raise
     except Exception as e:
-        print(f"❌ Erreur send_message: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Erreur: {str(e)}")
+        print(f"Error in send_message: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
 
 
 @app.post("/get_state")
 async def get_state(req: GetStateRequest = Body(...)):
     """
-    Récupère l'état complet de la session.
+    Retrieve the complete session state.
     """
     user_id = req.user_id or "user_backend"
     session_id = req.session_id or "session_api"
     app_name = APP_NAME
 
-    print(f"📊 Récupération état {user_id}/{session_id}...")
+    print(f"Retrieving state for {user_id}/{session_id}...")
 
     try:
         from fastapi.testclient import TestClient
@@ -279,8 +278,8 @@ async def get_state(req: GetStateRequest = Body(...)):
         )
 
         if response.status_code == 404:
-            # Créer la session si elle n'existe pas
-            print(f"Session non trouvée, création...")
+            # Create session if it doesn't exist
+            print(f"Session not found, creating...")
             response = client.post(
                 f"/apps/{app_name}/users/{user_id}/sessions",
                 json={"session_id": session_id}
@@ -289,12 +288,12 @@ async def get_state(req: GetStateRequest = Body(...)):
         if response.status_code >= 400:
             raise HTTPException(
                 status_code=response.status_code,
-                detail=f"Erreur: {response.text[:500]}"
+                detail=f"Error: {response.text[:500]}"
             )
 
         data = response.json()
 
-        print(f"✅ État récupéré: {len(str(data))} caractères")
+        print(f"State retrieved: {len(str(data))} characters")
 
         logger.log_struct({
             "event": "get_state",
@@ -315,20 +314,20 @@ async def get_state(req: GetStateRequest = Body(...)):
     except HTTPException:
         raise
     except Exception as e:
-        print(f"❌ Erreur get_state: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Erreur: {str(e)}")
+        print(f"Error in get_state: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
 
 
 @app.post("/get_agent_outputs")
 async def get_agent_outputs(req: GetStateRequest = Body(...)):
     """
-    Récupère les outputs spécifiques des agents cliniques depuis le state.
+    Retrieve specific clinical agent outputs from state.
     """
     user_id = req.user_id or "user_backend"
     session_id = req.session_id or "session_api"
     app_name = APP_NAME
 
-    print(f"🧠 Récupération outputs agents {user_id}/{session_id}...")
+    print(f"Retrieving agent outputs for {user_id}/{session_id}...")
 
     try:
         from fastapi.testclient import TestClient
@@ -339,28 +338,28 @@ async def get_agent_outputs(req: GetStateRequest = Body(...)):
         )
 
         if response.status_code == 404:
-            raise HTTPException(status_code=404, detail="Session non trouvée")
+            raise HTTPException(status_code=404, detail="Session not found")
 
         if response.status_code >= 400:
             raise HTTPException(
                 status_code=response.status_code,
-                detail=f"Erreur: {response.text[:500]}"
+                detail=f"Error: {response.text[:500]}"
             )
 
         data = response.json()
         state = data.get("state", {})
 
-        # Extraire les outputs des agents
+        # Extract agent outputs
         agent_outputs = {
             "donnees_patient": state.get("donnees_patient"),
             "synthese_clinique": state.get("synthese_clinique"),
             "validation_expert": state.get("validation_expert"),
         }
 
-        # Compter les outputs disponibles
+        # Count available outputs
         available_outputs = [k for k, v in agent_outputs.items() if v is not None]
 
-        print(f"✅ Outputs: {', '.join(available_outputs) if available_outputs else 'Aucun'}")
+        print(f"Outputs: {', '.join(available_outputs) if available_outputs else 'None'}")
 
         logger.log_struct({
             "event": "get_agent_outputs",
@@ -381,15 +380,15 @@ async def get_agent_outputs(req: GetStateRequest = Body(...)):
     except HTTPException:
         raise
     except Exception as e:
-        print(f"❌ Erreur get_agent_outputs: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Erreur: {str(e)}")
+        print(f"Error in get_agent_outputs: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
 
 
-# === ENDPOINTS DE DEBUG ===
+# DEBUG ENDPOINTS
 
 @app.get("/health")
 async def health_check():
-    """Vérifie la santé du service."""
+    """Check service health."""
     return {
         "status": "ok",
         "service": "Clinical Agent API",
@@ -406,7 +405,7 @@ async def health_check():
     }
 
 
-# === ENDPOINT FEEDBACK (déjà existant) ===
+# FEEDBACK ENDPOINT
 @app.post("/feedback")
 def collect_feedback(feedback: Feedback) -> dict[str, str]:
     """Collect and log feedback."""
@@ -414,11 +413,11 @@ def collect_feedback(feedback: Feedback) -> dict[str, str]:
     return {"status": "success"}
 
 
-# === INCLURE LES ROUTES ORCHESTRATOR ===
+# INCLUDE ORCHESTRATOR ROUTES
 app.include_router(orchestrator_routes.router)
 
 
-# === MAIN ===
+# MAIN
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)

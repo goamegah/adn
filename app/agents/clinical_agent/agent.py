@@ -69,11 +69,11 @@ class AgentCollecteur:
     ):
         self.engine = None
 
-        # 🔥 Mode MOCK pour les tests (PR checks, unit tests)
+        # Mode MOCK pour les tests (PR checks, unit tests)
         self.use_mock = os.getenv("USE_MOCK_DB", "false").lower() == "true"
         
         if self.use_mock:
-            logger.info("🧪 MODE MOCK ACTIVÉ - Pas de connexion réelle à Cloud SQL")
+            logger.info("MODE MOCK ACTIVÉ - Pas de connexion réelle à Cloud SQL")
             self.engine = None
             return
         
@@ -85,22 +85,22 @@ class AgentCollecteur:
         self.db_port = db_port or int(os.getenv("DB_PORT", "5432"))
         self.instance_conn_name = instance_conn_name or os.getenv("INSTANCE_CONNECTION_NAME")
 
-        # ✅ CORRECTION: Vérification uniquement en mode non-mock
+        # CORRECTION: Vérification uniquement en mode non-mock
         if not self.db_password:
-            logger.warning("⚠️ DB_PASSWORD manquant - tentative de connexion sans mot de passe")
+            logger.warning("DB_PASSWORD manquant - tentative de connexion sans mot de passe")
             # Ne pas raise si on est en développement local
             if os.getenv("ENVIRONMENT") == "prod":
-                raise ValueError("❌ DB_PASSWORD requis en mode production")
+                raise ValueError("DB_PASSWORD requis en mode production")
 
-        # 🔗 Connexion dynamique Cloud SQL / local
+        # Connexion dynamique Cloud SQL / local
         self._setup_connection()
 
     def _setup_connection(self):
         """Configure la connexion à Cloud SQL"""
         try:
-            # 🔍 DEBUG: Afficher la configuration
+            # DEBUG: Afficher la configuration
             logger.info("=" * 60)
-            logger.info("🔍 CONFIGURATION DE CONNEXION")
+            logger.info("CONFIGURATION DE CONNEXION")
             logger.info(f"DB_USER: {self.db_user}")
             logger.info(f"DB_PASSWORD: {'***' if self.db_password else 'MANQUANT'}")
             logger.info(f"DB_NAME: {self.db_name}")
@@ -113,12 +113,12 @@ class AgentCollecteur:
             connection_uri = self._build_connection_uri()
             
             if not connection_uri:
-                logger.error("❌ connection_uri est None - aucune méthode de connexion configurée")
+                logger.error("connection_uri est None - aucune méthode de connexion configurée")
                 return
 
             # Masquer le mot de passe dans les logs
             safe_uri = connection_uri.replace(self.db_password, '***') if self.db_password else connection_uri
-            logger.info(f"🔗 URI de connexion: {safe_uri}")
+            logger.info(f"URI de connexion: {safe_uri}")
             
             self.engine = create_engine(
                 connection_uri,
@@ -134,11 +134,11 @@ class AgentCollecteur:
             )
             
             # Test de connexion avec plus de détails
-            logger.info("🧪 Test de connexion à la base...")
+            logger.info("Test de connexion à la base...")
             with self.engine.connect() as conn:
                 result = conn.execute(text("SELECT version()"))
                 version = result.fetchone()[0]
-                logger.info(f"✅ Connexion Cloud SQL réussie - {version[:50]}...")
+                logger.info(f"Connexion Cloud SQL réussie - {version[:50]}...")
                 
                 # Test de lecture des tables
                 result = conn.execute(text("""
@@ -148,46 +148,46 @@ class AgentCollecteur:
                     LIMIT 5
                 """))
                 tables = [row[0] for row in result]
-                logger.info(f"📋 Tables disponibles: {', '.join(tables)}")
+                logger.info(f"Tables disponibles: {', '.join(tables)}")
                     
         except Exception as e:
-            logger.error(f"❌ Erreur de connexion à Cloud SQL : {type(e).__name__}: {e}")
+            logger.error(f"Erreur de connexion à Cloud SQL : {type(e).__name__}: {e}")
             import traceback
             logger.error(traceback.format_exc())
             
             if os.getenv("ENVIRONMENT") == "prod":
                 raise
-            logger.warning("⚠️ Continuation en mode dégradé sans connexion DB")
+            logger.warning("Continuation en mode dégradé sans connexion DB")
             self.engine = None
 
     def _build_connection_uri(self) -> Optional[str]:
         """Construit l'URI de connexion selon l'environnement"""
         
-        # 🔥 ENCODER les caractères spéciaux
+        # ENCODER les caractères spéciaux
         encoded_user = quote_plus(self.db_user) if self.db_user else ""
         encoded_password = quote_plus(self.db_password) if self.db_password else ""
         
-        logger.info(f"🔍 instance_conn_name: {self.instance_conn_name}")
-        logger.info(f"🔍 db_host: {self.db_host}")
+        logger.info(f"instance_conn_name: {self.instance_conn_name}")
+        logger.info(f"db_host: {self.db_host}")
         
-        # ✅ PRIORITÉ 1 : IP publique (choix explicite de l'utilisateur)
+        # PRIORITÉ 1 : IP publique (choix explicite de l'utilisateur)
         # Si DB_HOST est défini, on l'utilise directement
         # C'est le cas pour développement local avec firewall ouvert (0.0.0.0/0)
         if self.db_host:
-            logger.info(f"🌐 Connexion IP publique: {self.db_host}:{self.db_port}")
-            logger.info("💡 Pour utiliser Cloud SQL Proxy, retirez DB_HOST du .env")
+            logger.info(f"Connexion IP publique: {self.db_host}:{self.db_port}")
+            logger.info("Pour utiliser Cloud SQL Proxy, retirez DB_HOST du .env")
             return (
                 f"postgresql+psycopg2://{encoded_user}:{encoded_password}"
                 f"@{self.db_host}:{self.db_port}/{self.db_name}?sslmode=require"
             )
         
-        # ✅ PRIORITÉ 2 : Cloud SQL Proxy / Unix socket
+        # PRIORITÉ 2 : Cloud SQL Proxy / Unix socket
         # Utilisé seulement si DB_HOST n'est PAS défini
         elif self.instance_conn_name:
             # Cas 1: Unix socket (Cloud Run avec sidecar proxy)
             socket_path = f"/cloudsql/{self.instance_conn_name}"
             if os.path.exists(socket_path):
-                logger.info(f"✅ Connexion via Unix socket: {socket_path}")
+                logger.info(f"Connexion via Unix socket: {socket_path}")
                 return (
                     f"postgresql+psycopg2://{encoded_user}:{encoded_password}"
                     f"@/{self.db_name}?host={socket_path}"
@@ -195,33 +195,33 @@ class AgentCollecteur:
             
             # Cas 2: Cloud SQL Proxy local (développement avec proxy)
             else:
-                logger.info("🔗 Connexion via Cloud SQL Proxy local (127.0.0.1:5432)")
-                logger.warning("⚠️ Assurez-vous que cloud-sql-proxy est démarré !")
-                logger.info(f"💡 Commande: cloud-sql-proxy --port 5432 {self.instance_conn_name}")
+                logger.info("Connexion via Cloud SQL Proxy local (127.0.0.1:5432)")
+                logger.warning("Assurez-vous que cloud-sql-proxy est démarré !")
+                logger.info(f"Commande: cloud-sql-proxy --port 5432 {self.instance_conn_name}")
                 return (
                     f"postgresql+psycopg2://{encoded_user}:{encoded_password}"
                     f"@127.0.0.1:5432/{self.db_name}"
                 )
         
-        # ❌ Aucune configuration trouvée
+        # Aucune configuration trouvée
         else:
-            logger.error("❌ Aucune configuration de connexion trouvée")
-            logger.error("💡 Définissez soit DB_HOST (IP publique) soit INSTANCE_CONNECTION_NAME (proxy)")
+            logger.error("Aucune configuration de connexion trouvée")
+            logger.error("Définissez soit DB_HOST (IP publique) soit INSTANCE_CONNECTION_NAME (proxy)")
             return None
 
     def _load_table(self, name: str, limit: Optional[int] = 1000) -> pd.DataFrame:
         """Charge une table depuis Cloud SQL ou retourne des données mock"""
         if self.use_mock:
-            logger.info(f"🧪 MOCK : Retour de données factices pour {name}")
+            logger.info(f"MOCK : Retour de données factices pour {name}")
             return self._get_mock_data(name)
         
-        # ✅ CORRECTION: Gérer le cas où engine est None
+        # CORRECTION: Gérer le cas où engine est None
         if self.engine is None:
-            logger.warning(f"⚠️ Pas de connexion DB disponible, utilisation de données mock pour {name}")
+            logger.warning(f"Pas de connexion DB disponible, utilisation de données mock pour {name}")
             return self._get_mock_data(name)
         
         try:
-            # ✅ CORRECTION: Normaliser le nom de table (minuscules)
+            # CORRECTION: Normaliser le nom de table (minuscules)
             table_name = name.lower()
             query = f"SELECT * FROM {table_name}"
             if limit:
@@ -230,13 +230,13 @@ class AgentCollecteur:
             with self.engine.connect() as conn:
                 df = pd.read_sql(text(query), conn)
             
-            logger.info(f"📊 Table {table_name} chargée ({len(df)} lignes)")
+            logger.info(f"Table {table_name} chargée ({len(df)} lignes)")
             return df
             
         except Exception as e:
-            logger.warning(f"⚠️ Erreur lors du chargement de {name}: {e}")
-            # ✅ CORRECTION: Fallback sur mock en cas d'erreur
-            logger.info(f"🔄 Fallback sur données mock pour {name}")
+            logger.warning(f"Erreur lors du chargement de {name}: {e}")
+            # CORRECTION: Fallback sur mock en cas d'erreur
+            logger.info(f"Fallback sur données mock pour {name}")
             return self._get_mock_data(name)
 
     def _get_mock_data(self, table_name: str) -> pd.DataFrame:
@@ -325,7 +325,7 @@ class AgentCollecteur:
     ) -> Dict[str, Any]:
         """Point d'entrée principal de collecte"""
         if texte_medical:
-            logger.info("🧾 Mode texte médical")
+            logger.info("Mode texte médical")
             return self._collecter_depuis_texte(texte_medical)
         
         if subject_id is None:
@@ -333,21 +333,21 @@ class AgentCollecteur:
         
         # En mode mock, utiliser un subject_id par défaut
         if self.use_mock and subject_id not in [12345, 12346, 12347]:
-            logger.warning(f"⚠️ Subject {subject_id} non disponible en mode mock, utilisation de 12345")
+            logger.warning(f"Subject {subject_id} non disponible en mode mock, utilisation de 12345")
             subject_id = 12345
             
-        logger.info(f"🩺 Collecte en cours pour patient {subject_id}...")
+        logger.info(f"Collecte en cours pour patient {subject_id}...")
         
         try:
             result = self._collecter_depuis_mimic(subject_id)
-            logger.info(f"✅ Collecte terminée pour patient {subject_id}")
+            logger.info(f"Collecte terminée pour patient {subject_id}")
             return {
                 "status": "ok",
                 "subject_id": subject_id,
                 "patient_normalized": result["patient_normalized"]
             }
         except Exception as e:
-            logger.error(f"❌ Erreur collecte patient {subject_id}: {e}")
+            logger.error(f"Erreur collecte patient {subject_id}: {e}")
             return {
                 "status": "error",
                 "error": str(e),
@@ -360,7 +360,7 @@ class AgentCollecteur:
         
         # print(patient_df.head())
 
-        # ✅ CORRECTION: Gérer le cas où le DataFrame est vide
+        # CORRECTION: Gérer le cas où le DataFrame est vide
         if patient_df.empty:
             raise ValueError(f"Table patients vide ou inaccessible")
         
@@ -387,7 +387,7 @@ class AgentCollecteur:
         chartevents = self._load_table("chartevents").query(f"subject_id == {subject_id}").tail(50)
         microevents = self._load_table("microbiologyevents").query(f"subject_id == {subject_id}")
         
-        # ✅ CORRECTION: Déterminer la source des données
+        # CORRECTION: Déterminer la source des données
         source_type = "MOCK_DATA" if self.use_mock or self.engine is None else "MIMIC_III_CLOUDSQL"
         
         # Normalisation
@@ -568,12 +568,12 @@ class AgentCollecteur:
             return []
 
 
-# ✅ CORRECTION: Initialisation sécurisée du collecteur
+# CORRECTION: Initialisation sécurisée du collecteur
 try:
     collecteur = AgentCollecteur()
-    logger.info("✅ AgentCollecteur initialisé avec succès")
+    logger.info("AgentCollecteur initialisé avec succès")
 except Exception as e:
-    logger.error(f"❌ Erreur d'initialisation de AgentCollecteur: {e}")
+    logger.error(f"Erreur d'initialisation de AgentCollecteur: {e}")
     # En mode mock, continuer quand même
     if os.getenv("USE_MOCK_DB", "false").lower() == "true":
         collecteur = AgentCollecteur()
@@ -779,7 +779,7 @@ collecteur_tool = agent_tool.AgentTool(agent=collecteur_agent)
 synthetiseur_tool = agent_tool.AgentTool(agent=synthetiseur_agent)
 expert_tool = agent_tool.AgentTool(agent=expert_agent)
 
-# Pipeline complet : Collecte → Synthèse → Validation
+# Pipeline complet : Collecte -> Synthèse -> Validation
 pipeline_clinique = SequentialAgent(
     name="pipeline_clinique",
     sub_agents=[collecteur_agent, synthetiseur_agent, expert_agent],
@@ -799,22 +799,22 @@ Tu es le coordinateur clinique principal d'un système multi-agent médical.
 Ton rôle est de diriger intelligemment les sous-agents disponibles selon le type de demande utilisateur.
 
 =========================
-🧠 RÔLE GLOBAL
+RÔLE GLOBAL
 =========================
 Tu dois déterminer dynamiquement quelles étapes du raisonnement clinique exécuter :
-- Si le contexte contient un **identifiant patient (subject_id)** → exécute le pipeline complet `pipeline_clinique`.
-- Si le contexte contient un **texte médical brut** (compte rendu, observation, courrier, etc.) → exécute aussi `pipeline_clinique`.
-- Si la demande concerne uniquement une **vérification, une validation ou un avis clinique** et que la synthèse existe déjà (`synthese_clinique` dans le contexte) → appelle uniquement `expert_agent`.
-- Si la demande concerne la **génération d'une synthèse clinique à partir de données déjà collectées** (`donnees_patient` présentes dans le contexte) → appelle `synthetiseur_agent`.
-- Si la demande concerne **la simple collecte de données patient** → appelle `collecteur_agent`.
+- Si le contexte contient un **identifiant patient (subject_id)** -> exécute le pipeline complet `pipeline_clinique`.
+- Si le contexte contient un **texte médical brut** (compte rendu, observation, courrier, etc.) -> exécute aussi `pipeline_clinique`.
+- Si la demande concerne uniquement une **vérification, une validation ou un avis clinique** et que la synthèse existe déjà (`synthese_clinique` dans le contexte) -> appelle uniquement `expert_agent`.
+- Si la demande concerne la **génération d'une synthèse clinique à partir de données déjà collectées** (`donnees_patient` présentes dans le contexte) -> appelle `synthetiseur_agent`.
+- Si la demande concerne **la simple collecte de données patient** -> appelle `collecteur_agent`.
 
 =========================
-🩺 PIPELINE CLINIQUE
+PIPELINE CLINIQUE
 =========================
 Le pipeline complet `pipeline_clinique` exécute dans l'ordre :
-1️⃣ `collecteur_agent` — collecte les données patient depuis MIMIC-III ou texte libre.  
-2️⃣ `synthetiseur_agent` — produit une synthèse clinique (mode Jekyll/Hyde).  
-3️⃣ `expert_agent` — valide la synthèse et produit les recommandations médicales.  
+1. `collecteur_agent` — collecte les données patient depuis MIMIC-III ou texte libre.  
+2. `synthetiseur_agent` — produit une synthèse clinique (mode Jekyll/Hyde).  
+3. `expert_agent` — valide la synthèse et produit les recommandations médicales.  
 
 Si l'utilisateur demande une **analyse complète** (par exemple :  
 > "Analyse complète du patient 12548"  
@@ -823,19 +823,19 @@ ou
 alors tu dois **appeler `pipeline_clinique` directement** avec les bons paramètres.
 
 =========================
-⚙️ OUTILS DISPONIBLES
+OUTILS DISPONIBLES
 =========================
 - `pipeline_clinique(subject_id=..., texte_medical=...)`
-  → Exécute tout le pipeline (Collecte → Synthèse → Validation).
+  -> Exécute tout le pipeline (Collecte -> Synthèse -> Validation).
 - `collecteur_agent(subject_id=..., texte_medical=...)`
-  → Collecte uniquement les données patient.
+  -> Collecte uniquement les données patient.
 - `synthetiseur_agent(donnees_patient=...)`
-  → Produit une synthèse clinique et une auto-critique.
+  -> Produit une synthèse clinique et une auto-critique.
 - `expert_agent(synthese_clinique=...)`
-  → Fait la validation experte et les diagnostics différentiels.
+  -> Fait la validation experte et les diagnostics différentiels.
 
 =========================
-💡 DIRECTIVES
+DIRECTIVES
 =========================
 - Tu dois toujours répondre avec un ton professionnel et structuré.
 - Résume les conclusions cliniques finales du pipeline de façon claire.
@@ -845,26 +845,26 @@ alors tu dois **appeler `pipeline_clinique` directement** avec les bons paramèt
 - Termine toujours ta réponse par une **conclusion clinique synthétique**.
 
 =========================
-📝 EXEMPLES
+EXEMPLES
 =========================
-🧩 Exemple 1 :
+Exemple 1 :
 Utilisateur : "Analyse complète du patient 14532"
-→ Appelle `pipeline_clinique(subject_id=14532)`
+-> Appelle `pipeline_clinique(subject_id=14532)`
 
-🧩 Exemple 2 :
+Exemple 2 :
 Utilisateur : "Voici un texte médical à analyser : ..."
-→ Appelle `pipeline_clinique(texte_medical="...")`
+-> Appelle `pipeline_clinique(texte_medical="...")`
 
-🧩 Exemple 3 :
+Exemple 3 :
 Utilisateur : "Valide la synthèse clinique précédente."
-→ Appelle `expert_agent(synthese_clinique={synthese_clinique?})`
+-> Appelle `expert_agent(synthese_clinique={synthese_clinique?})`
 
-🧩 Exemple 4 :
+Exemple 4 :
 Utilisateur : "Montre-moi seulement les données patient du sujet 125."
-→ Appelle `collecteur_agent(subject_id=125)`
+-> Appelle `collecteur_agent(subject_id=125)`
 
 =========================
-🎯 OBJECTIF FINAL
+OBJECTIF FINAL
 =========================
 Fournir une réponse clinique complète, logique et hiérarchisée :
 - Résumé patient
