@@ -15,16 +15,13 @@
 ## Agent tools
 
 ### Collecteur Agent
-- **Retrieving patient medical records**: Schedule new appointments with date, time, location, and descriptions.
+**Retrieving patient medical records**: Access and fetch patient data from the MIMIC-III clinical database.
 
 ### Synthetiseur Agent  
-- **Python REPL**: Execute Python code in a REPL environment with PTY support and state persistence.
-- **Editor**: Editor tool designed to do changes iteratively on multiple files.
-- **Shell Access**: Interactive shell tool with PTY support for real-time command execution and interaction.
-- **Journal**: Daily journal management tool for Strands Agent.
+**Summarizing patient data**: Generate concise summaries of patient medical histories and current conditions.
 
 ### Expert Agent
-- **Web Search**: Powered by Perplexity MCP Server for real-time information
+**Providing medical recommendations**: Analyze patient data and offer diagnostic and treatment suggestions based on established medical guidelines.
 
 ## Getting Started
 
@@ -93,8 +90,6 @@ To do this:
 
 ![alt text](assets/image-3.png)
 - Do the same for the frontend.
-
-![alt text](assets/image-1.png)
 
 The link to the frontend will take you to the following page:
 
