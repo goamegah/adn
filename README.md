@@ -1,26 +1,71 @@
 # ADN - AI Diagnostic Navigator
 
-> 🏥 **Système d'aide à la décision médicale basé sur l'Intelligence Artificielle multi-agents**
+> 🏥 **Medical decision support system for emergency situations based on multi-agent artificial intelligence**
 
 [![Google Cloud](https://img.shields.io/badge/Google%20Cloud-4285F4?style=flat&logo=google-cloud&logoColor=white)](https://cloud.google.com)
 [![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=flat&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
 [![Python](https://img.shields.io/badge/Python-3.10+-3776AB?style=flat&logo=python&logoColor=white)](https://www.python.org)
 [![Google ADK](https://img.shields.io/badge/Google%20ADK-1.15.0-4285F4?style=flat)](https://github.com/google/adk-python)
 
----
 
-# Quick Start
+## Architecture Overview
 
-Notre solution est déployée sur Google Cloud Platform et utilise plusieurs services GCP tels que Cloud Run, Cloud SQL, Cloud Storage, et Cloud Build pour l'intégration continue et le déploiement continu (CI/CD). Nous disposons de deux environnements distincts : staging et production, chacun hébergé dans des projets GCP séparés pour garantir l'isolation et la sécurité des données.
+![alt text](assets/architecture_overview.png)
 
-Nous disposerons donc de 3 projets :
+## Agent tools
 
-- staging : `adn-app-chn-staging`: environnement de test pour valider les nouvelles fonctionnalités avant leur mise en production.
-- production : `adn-app-chn-prod`: environnement de production hébergeant l'agent ADN pour les utilisateurs finaux.
-- cicd : `adn-app-chn-cicd`: chargé d'exécuter les pipelines CI/CD via Cloud Build pour les environnements staging et production.
+### Collecteur Agent
+- **Retrieving patient medical records**: Schedule new appointments with date, time, location, and descriptions.
 
+### Synthetiseur Agent  
+- **Python REPL**: Execute Python code in a REPL environment with PTY support and state persistence.
+- **Editor**: Editor tool designed to do changes iteratively on multiple files.
+- **Shell Access**: Interactive shell tool with PTY support for real-time command execution and interaction.
+- **Journal**: Daily journal management tool for Strands Agent.
 
-### Provisioner les ressources Google Cloud nécessaires avec Terraform :
+### Expert Agent
+- **Web Search**: Powered by Perplexity MCP Server for real-time information
+
+## Getting Started
+
+### Prerequisites
+- Python 3.10+
+- GCP Account with Vertex AI access
+- Terraform installed
+- Agent Development Kit Required Python packages (see pyproject.toml)
+- Node.js and npm installed
+
+### Installation
+
+1. **Clone the repository and Install dependencies**:
+```bash
+git clone https://github.com/goamegah/adn
+cd adn
+```
+
+2. **Set up Python virtual environment**:
+```bash
+uv sync
+```
+
+3. **Install Node.js dependencies for the Next.js frontend**:
+```bash
+cd frontend
+npm install
+```
+
+### Resources Provisioning and Deployment
+
+Here the simplified view of the deployment process:
+
+![alt text](image.png)
+
+We will have 3 projects:
+- staging : `adn-app-chn-staging`: test environment to validate new features before production deployment.
+- production : `adn-app-chn-prod`: production environment hosting the ADN agent and Frontend for end users.
+- cicd : `adn-app-chn-cicd`: responsible for executing CI/CD pipelines via Cloud Build for staging and production environments.
+
+#### Provision Google Cloud resources with Terraform:
 
 ```bash
 cd deployment/terraform
@@ -29,46 +74,48 @@ terraform plan --var-file=vars/env.tfvars
 terraform apply --var-file=vars/env.tfvars
 ```
 
-### Uploader les données 
+#### Upload MIMIC Data
+Upload the MIMIC data you can obtain via Kaggle: https://www.kaggle.com/datasets/atamazian/mimic-iii-clinical-dataset-demo, into the Cloud Storage bucket (`adn-app-chn-staging-mimic-data`) created during resource provisioning in the staging project.
+Once done, you can:
 
-Téléverser les données MIMIC que vous pouvez obtenir via Kaggle: https://www.kaggle.com/datasets/atamazian/mimic-iii-clinical-dataset-demo, dans le bucket Cloud Storage (`adn-app-chn-staging-mimic-data`) créé lors du provisionnement des ressources dans le projet staging.
+- Trigger the `import-mimic.yaml` pipeline from `Cloud Build` to import the data into Cloud SQL (for the staging project). This pipeline uses the `import_mimic.py` script located in the `/scripts/` directory.
 
-une fois effectuer vous pouvez déclencher depuis `Cloud Build` le pipeline import-mimic.yaml pour importer les données dans Cloud SQL (pour le projet staging). ce pipeline utilise le script `import_mimic.py` situé dans le répertoire `/scripts/`.
-
-
-Maintenant vous pouvez déclencher depuis Cloud build le pipeline ```staging.yml``` pour déployer l'agent dans `Cloud Run` du projet staging.
-
+- Trigger the `staging.yml` pipeline from Cloud Build to deploy the agent and frontend in `Cloud Run` of the staging project.
 
 ![alt text](assets/image.png)
 
+You can then access the Next.js web interface of the ADN agent via the URL provided by Cloud Run once the deployment is complete.
 
-Vous pourrez donc consulter l'interface web Next.js de l'agent ADN via l'URL fournie par Cloud Run une fois le déploiement terminé. 
+![alt text](assets/image-4.png)
 
-![alt text](assets/image-4.png)Pour cela:
-
-- Donner un accès public au backend de l'agent ADN depuis l'interface Cloud Run du projet staging.
+To do this:
+- Give public access to the ADN agent backend from the Cloud Run interface of the staging project.
 
 ![alt text](assets/image-3.png)
-
-- Faites de même pour le frontend.
+- Do the same for the frontend.
 
 ![alt text](assets/image-1.png)
 
-
-Le lien vers le frontend vous amènera à la page suivante:
+The link to the frontend will take you to the following page:
 
 ![alt text](assets/image-2.png)
 
+You can now interact with the ADN agent via this Next.js web interface.
 
-Vous pouvez maintenant interagir avec l'agent ADN via cette interface web Next.js
+![alt text](assets/adn_usage.png)
 
-![alt text](assets/image-5.png)
+You will find an additional list of ids in the mimic3_ids.csv file with which you can test the ADN agent.
 
+### Quick Start
 
-Vous trouverez une liste complémentaire d'id dans le fichier mimic3_ids.csv avec lequel vous pouvez tester l'agent ADN.
+#### Clinical Agent
+```bash
+cd app
+adk web
+```
 
+## Usage Examples
 
+### ADN Agent
 
-
-
-
+![alt text](assets/adn_usage.png)
