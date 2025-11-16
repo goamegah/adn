@@ -27,7 +27,7 @@
 
 ### Prerequisites
 - Python 3.10+
-- GCP Account with Vertex AI access
+- GCloud CLI and GCP Account
 - Terraform installed
 - Agent Development Kit Required Python packages (see pyproject.toml)
 - Node.js and npm installed
@@ -40,7 +40,14 @@ git clone https://github.com/goamegah/adn
 cd adn
 ```
 
-2. **Set up Python virtual environment**:
+2. **Set up Google Cloud SDK and authenticate**:
+```bash
+gcloud auth login
+gcloud config set project YOUR_PROJECT_ID
+```
+Replace `YOUR_PROJECT_ID` with your actual GCP project ID.
+
+3. **Install Python dependencies for the ADN agent**:
 ```bash
 uv sync
 ```
@@ -55,7 +62,7 @@ npm install
 
 Here the simplified view of the deployment process:
 
-![alt text](image.png)
+![alt text](assets/simplified_deployment_process.png)
 
 We will have 3 projects:
 - staging : `adn-app-chn-staging`: test environment to validate new features before production deployment.
