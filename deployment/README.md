@@ -4,7 +4,7 @@ This directory contains the Terraform configurations for provisioning the necess
 
 ## Deployment process overview
 
-![alt text](assets/deployment_overview.png)
+![alt text](../assets/deployment_overview.png)
 
 
 1. CI Pipeline (`.cloudbuild/pr_checks.yaml`):
@@ -44,24 +44,22 @@ Once done, you can:
 
 - Trigger the `staging.yml` pipeline from Cloud Build to deploy the agent and frontend in `Cloud Run` of the staging project.
 
-![alt text](assets/image.png)
+![alt text](../assets/image.png)
 
 You can then access the Next.js web interface of the ADN agent via the URL provided by Cloud Run once the deployment is complete.
 
-![alt text](assets/image-4.png)
-
+![alt text](../assets/image-4.png)
 To do this:
 - Give public access to the ADN agent backend from the Cloud Run interface of the staging project.
 
-![alt text](assets/image-3.png)
+![alt text](../assets/image-3.png)
 - Do the same for the frontend.
 
 The link to the frontend will take you to the following page:
 
-![alt text](assets/image-2.png)
+![alt text](../assets/image-2.png)
 
 You can now interact with the ADN agent via this Next.js web interface.
 
-![alt text](assets/adn_usage.png)
-
+![alt text](../assets/adn_usage.png)
 You will find an additional list of ids in the mimic3_ids.csv file with which you can test the ADN agent.
