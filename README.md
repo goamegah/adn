@@ -59,54 +59,7 @@ npm install
 ```
 
 ### Resources Provisioning and Deployment
-
-Here the simplified view of the deployment process:
-
-![alt text](assets/simplified_deployment_process.png)
-
-We will have 3 projects:
-- staging : `adn-app-chn-staging`: test environment to validate new features before production deployment.
-- production : `adn-app-chn-prod`: production environment hosting the ADN agent and Frontend for end users.
-- cicd : `adn-app-chn-cicd`: responsible for executing CI/CD pipelines via Cloud Build for staging and production environments.
-
-#### Provision Google Cloud resources with Terraform:
-
-```bash
-cd deployment/terraform
-terraform init --var-file=vars/env.tfvars
-terraform plan --var-file=vars/env.tfvars
-terraform apply --var-file=vars/env.tfvars
-```
-
-#### Upload MIMIC Data
-Upload the MIMIC data you can obtain via Kaggle: https://www.kaggle.com/datasets/atamazian/mimic-iii-clinical-dataset-demo, into the Cloud Storage bucket (`adn-app-chn-staging-mimic-data`) created during resource provisioning in the staging project.
-Once done, you can:
-
-- Trigger the `import-mimic.yaml` pipeline from `Cloud Build` to import the data into Cloud SQL (for the staging project). This pipeline uses the `import_mimic.py` script located in the `/scripts/` directory.
-
-- Trigger the `staging.yml` pipeline from Cloud Build to deploy the agent and frontend in `Cloud Run` of the staging project.
-
-![alt text](assets/image.png)
-
-You can then access the Next.js web interface of the ADN agent via the URL provided by Cloud Run once the deployment is complete.
-
-![alt text](assets/image-4.png)
-
-To do this:
-- Give public access to the ADN agent backend from the Cloud Run interface of the staging project.
-
-![alt text](assets/image-3.png)
-- Do the same for the frontend.
-
-The link to the frontend will take you to the following page:
-
-![alt text](assets/image-2.png)
-
-You can now interact with the ADN agent via this Next.js web interface.
-
-![alt text](assets/adn_usage.png)
-
-You will find an additional list of ids in the mimic3_ids.csv file with which you can test the ADN agent.
+Please refer to the [Deployment process overview](deployment/README.md#deployment-process-overview) section in the deployment/README.md file for detailed instructions on provisioning Google Cloud resources with Terraform and deploying the ADN agent and frontend.
 
 ### Quick Start
 
@@ -119,5 +72,8 @@ adk web
 ## Usage Examples
 
 ### ADN Agent
+
+Note: You will find an additional list of ids in the mimic3_ids.csv file with which you can test the ADN agent.
+
 
 ![alt text](assets/adn_usage.png)
